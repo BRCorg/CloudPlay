@@ -1,49 +1,124 @@
-# React + TypeScript + Vite
+# CloudPlay Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface utilisateur de l'application CloudPlay, construite avec React, TypeScript et Vite.
 
-Currently, two official plugins are available:
+## 🛠️ Technologies
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework**: React 19
+- **Langage**: TypeScript
+- **Build Tool**: Vite 7
+- **State Management**: Redux
+- **Linting**: ESLint
 
-## React Compiler
+## 📁 Structure du projet
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+frontend/
+├── public/               # Assets statiques
+├── src/
+│   ├── api/              # Services et appels API
+│   ├── app/              # Configuration de l'application
+│   ├── assets/           # Images, icônes, etc.
+│   ├── components/       # Composants réutilisables (Atomic Design)
+│   │   ├── atoms/        # Composants de base (boutons, inputs...)
+│   │   ├── molecules/    # Groupes d'atomes
+│   │   ├── organismes/   # Sections complexes
+│   │   └── templates/    # Layouts de pages
+│   ├── pages/            # Pages de l'application
+│   │   ├── LoginPage/
+│   │   ├── SignupPage/
+│   │   ├── PostsPage/
+│   │   └── PostsDetailPage/
+│   ├── redux/            # Store et slices Redux
+│   ├── routes/           # Configuration du routing
+│   ├── utils/            # Fonctions utilitaires
+│   ├── App.tsx           # Composant racine
+│   ├── App.css           # Styles globaux
+│   ├── main.tsx          # Point d'entrée
+│   └── index.css         # Styles de base
+├── index.html            # Template HTML
+├── vite.config.ts        # Configuration Vite
+├── tsconfig.json         # Configuration TypeScript
+├── eslint.config.js      # Configuration ESLint
+└── package.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Installation
+
+### Prérequis
+- Node.js (v18 ou supérieur)
+- npm ou yarn
+
+### Étapes
+
+1. **Installer les dépendances**
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. **Configurer les variables d'environnement**
+   
+   Créer un fichier `.env` à la racine du dossier frontend :
+   ```env
+   VITE_API_URL=http://localhost:5000/api
+   ```
+
+3. **Lancer en mode développement**
+   ```bash
+   npm run dev
+   ```
+
+4. **Build pour la production**
+   ```bash
+   npm run build
+   npm run preview
+   ```
+
+## 📜 Scripts disponibles
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Lance le serveur de développement avec HMR |
+| `npm run build` | Compile TypeScript et build pour la production |
+| `npm run preview` | Prévisualise le build de production |
+| `npm run lint` | Vérifie le code avec ESLint |
+
+## 🎨 Architecture des composants (Atomic Design)
+
+Le projet utilise l'architecture **Atomic Design** pour organiser les composants :
+
+- **Atoms** : Composants de base indivisibles (Button, Input, Label...)
+- **Molecules** : Combinaisons d'atoms (SearchBar, FormField...)
+- **Organismes** : Sections complètes (Header, PostCard, CommentList...)
+- **Templates** : Layouts et structures de pages
+
+## 📄 Pages
+
+| Page | Description |
+|------|-------------|
+| `LoginPage` | Page de connexion |
+| `SignupPage` | Page d'inscription |
+| `PostsPage` | Liste des posts |
+| `PostsDetailPage` | Détail d'un post avec commentaires |
+
+## 📦 Dépendances principales
+
+- `react` - Bibliothèque UI
+- `react-dom` - Rendu DOM pour React
+- `vite` - Build tool et serveur de développement
+- `typescript` - Typage statique
+- `eslint` - Linting du code
+
+## 🔧 Configuration ESLint
+
+Le projet utilise ESLint avec les plugins suivants :
+- `eslint-plugin-react-hooks` - Règles pour les hooks React
+- `eslint-plugin-react-refresh` - Support du Fast Refresh
+
+## 📝 License
+
+ISC
 
 ```js
 // eslint.config.js
