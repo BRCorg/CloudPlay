@@ -1,0 +1,28 @@
+@import '../../../../public/assets/scss/variables';
+
+.text {
+  font-family: $font-primary;
+  color: $color-black;
+  margin: 0;
+}
+
+// Sizes
+.text--xs { font-size: $text-xs; }
+.text--sm { font-size: $text-sm; }
+.text--base { font-size: $text-base; }
+.text--lg { font-size: $text-lg; }
+.text--xl { font-size: $text-xl; }
+.text--2xl { font-size: $text-2xl; }
+.text--3xl { font-size: $text-3xl; }
+.text--4xl { font-size: $text-4xl; }
+.text--5xl { font-size: $text-5xl; }
+
+// Weights
+.text--normal { font-weight: $weight-normal; }
+.text--medium { font-weight: $weight-medium; }
+.text--semibold { font-weight: $weight-semibold; }
+.text--bold { font-weight: $weight-bold; }
+
+// Colors
+.text--muted { color: $color-gray-600; }
+.text--primary { color: $color-primary; }

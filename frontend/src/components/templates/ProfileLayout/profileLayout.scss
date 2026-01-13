@@ -1,0 +1,14 @@
+@import '../../../../public/assets/scss/variables';
+
+.profile-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-layout__content {
+  flex: 1;
+  @include container;
+  padding-top: $space-8;
+  padding-bottom: $space-8;
+}

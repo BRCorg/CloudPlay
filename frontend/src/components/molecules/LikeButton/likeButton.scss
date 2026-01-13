@@ -1,0 +1,27 @@
+@import '../../../../public/assets/scss/variables';
+
+.like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  font-size: $text-sm;
+  color: $color-gray-600;
+  background: transparent;
+  border: $border-width solid $border-color;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $duration-base $ease;
+
+  &:hover {
+    background: $color-gray-50;
+    color: $color-error;
+    border-color: $color-error;
+  }
+}
+
+.like-button--liked {
+  color: $color-error;
+  border-color: $color-error;
+  background: rgba($color-error, 0.05);
+}

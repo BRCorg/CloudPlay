@@ -1,0 +1,16 @@
+@import '../../../../public/assets/scss/variables';
+
+.label {
+  display: block;
+  font-family: $font-primary;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $color-gray-700;
+  margin-bottom: $space-2;
+}
+
+.label--required::after {
+  content: '*';
+  color: $color-error;
+  margin-left: $space-1;
+}

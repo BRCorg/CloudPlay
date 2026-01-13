@@ -1,0 +1,15 @@
+@import '../../../../public/assets/scss/variables';
+
+.like-icon {
+  display: inline-flex;
+  color: $color-gray-400;
+  transition: color $duration-base $ease;
+
+  &:hover {
+    color: $color-error;
+  }
+}
+
+.like-icon--liked {
+  color: $color-error;
+}

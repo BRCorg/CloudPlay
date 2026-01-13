@@ -1,0 +1,64 @@
+@import '../../../../public/assets/scss/variables';
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: $space-3 $space-4;
+  font-family: $font-primary;
+  font-size: $text-base;
+  font-weight: $weight-normal;
+  color: $color-black;
+  background: $color-white;
+  border: $border-width solid $border-color;
+  border-radius: $radius-md;
+  transition: all $duration-base $ease;
+
+  &::placeholder {
+    color: $color-gray-400;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $color-gray-300;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $color-primary;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: $color-gray-50;
+  }
+}
+
+.input--error {
+  border-color: $color-error;
+
+  &:focus {
+    border-color: $color-error;
+  }
+}
+
+.input--large {
+  padding: $space-4 $space-5;
+  font-size: $text-lg;
+}
+
+.input--small {
+  padding: $space-2 $space-3;
+  font-size: $text-sm;
+}
+
+.input--textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: $leading-normal;
+}

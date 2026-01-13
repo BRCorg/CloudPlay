@@ -1,0 +1,373 @@
+@import '../../../public/assets/scss/variables';
+
+.home {
+  display: flex;
+  flex-direction: column;
+}
+
+// Hero - Refined layout
+.home__hero {
+  padding: $space-32 0 $space-24;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.home__hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $color-gray-600;
+  background: $color-gray-100;
+  border-radius: $radius-full;
+  margin-bottom: $space-8;
+  transition: all $duration-base $ease;
+
+  &:hover {
+    background: $color-gray-200;
+  }
+}
+
+.home__hero-title {
+  font-size: $text-6xl;
+  font-weight: $weight-bold;
+  color: $color-black;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-tight;
+  margin-bottom: $space-6;
+
+  @media (max-width: 768px) {
+    font-size: $text-4xl;
+  }
+}
+
+.home__hero-description {
+  font-size: $text-xl;
+  color: $color-gray-600;
+  line-height: $leading-relaxed;
+  max-width: 680px;
+  margin: 0 auto $space-10;
+
+  @media (max-width: 768px) {
+    font-size: $text-lg;
+  }
+}
+
+.home__hero-tags {
+  display: flex;
+  gap: $space-3;
+  justify-content: center;
+  margin-bottom: $space-10;
+  flex-wrap: wrap;
+}
+
+.home__hero-tag {
+  padding: $space-2 $space-4;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $color-gray-700;
+  background: $color-white;
+  border: $border-width solid $border-color;
+  border-radius: $radius-md;
+  transition: all $duration-base $ease;
+
+  &:hover {
+    border-color: $color-gray-300;
+    box-shadow: $shadow-sm;
+  }
+}
+
+.home__hero-actions {
+  display: flex;
+  gap: $space-4;
+  justify-content: center;
+  margin-bottom: $space-16;
+  flex-wrap: wrap;
+}
+
+// Featured image
+.home__hero-image {
+  width: 100%;
+  max-width: 800px;
+  height: 500px;
+  margin: 0 auto;
+  border-radius: $radius-2xl;
+  overflow: hidden;
+  border: $border-width solid $border-color;
+  box-shadow: $shadow-xl;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 768px) {
+    height: 300px;
+  }
+}
+
+// Sections
+.home__section {
+  padding: $space-24 0;
+  border-top: $border-width solid $border-color;
+}
+
+.home__section-header {
+  max-width: $container-xl;
+  margin: 0 auto $space-16;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: $space-8;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.home__section-title {
+  font-size: $text-4xl;
+  font-weight: $weight-bold;
+  color: $color-black;
+  letter-spacing: $tracking-tight;
+
+  @media (max-width: 768px) {
+    font-size: $text-3xl;
+  }
+}
+
+.home__section-description {
+  font-size: $text-lg;
+  color: $color-gray-600;
+  max-width: 600px;
+}
+
+.home__container {
+  @include container;
+}
+
+// Categories Grid
+.home__categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: $space-4;
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.home__category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  padding: $space-8 $space-4;
+  background: $color-white;
+  border: $border-width solid $border-color;
+  border-radius: $radius-lg;
+  cursor: pointer;
+  transition: all $duration-base $ease;
+
+  &:hover {
+    border-color: $color-gray-300;
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+}
+
+.home__category-icon {
+  font-size: $text-4xl;
+}
+
+.home__category-name {
+  font-size: $text-base;
+  color: $color-black;
+}
+
+.home__category-count {
+  color: $color-gray-500;
+}
+
+// Games Grid
+.home__games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: $space-5;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home__game-card {
+  position: relative;
+  display: block;
+  background: $color-white;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all $duration-base $ease;
+  aspect-ratio: 3/4;
+
+  &:hover {
+    transform: translateY(-2px);
+
+    .home__game-image img {
+      transform: scale(1.03);
+    }
+
+    .home__game-info {
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.3));
+    }
+  }
+}
+
+.home__game-image {
+  position: absolute;
+  inset: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform $duration-slow $ease;
+  }
+}
+
+.home__game-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $space-6;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2));
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  transition: background $duration-base $ease;
+}
+
+.home__game-title {
+  font-size: $text-xl;
+  font-weight: $weight-bold;
+  color: $color-white;
+  line-height: $leading-tight;
+}
+
+.home__game-genre {
+  font-size: $text-sm;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: $weight-medium;
+}
+
+.home__game-meta {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-top: $space-1;
+
+  .badge {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: $color-white;
+    font-weight: $weight-semibold;
+  }
+}
+
+// Deprecated - kept for backwards compatibility
+.home__game-overlay {
+  display: none;
+}
+
+// Hero cards
+.home__hero-content {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 0 $space-4;
+}
+
+.home__hero-visual {
+  margin-top: $space-16;
+}
+
+.home__hero-cards {
+  display: flex;
+  gap: $space-5;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.home__hero-card {
+  position: relative;
+  width: 240px;
+  aspect-ratio: 2/3;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  animation: fadeInUp 0.6s $ease forwards;
+  opacity: 0;
+  cursor: pointer;
+  transition: transform $duration-base $ease;
+
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+
+    img {
+      transform: scale(1.05);
+    }
+
+    .home__hero-card-overlay {
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.3));
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform $duration-slow $ease;
+  }
+}
+
+.home__hero-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $space-5;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2));
+  color: $color-white;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  transition: background $duration-base $ease;
+
+  .text {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .badge {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}

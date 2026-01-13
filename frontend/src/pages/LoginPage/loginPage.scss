@@ -1,0 +1,103 @@
+@import '../../../public/assets/scss/variables';
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  background: $color-white;
+}
+
+.login-page__container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  min-height: 100vh;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Left side - Marketing content
+.login-page__left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: $space-16 $space-12;
+  background: $color-gray-50;
+  border-right: $border-width solid $border-color;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+}
+
+.login-page__logo {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  font-size: $text-2xl;
+  font-weight: $weight-bold;
+  color: $color-black;
+  margin-bottom: $space-12;
+
+  span {
+    font-size: $text-3xl;
+  }
+}
+
+.login-page__title {
+  font-size: $text-4xl;
+  font-weight: $weight-bold;
+  color: $color-black;
+  line-height: $leading-tight;
+  letter-spacing: $tracking-tight;
+  margin-bottom: $space-6;
+}
+
+.login-page__subtitle {
+  font-size: $text-lg;
+  color: $color-gray-600;
+  line-height: $leading-relaxed;
+  margin-bottom: $space-12;
+}
+
+.login-page__features {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.login-page__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-4;
+}
+
+.login-page__feature-icon {
+  font-size: $text-3xl;
+  flex-shrink: 0;
+}
+
+.login-page__feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+// Right side - Form
+.login-page__right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-12 $space-8;
+  background: $color-white;
+
+  @media (max-width: 640px) {
+    padding: $space-8 $space-4;
+  }
+}
+
+.login-page__form-container {
+  width: 100%;
+  max-width: 440px;
+}

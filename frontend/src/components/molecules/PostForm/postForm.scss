@@ -1,0 +1,19 @@
+@import '../../../../public/assets/scss/variables';
+
+.post-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.post-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.post-form__actions {
+  display: flex;
+  gap: $space-3;
+  justify-content: flex-end;
+}

@@ -1,0 +1,46 @@
+@import '../../../../public/assets/scss/variables';
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1 $space-3;
+  font-family: $font-primary;
+  font-size: $text-xs;
+  font-weight: $weight-medium;
+  line-height: 1;
+  color: $color-gray-700;
+  background: $color-gray-100;
+  border-radius: $radius-full;
+  white-space: nowrap;
+}
+
+.badge--primary {
+  background: $color-primary;
+  color: $color-white;
+}
+
+.badge--success {
+  background: $color-success;
+  color: $color-white;
+}
+
+.badge--error {
+  background: $color-error;
+  color: $color-white;
+}
+
+.badge--warning {
+  background: $color-warning;
+  color: $color-white;
+}
+
+.badge--small {
+  padding: $space-1 $space-2;
+  font-size: 0.625rem;
+}
+
+.badge--large {
+  padding: $space-2 $space-4;
+  font-size: $text-sm;
+}
