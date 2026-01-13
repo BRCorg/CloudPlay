@@ -1,52 +1,45 @@
-import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { login } from "../../redux/auth/authSlice";
 import { useNavigate } from "react-router-dom";
+import type { RootState } from "../../app/store";
+import "./loginPage.scss";
 
-export default function Login() {
-    // On récupère le dispatch et l'état d'authentification depuis le store
-    const dispatch = useAppDispatch();
-    const { loading, error } = useAppSelector((state) => state.auth);
+import MainLayout from "../../components/templates/MainLayout";
+import LoginForm from "../../components/molecules/LoginForm";
 
-    // États locaux pour les champs du formulaire
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+const LoginPage = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useAppSelector((state: RootState) => state.auth);
 
-    const navigate = useNavigate();
-    const handleSubmit = async (e: React.FormEvent) => {
-        // Empêche le rechargement de la page
-        e.preventDefault();
+  const handleSubmit = async (email: string, password: string) => {
+    const resultAction = await dispatch(login({ email, password }));
 
-        // Dispatch et attendre le résultat
-        const resultAction = await dispatch(login({ email, password }));
+    if (login.fulfilled.match(resultAction)) {
+      navigate("/");
+    }
+  };
 
-        // Vérifier si l'action a été réussie
-        if (login.fulfilled.match(resultAction)) {
-            // Rediriger vers la page d'accueil
-            navigate("/");
-        }
-    };
+  const errorMessage = error && typeof error === "object" && error.error 
+    ? error.error 
+    : typeof error === "string" 
+    ? error 
+    : undefined;
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-            />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-            />
-            <button type="submit" disabled={loading}>
-                Se connecter
-            </button>
-            {error && <p>{error}</p>}
-        </form>
-    );
-}
+  return (
+    <MainLayout>
+      <section className="login-page">
+        <div className="login-page__container">
+          <div className="login-page__header">
+            <p className="login-page__brand">CloudPlay</p>
+            <h1 className="login-page__title">Connexion</h1>
+          </div>
+
+          <LoginForm onSubmit={handleSubmit} error={errorMessage} loading={loading} />
+        </div>
+      </section>
+    </MainLayout>
+  );
+};
+
+export default LoginPage;

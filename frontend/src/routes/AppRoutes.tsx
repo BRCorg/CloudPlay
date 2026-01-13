@@ -7,10 +7,11 @@ import PostDetail from "../pages/PostDetail";
 import Profile from "../pages/Profile";
 import { useAppSelector } from "../app/hooks";
 import ProtectedRoute from "./ProtectedRoute";
-import ProfileSetup from "../pages/SignupPage/ProfileSetup";
+import ProfileSetup from "../pages/ProfileSetup";
+import type { RootState } from "../app/store";
 
 const AppRoutes = () => {
-  const { loading } = useAppSelector((state) => state.auth);
+  const { loading } = useAppSelector((state: RootState) => state.auth);
 
   if (loading) return <p>Chargement...</p>;
 

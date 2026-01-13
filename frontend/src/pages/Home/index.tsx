@@ -1,4 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { logout } from "../../redux/auth/authSlice";
+import type { RootState } from "../../app/store";
 
 import MainLayout from "../../components/templates/MainLayout";
 import Header from "../../components/organisms/Header";
@@ -11,9 +14,26 @@ import "./home.scss";
 
 const Home = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated } = useAppSelector((state: RootState) => state.auth);
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    navigate("/login");
+  };
 
   return (
-    <MainLayout header={<Header onLogoClick={() => navigate("/")} />} footer={<Footer />}>
+    <MainLayout 
+      header={
+        <Header 
+          onLogoClick={() => navigate("/")}
+          user={isAuthenticated && user ? { name: user.username, avatar: user.avatar ? `http://localhost:5000/uploads/${user.avatar}` : undefined } : undefined}
+          onProfileClick={() => navigate("/profile")}
+          onLogout={handleLogout}
+        />
+      } 
+      footer={<Footer />}
+    >
       <section className="home">
         <div className="home__container">
           <header className="home__header">
