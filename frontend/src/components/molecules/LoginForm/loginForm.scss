@@ -1,11 +1,39 @@
-@import '../../../../public/assets/scss/variables';
+@import "../../../../public/assets/scss/variables";
 
 .login-form {
+  width: 100%;
+  max-width: 400px;
+
   display: flex;
   flex-direction: column;
   gap: $space-6;
-  width: 100%;
-  max-width: 400px;
+}
+
+.login-form__header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.login-form__title {
+  margin: 0;
+  font-size: $text-xl;
+  font-weight: $weight-semibold;
+  color: $color-black;
+}
+
+.login-form__error {
+  margin: 0;
+  padding: $space-3 $space-4;
+
+  border: $border-width solid $color-error;
+  border-radius: $radius-md;
+
+  background: rgba($color-error, 0.06);
+  color: $color-error;
+
+  font-size: $text-sm;
+  line-height: $leading-normal;
 }
 
 .login-form__field {
@@ -14,9 +42,27 @@
   gap: $space-2;
 }
 
-.login-form__actions {
-  display: flex;
-  flex-direction: column;
-  gap: $space-3;
+.login-form__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+}
+
+.login-form__footer {
   margin-top: $space-2;
+  font-size: $text-sm;
+
+  a {
+    color: $color-primary;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
 }

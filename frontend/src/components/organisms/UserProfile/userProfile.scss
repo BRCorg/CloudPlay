@@ -1,0 +1,41 @@
+@import "../../../../public/assets/scss/variables";
+
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  gap: $space-6;
+
+  padding: $space-8;
+  background: $color-white;
+  border: $border-width solid $border-color;
+  border-radius: $radius-lg;
+}
+
+.user-profile__info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.user-profile__name {
+  margin: 0;
+  font-size: $text-2xl;
+  font-weight: $weight-bold;
+  color: $color-black;
+}
+
+.user-profile__username {
+  margin: 0;
+  font-size: $text-base;
+  color: $color-gray-600;
+}
+
+.user-profile__bio {
+  margin-top: $space-2;
+  font-size: $text-base;
+  color: $color-gray-700;
+  line-height: $leading-normal;
+}

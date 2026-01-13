@@ -1,38 +1,20 @@
-import React from 'react';
-import './avatar.scss';
+import "./avatar.scss";
 
-interface AvatarProps {
+type AvatarProps = {
   src?: string;
   alt?: string;
-  size?: 'small' | 'medium' | 'large' | 'xlarge';
-  shape?: 'square' | 'circle';
-  fallback?: string;
-  className?: string;
-}
+  size?: "sm" | "md" | "lg";
+};
 
-export const Avatar: React.FC<AvatarProps> = ({
-  src,
-  alt = 'Avatar',
-  size = 'medium',
-  shape = 'circle',
-  fallback,
-  className = '',
-}) => {
-  const classNames = [
-    'avatar',
-    `avatar--${size}`,
-    `avatar--${shape}`,
-    className,
-  ].filter(Boolean).join(' ');
-
+const Avatar = ({ src, alt = "Avatar", size = "md" }: AvatarProps) => {
   return (
-    <div className={classNames}>
+    <div className={`avatar avatar--${size}`}>
       {src ? (
-        <img src={src} alt={alt} className="avatar__image" />
+        <img src={src} alt={alt} />
       ) : (
-        <div className="avatar__fallback">
-          {fallback || alt.charAt(0).toUpperCase()}
-        </div>
+        <span className="avatar__fallback">
+          {alt[0].toUpperCase()}
+        </span>
       )}
     </div>
   );

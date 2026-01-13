@@ -1,54 +1,59 @@
-import React, { useState } from 'react';
-import { MainLayout } from '../../components/templates/MainLayout';
-import { Header } from '../../components/organismes/Header';
-import { Footer } from '../../components/organismes/Footer';
-import { PostList } from '../../components/organismes/PostList';
-import { PostForm } from '../../components/molecules/PostForm';
-import { Text } from '../../components/atoms/Text';
-import './postsPage.scss';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./postsPage.scss";
 
-// Mock data
+import MainLayout from "../../components/templates/MainLayout";
+import Header from "../../components/organisms/Header";
+import Footer from "../../components/organisms/Footer";
+
+import PostList from "../../components/organisms/PostList";
+import PostForm from "../../components/molecules/PostForm";
+
 const MOCK_POSTS = [
   {
-    id: '1',
-    title: 'Getting Started with React',
-    content: 'React is a JavaScript library for building user interfaces. Learn the basics and start building amazing apps!',
-    author: { name: 'John Doe', avatar: undefined },
+    id: "1",
+    title: "Getting Started with React",
+    content:
+      "React is a JavaScript library for building user interfaces. Learn the basics and start building amazing apps!",
+    author: { name: "John Doe", avatar: undefined },
     likes: 42,
     comments: 12,
-    timestamp: '2 hours ago',
-    isLiked: false,
+    timestamp: "2 hours ago",
+    liked: false,
   },
   {
-    id: '2',
-    title: 'TypeScript Best Practices',
-    content: 'TypeScript adds static typing to JavaScript. Here are some best practices to follow when using TypeScript in your projects.',
-    author: { name: 'Jane Smith', avatar: undefined },
+    id: "2",
+    title: "TypeScript Best Practices",
+    content:
+      "TypeScript adds static typing to JavaScript. Here are some best practices to follow when using TypeScript in your projects.",
+    author: { name: "Jane Smith", avatar: undefined },
     likes: 38,
     comments: 8,
-    timestamp: '5 hours ago',
-    isLiked: true,
+    timestamp: "5 hours ago",
+    liked: true,
   },
   {
-    id: '3',
-    title: 'CSS Grid vs Flexbox',
-    content: 'When should you use CSS Grid and when should you use Flexbox? This guide will help you decide.',
-    author: { name: 'Mike Johnson', avatar: undefined },
+    id: "3",
+    title: "CSS Grid vs Flexbox",
+    content:
+      "When should you use CSS Grid and when should you use Flexbox? This guide will help you decide.",
+    author: { name: "Mike Johnson", avatar: undefined },
     likes: 65,
     comments: 24,
-    timestamp: '1 day ago',
-    isLiked: false,
+    timestamp: "1 day ago",
+    liked: false,
   },
 ];
 
 const CURRENT_USER = {
-  name: 'Current User',
+  name: "Current User",
   avatar: undefined,
 };
 
-export const PostsPage: React.FC = () => {
+const PostsPage = () => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState(MOCK_POSTS);
-  const [isLoading] = useState(false);
+  const [loading] = useState(false);
 
   const handleCreatePost = (data: { title: string; content: string; image?: string }) => {
     const newPost = {
@@ -59,69 +64,55 @@ export const PostsPage: React.FC = () => {
       image: data.image,
       likes: 0,
       comments: 0,
-      timestamp: 'Just now',
-      isLiked: false,
+      timestamp: "Just now",
+      liked: false,
     };
-    setPosts([newPost, ...posts]);
+    setPosts((prev) => [newPost, ...prev]);
   };
 
-  const handleLike = (postId: string) => {
-    setPosts(posts.map(post => {
-      if (post.id === postId) {
+  const handleToggleLike = (id: string, next: boolean) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== id) return p;
         return {
-          ...post,
-          isLiked: !post.isLiked,
-          likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+          ...p,
+          liked: next,
+          likes: next ? (p.likes ?? 0) + 1 : Math.max(0, (p.likes ?? 0) - 1),
         };
-      }
-      return post;
-    }));
+      })
+    );
   };
 
-  const handlePostClick = (postId: string) => {
-    console.log('Navigate to post:', postId);
-    // Navigate to post detail
+  const handleOpenPost = (id: string) => {
+    navigate(`/posts/${id}`);
   };
 
   return (
     <MainLayout
-      header={
-        <Header
-          currentUser={CURRENT_USER}
-          onLogoClick={() => console.log('Logo clicked')}
-          onProfileClick={() => console.log('Profile clicked')}
-          onLogout={() => console.log('Logout')}
-        />
-      }
+      header={<Header user={CURRENT_USER} onLogoClick={() => navigate("/")} />}
       footer={<Footer />}
-      className="posts-page"
     >
-      <div className="posts-page__container">
-        <div className="posts-page__header">
-          <Text as="h1" size="3xl" weight="bold">
-            Posts
-          </Text>
-          <Text color="muted">
-            Share your thoughts and discover what others are saying
-          </Text>
-        </div>
+      <section className="posts-page">
+        <div className="posts-page__container">
+          <header className="posts-page__header">
+            <h1 className="posts-page__title">Posts</h1>
+            <p className="posts-page__subtitle">
+              Partagez un post et découvrez ceux des autres (données mockées).
+            </p>
+          </header>
 
-        <div className="posts-page__create">
-          <PostForm
-            currentUser={CURRENT_USER}
-            onSubmit={handleCreatePost}
-          />
-        </div>
+          <div className="posts-page__create">
+            <PostForm user={CURRENT_USER} onSubmit={handleCreatePost} loading={loading} />
+          </div>
 
-        <div className="posts-page__list">
           <PostList
             posts={posts}
-            isLoading={isLoading}
-            onPostClick={handlePostClick}
-            onLike={handleLike}
+            loading={loading}
+            onOpenPost={handleOpenPost}
+            onToggleLike={handleToggleLike}
           />
         </div>
-      </div>
+      </section>
     </MainLayout>
   );
 };

@@ -1,117 +1,77 @@
-@import '../../../public/assets/scss/variables';
+@import "../../../public/assets/scss/variables";
 
 .signup-page {
-  min-height: 100vh;
-  display: flex;
-  background: $color-white;
+  padding: $space-16 0;
+  background: $color-gray-50;
 }
 
 .signup-page__container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 100%;
-  min-height: 100vh;
+  @include container;
+  max-width: 560px;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-// Left side - Marketing content
-.signup-page__left {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: $space-16 $space-12;
-  background: $color-gray-50;
-  border-right: $border-width solid $border-color;
+  gap: $space-6;
 
-  @media (max-width: 1024px) {
-    display: none;
+  background: $color-white;
+  border: $border-width solid $border-color;
+  border-radius: $radius-xl;
+  padding: $space-10;
+
+  box-shadow: $shadow-sm;
+
+  @media (max-width: 640px) {
+    padding: $space-6;
   }
 }
 
-.signup-page__logo {
+.signup-page__header {
   display: flex;
-  align-items: center;
-  gap: $space-3;
-  font-size: $text-2xl;
-  font-weight: $weight-bold;
-  color: $color-black;
-  margin-bottom: $space-12;
+  flex-direction: column;
+  gap: $space-2;
+  padding-bottom: $space-5;
+  border-bottom: $border-width solid $border-color;
+}
 
-  span {
-    font-size: $text-3xl;
+.signup-page__brand {
+  margin: 0;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $color-gray-600;
+
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+
+  &::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: $radius-full;
+    background: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
   }
 }
 
 .signup-page__title {
-  font-size: $text-4xl;
+  margin: 0;
+  font-size: $text-3xl;
   font-weight: $weight-bold;
   color: $color-black;
-  line-height: $leading-tight;
   letter-spacing: $tracking-tight;
-  margin-bottom: $space-6;
 }
 
 .signup-page__subtitle {
-  font-size: $text-lg;
-  color: $color-gray-600;
-  line-height: $leading-relaxed;
-  margin-bottom: $space-12;
+  margin: 0;
+  color: $color-gray-700;
+  line-height: $leading-normal;
 }
 
-.signup-page__features {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-}
-
-.signup-page__feature {
-  display: flex;
-  align-items: flex-start;
-  gap: $space-4;
-}
-
-.signup-page__feature-icon {
-  font-size: $text-3xl;
-  flex-shrink: 0;
-}
-
-.signup-page__feature-text {
-  display: flex;
-  flex-direction: column;
-  gap: $space-1;
-}
-
-// Right side - Form
-.signup-page__right {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $space-12 $space-8;
-  background: $color-white;
-
-  @media (max-width: 640px) {
-    padding: $space-8 $space-4;
-  }
-}
-
-.signup-page__form-container {
-  width: 100%;
-  max-width: 440px;
-}
-
-.signup-page__form-header {
-  margin-bottom: $space-8;
-  text-align: center;
-}
-
+/* Form */
 .signup-page__form {
   display: flex;
   flex-direction: column;
   gap: $space-5;
-  margin-bottom: $space-6;
 }
 
 .signup-page__field {
@@ -120,36 +80,27 @@
   gap: $space-2;
 }
 
-.signup-page__divider {
-  display: flex;
-  align-items: center;
-  gap: $space-4;
-  margin: $space-8 0;
-  text-align: center;
+.signup-page__error {
+  margin: 0;
+  font-size: $text-sm;
+  color: $color-error;
 
-  &::before,
-  &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: $border-color;
-  }
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  background: rgba($color-error, 0.08);
+  border: 1px solid rgba($color-error, 0.25);
 }
 
-.signup-page__social {
-  display: flex;
-  gap: $space-3;
-  margin-bottom: $space-6;
-}
-
-.signup-page__social-btn {
-  flex: 1;
-}
-
-.signup-page__login {
-  text-align: center;
-  padding-top: $space-6;
+/* Footer */
+.signup-page__footer {
+  padding-top: $space-5;
   border-top: $border-width solid $border-color;
+}
+
+.signup-page__muted {
+  margin: 0;
+  font-size: $text-sm;
+  color: $color-gray-600;
 
   a {
     color: $color-primary;
@@ -158,6 +109,10 @@
 
     &:hover {
       text-decoration: underline;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
     }
   }
 }

@@ -1,31 +1,16 @@
-import React from 'react';
-import './label.scss';
+import "./label.scss";
 
-interface LabelProps {
-  children: React.ReactNode;
-  required?: boolean;
-  optional?: boolean;
+type LabelProps = {
   htmlFor?: string;
-  className?: string;
-}
+  required?: boolean;
+  children: React.ReactNode;
+};
 
-export const Label: React.FC<LabelProps> = ({
-  children,
-  required = false,
-  optional = false,
-  htmlFor,
-  className = '',
-}) => {
-  const classNames = [
-    'label',
-    required && 'label--required',
-    optional && 'label--optional',
-    className,
-  ].filter(Boolean).join(' ');
-
+const Label = ({ htmlFor, required, children }: LabelProps) => {
   return (
-    <label htmlFor={htmlFor} className={classNames}>
+    <label className="label" htmlFor={htmlFor}>
       {children}
+      {required && <span className="label__required">*</span>}
     </label>
   );
 };

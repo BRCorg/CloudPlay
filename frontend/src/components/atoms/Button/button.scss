@@ -1,106 +1,81 @@
-@import '../../../../public/assets/scss/variables';
+@import "../../../../public/assets/scss/variables";
 
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: $space-2;
-  padding: $space-3 $space-7;
-  font-family: $font-primary;
-  font-size: $text-base;
+
+  border-radius: $radius-lg;
+  border: $border-width solid transparent;
+
   font-weight: $weight-medium;
   line-height: 1;
-  color: $color-white;
-  background: $color-black;
-  border: $border-width solid $color-black;
-  border-radius: $radius-lg;
-  cursor: pointer;
-  transition: all $duration-base $ease-out;
   white-space: nowrap;
 
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: $shadow-md;
-  }
+  cursor: pointer;
+  user-select: none;
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: $shadow-sm;
-  }
+  transition: background $duration-base $ease-out,
+              border-color $duration-base $ease-out,
+              color $duration-base $ease-out,
+              opacity $duration-base $ease-out;
 
   &:focus-visible {
     @include focus-ring;
   }
 
   &:disabled {
-    opacity: 0.4;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
   }
-}
 
-// Variants
-.button--primary {
-  background: $color-primary;
-  border-color: $color-primary;
-
-  &:hover:not(:disabled) {
-    background: $color-primary-hover;
-    border-color: $color-primary-hover;
+  /* sizes (sm/md/lg) */
+  &--sm {
+    padding: $space-2 $space-4;
+    font-size: $text-sm;
   }
-}
 
-.button--secondary {
-  background: $color-white;
-  color: $color-black;
-  border-color: $border-color;
-
-  &:hover:not(:disabled) {
-    background: $color-gray-50;
-    border-color: $color-gray-300;
+  &--md {
+    padding: $space-3 $space-6;
+    font-size: $text-base;
   }
-}
 
-.button--outline {
-  background: transparent;
-  color: $color-black;
-  border-color: $color-gray-300;
-
-  &:hover:not(:disabled) {
-    background: $color-gray-50;
-    border-color: $color-black;
+  &--lg {
+    padding: $space-4 $space-8;
+    font-size: $text-lg;
   }
-}
 
-.button--ghost {
-  background: transparent;
-  color: $color-gray-600;
-  border-color: transparent;
-  box-shadow: none;
+  /* variants (3 max) */
+  &--primary {
+    background: $color-primary;
+    border-color: $color-primary;
+    color: $color-white;
 
-  &:hover:not(:disabled) {
-    background: $color-gray-100;
+    &:hover:not(:disabled) {
+      background: $color-primary-hover;
+      border-color: $color-primary-hover;
+    }
+  }
+
+  &--secondary {
+    background: $color-white;
+    border-color: $border-color;
     color: $color-black;
-    transform: none;
+
+    &:hover:not(:disabled) {
+      background: $color-gray-50;
+      border-color: $color-gray-300;
+    }
   }
-}
 
-// Sizes
-.button--small {
-  padding: $space-2 $space-5;
-  font-size: $text-sm;
-}
+  &--outline {
+    background: transparent;
+    border-color: $color-gray-300;
+    color: $color-black;
 
-.button--large {
-  padding: $space-4 $space-10;
-  font-size: $text-lg;
-}
-
-.button--full {
-  width: 100%;
-}
-
-.button--icon {
-  padding: $space-3;
-  aspect-ratio: 1;
+    &:hover:not(:disabled) {
+      background: $color-gray-50;
+      border-color: $color-black;
+    }
+  }
 }

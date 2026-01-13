@@ -1,0 +1,97 @@
+@import "../../../../public/assets/scss/variables";
+
+.comment-section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.comment-section__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+
+  padding-bottom: $space-4;
+  border-bottom: $border-width solid $border-color;
+}
+
+.comment-section__title {
+  margin: 0;
+  font-size: $text-xl;
+  font-weight: $weight-semibold;
+  color: $color-black;
+}
+
+.comment-section__count {
+  font-size: $text-base;
+  font-weight: $weight-normal;
+  color: $color-gray-600;
+}
+
+.comment-section__form {
+  display: flex;
+  gap: $space-3;
+}
+
+.comment-section__form-body {
+  flex: 1;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.comment-section__form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.comment-section__loading {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-3;
+
+  padding: $space-4;
+  border: $border-width solid $border-color;
+  border-radius: $radius-md;
+
+  background: $color-gray-50;
+}
+
+.comment-section__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  padding: $space-6;
+  border: $border-width dashed $border-color;
+  border-radius: $radius-md;
+
+  color: $color-gray-700;
+}
+
+.comment-section__empty-icon {
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: $space-2;
+}
+
+.comment-section__empty-title {
+  margin: 0 0 $space-1 0;
+  font-size: $text-base;
+  font-weight: $weight-medium;
+  color: $color-black;
+}
+
+.comment-section__muted {
+  margin: 0;
+  color: $color-gray-600;
+  font-size: $text-sm;
+}
+
+.comment-section__list {
+  display: flex;
+  flex-direction: column;
+}

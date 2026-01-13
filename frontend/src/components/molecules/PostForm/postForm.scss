@@ -1,9 +1,27 @@
-@import '../../../../public/assets/scss/variables';
+@import "../../../../public/assets/scss/variables";
 
 .post-form {
   display: flex;
   flex-direction: column;
-  gap: $space-6;
+  gap: $space-5;
+
+  padding: $space-5;
+  background: $color-white;
+  border: $border-width solid $border-color;
+  border-radius: $radius-lg;
+}
+
+.post-form__header {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.post-form__username {
+  margin: 0;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $color-black;
 }
 
 .post-form__field {
@@ -12,8 +30,62 @@
   gap: $space-2;
 }
 
+.post-form__preview {
+  position: relative;
+  border-radius: $radius-md;
+  overflow: hidden;
+  border: $border-width solid $border-color;
+  background: $color-gray-100;
+}
+
+.post-form__preview-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.post-form__remove {
+  position: absolute;
+  top: $space-2;
+  right: $space-2;
+
+  width: 32px;
+  height: 32px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 9999px;
+
+  background: rgba($color-black, 0.6);
+  color: $color-white;
+
+  cursor: pointer;
+
+  transition: background $duration-base $ease-out;
+
+  &:hover {
+    background: rgba($color-black, 0.8);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
 .post-form__actions {
   display: flex;
-  gap: $space-3;
+  align-items: center;
   justify-content: flex-end;
+  gap: $space-3;
+}
+
+.post-form__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
 }

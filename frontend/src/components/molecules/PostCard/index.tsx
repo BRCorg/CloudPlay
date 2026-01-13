@@ -1,27 +1,28 @@
-import React from 'react';
-import { Avatar } from '../../atoms/Avatar';
-import { Text } from '../../atoms/Text';
-import { LikeIcon } from '../../atoms/LikeIcon';
-import './postCard.scss';
+import "./postCard.scss";
+import Avatar from "../../atoms/Avatar";
+import LikeIcon from "../../atoms/LikeIcon";
 
-interface PostCardProps {
+type Author = {
+  name: string;
+  avatar?: string;
+};
+
+export type PostCardProps = {
   title: string;
   content: string;
-  author: {
-    name: string;
-    avatar?: string;
-  };
+  author: Author;
   image?: string;
   likes?: number;
   comments?: number;
   timestamp?: string;
-  isLiked?: boolean;
-  onLike?: () => void;
-  onClick?: () => void;
-  className?: string;
-}
 
-export const PostCard: React.FC<PostCardProps> = ({
+  liked?: boolean;
+  onToggleLike?: (next: boolean) => void;
+
+  onOpen?: () => void;
+};
+
+const PostCard = ({
   title,
   content,
   author,
@@ -29,58 +30,44 @@ export const PostCard: React.FC<PostCardProps> = ({
   likes = 0,
   comments = 0,
   timestamp,
-  isLiked = false,
-  onLike,
-  onClick,
-  className = '',
-}) => {
+  liked = false,
+  onToggleLike,
+  onOpen,
+}: PostCardProps) => {
+  const canLike = Boolean(onToggleLike);
+
   return (
-    <div className={`post-card ${className}`} onClick={onClick}>
-      <div className="post-card__header">
-        <Avatar
-          src={author.avatar}
-          alt={author.name}
-          fallback={author.name.charAt(0).toUpperCase()}
-          size="medium"
-          shape="square"
-        />
-        <div className="post-card__user-info">
-          <Text as="h3" weight="semibold" className="post-card__username">
-            {author.name}
-          </Text>
-          {timestamp && (
-            <Text size="sm" color="muted" className="post-card__timestamp">
-              {timestamp}
-            </Text>
-          )}
+    <article className="post-card">
+      <button type="button" className="post-card__main" onClick={onOpen}>
+        <header className="post-card__header">
+          <Avatar src={author.avatar} alt={author.name} size="md" />
+          <div className="post-card__meta">
+            <p className="post-card__author">{author.name}</p>
+            {timestamp && <span className="post-card__timestamp">{timestamp}</span>}
+          </div>
+        </header>
+
+        <div className="post-card__content">
+          <h3 className="post-card__title">{title}</h3>
+          <p className="post-card__text">{content}</p>
         </div>
-      </div>
 
-      <div className="post-card__content">
-        <Text as="h2" size="lg" weight="semibold" className="post-card__title">
-          {title}
-        </Text>
-        <Text color="secondary" className="post-card__text">
-          {content}
-        </Text>
-      </div>
+        {image && <img className="post-card__image" src={image} alt={title} />}
+      </button>
 
-      {image && <img src={image} alt={title} className="post-card__image" />}
+      <footer className="post-card__footer">
+        {canLike && (
+          <span className="post-card__like">
+            <LikeIcon liked={liked} onClick={() => onToggleLike?.(!liked)} />
+            {likes > 0 && <span className="post-card__count">{likes}</span>}
+          </span>
+        )}
 
-      <div className="post-card__footer">
-        <button
-          className="post-card__stat"
-          onClick={(e) => {
-            e.stopPropagation();
-            onLike?.();
-          }}
-        >
-          <LikeIcon liked={isLiked} size="small" />
-          <span>{likes}</span>
-        </button>
-        <div className="post-card__stat">💬 {comments}</div>
-      </div>
-    </div>
+        <span className="post-card__comments" aria-label="Comments">
+          💬 {comments}
+        </span>
+      </footer>
+    </article>
   );
 };
 

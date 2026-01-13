@@ -1,78 +1,86 @@
-import React, { useState } from 'react';
-import { Button } from '../../atoms/Button';
-import { Input } from '../../atoms/Input';
-import { Label } from '../../atoms/Label';
-import { Text } from '../../atoms/Text';
-import { Spinner } from '../../atoms/Spinner';
-import './loginForm.scss';
+import React, { useState } from "react";
+import "./loginForm.scss";
 
-interface LoginFormProps {
-  onSubmit?: (email: string, password: string) => void;
+import Button from "../../atoms/Button";
+import Input from "../../atoms/Input";
+import Label from "../../atoms/Label";
+import Text from "../../atoms/Text";
+import Spinner from "../../atoms/Spinner";
+
+type LoginFormProps = {
+  onSubmit: (email: string, password: string) => void;
   error?: string;
-  isLoading?: boolean;
-  className?: string;
-}
+  loading?: boolean;
+};
 
-export const LoginForm: React.FC<LoginFormProps> = ({
-  onSubmit,
-  error,
-  isLoading = false,
-  className = '',
-}) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit?.(email, password);
+    onSubmit(email, password);
   };
 
-  return (
-    <form className={`login-form ${className}`} onSubmit={handleSubmit}>
-      <div className="login-form__header">
-        <Text as="h2" size="2xl" weight="bold" className="login-form__title">
-          Welcome Back
-        </Text>
-        <Text color="muted" className="login-form__subtitle">
-          Sign in to continue
-        </Text>
-      </div>
+  const hasError = Boolean(error);
 
-      {error && (
-        <Text color="error" className="login-form__error">{error}</Text>
+  return (
+    <form className="login-form" onSubmit={handleSubmit}>
+      <header className="login-form__header">
+  <Text muted>Accédez à votre espace CloudPlay</Text>
+
+      </header>
+
+      {hasError && (
+        <p className="login-form__error" role="alert">
+          {error}
+        </p>
       )}
 
       <div className="login-form__field">
-        <Label htmlFor="email" required>Email</Label>
+        <Label htmlFor="email" required>
+          Email
+        </Label>
         <Input
+          id="email"
           type="email"
+          autoComplete="email"
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          error={!!error}
+          error={hasError}
+          required
         />
       </div>
 
       <div className="login-form__field">
-        <Label htmlFor="password" required>Password</Label>
+        <Label htmlFor="password" required>
+          Password
+        </Label>
         <Input
+          id="password"
           type="password"
+          autoComplete="current-password"
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          error={!!error}
+          error={hasError}
+          required
         />
       </div>
 
-      <Button type="submit" variant="primary" fullWidth disabled={isLoading}>
-        {isLoading ? <><Spinner size="small" variant="light" /> Signing in...</> : 'Sign In'}
+      <Button type="submit" disabled={loading}>
+        <span className="login-form__submit">
+          {loading && <Spinner size="sm" />}
+          {loading ? "Signing in..." : "Sign In"}
+        </span>
       </Button>
 
-      <div className="login-form__footer">
-        <Text color="muted" className="login-form__link">
-          Don't have an account? <a href="/signup">Sign up</a>
+      <footer className="login-form__footer">
+        <Text muted>
+          Don&apos;t have an account? <a href="/signup">Sign up</a>
         </Text>
-      </div>
+      </footer>
     </form>
   );
 };

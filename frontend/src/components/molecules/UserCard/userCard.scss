@@ -1,39 +1,57 @@
-@import '../../../../public/assets/scss/variables';
+@import "../../../../public/assets/scss/variables";
 
 .user-card {
   display: flex;
   align-items: center;
   gap: $space-3;
+
+  width: 100%;
   padding: $space-4;
+
   background: $color-white;
   border: $border-width solid $border-color;
   border-radius: $radius-md;
-  transition: all $duration-base $ease;
+
+  text-align: left;
+}
+
+.user-card--clickable {
   cursor: pointer;
 
+  transition: background $duration-base $ease-out,
+              border-color $duration-base $ease-out;
+
   &:hover {
+    background: $color-gray-50;
     border-color: $color-gray-300;
-    box-shadow: $shadow-sm;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
   }
 }
 
 .user-card__info {
   flex: 1;
   min-width: 0;
+
   display: flex;
   flex-direction: column;
-  gap: $space-1;
+  gap: 2px;
 }
 
 .user-card__name {
+  margin: 0;
   font-size: $text-base;
   font-weight: $weight-medium;
   color: $color-black;
+
   @include truncate;
 }
 
 .user-card__username {
   font-size: $text-sm;
-  color: $color-gray-500;
+  color: $color-gray-600;
+
   @include truncate;
 }

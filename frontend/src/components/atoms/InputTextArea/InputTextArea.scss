@@ -1,7 +1,8 @@
 @import "../../../../public/assets/scss/variables";
 
-.input {
+.textarea {
   width: 100%;
+  min-height: 120px;
   padding: $space-3 $space-4;
 
   border: $border-width solid $border-color;
@@ -11,7 +12,9 @@
   color: $color-black;
 
   font-size: $text-base;
-  line-height: 1.2;
+  line-height: $leading-normal;
+
+  resize: vertical;
 
   transition: border-color $duration-base $ease-out,
               box-shadow $duration-base $ease-out,

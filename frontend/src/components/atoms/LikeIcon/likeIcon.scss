@@ -1,12 +1,31 @@
-@import '../../../../public/assets/scss/variables';
+@import "../../../../public/assets/scss/variables";
 
 .like-icon {
   display: inline-flex;
-  color: $color-gray-400;
-  transition: color $duration-base $ease;
+  align-items: center;
+  justify-content: center;
 
-  &:hover {
+  padding: 0;
+  background: none;
+  border: none;
+
+  color: $color-gray-400;
+  cursor: pointer;
+
+  transition: color $duration-base $ease-out;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  &:hover:not(.like-icon--liked) {
     color: $color-error;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
   }
 }
 

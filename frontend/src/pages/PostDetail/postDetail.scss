@@ -1,116 +1,31 @@
-@import '../../../public/assets/scss/variables';
+@import "../../../public/assets/scss/variables";
 
 .post-detail {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+  padding: $space-8 0 $space-12;
 }
 
 .post-detail__container {
   @include container;
-  padding-top: $space-8;
-  padding-bottom: $space-12;
+
   display: flex;
   flex-direction: column;
   gap: $space-8;
 }
 
-.post-detail__back {
-  display: inline-flex;
-  align-items: center;
-  gap: $space-2;
-  padding: $space-2 $space-4;
-  font-size: $text-sm;
-  font-weight: $weight-medium;
-  color: $color-gray-600;
-  text-decoration: none;
-  background: $color-white;
-  border: $border-width solid $border-color;
-  border-radius: $radius-md;
-  width: fit-content;
-  transition: all $duration-base $ease;
-
-  &:hover {
-    background: $color-gray-50;
-    color: $color-black;
-  }
-}
-
 .post-detail__article {
-  background: $color-white;
   border: $border-width solid $border-color;
   border-radius: $radius-lg;
+  background: $color-white;
   overflow: hidden;
 }
 
-.post-detail__image {
-  width: 100%;
-  height: 400px;
-  object-fit: cover;
-  background: $color-gray-100;
-}
-
-.post-detail__content {
-  padding: $space-8;
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-}
-
-.post-detail__header {
-  display: flex;
-  align-items: center;
-  gap: $space-4;
-  padding-bottom: $space-6;
-  border-bottom: $border-width solid $border-color;
-}
-
-.post-detail__author-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: $space-1;
-}
-
-.post-detail__title {
-  font-size: $text-4xl;
-  font-weight: $weight-bold;
-  color: $color-black;
-  line-height: $leading-tight;
-  margin-bottom: $space-4;
-}
-
-.post-detail__body {
-  font-size: $text-lg;
-  color: $color-gray-700;
-  line-height: $leading-relaxed;
-
-  p {
-    margin-bottom: $space-4;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.post-detail__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: $space-6;
-  border-top: $border-width solid $border-color;
-}
-
-.post-detail__tags {
-  display: flex;
-  gap: $space-2;
-  flex-wrap: wrap;
-}
-
 .post-detail__comments {
-  background: $color-white;
   border: $border-width solid $border-color;
   border-radius: $radius-lg;
-  padding: $space-8;
+  background: $color-white;
+  padding: $space-6;
+
+  @media (max-width: 640px) {
+    padding: $space-4;
+  }
 }

@@ -1,0 +1,92 @@
+@import "../../../../public/assets/scss/variables";
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
+
+  background: $color-white;
+  border-bottom: $border-width solid $border-color;
+}
+
+.header__container {
+  @include container;
+
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header__logo {
+  padding: 0;
+  background: none;
+  border: none;
+
+  cursor: pointer;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.header__logo-text {
+  font-size: $text-lg;
+  font-weight: $weight-bold;
+  color: $color-black;
+}
+
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.header__user {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+
+  padding: $space-2 $space-3;
+
+  background: transparent;
+  border: $border-width solid $border-color;
+  border-radius: $radius-md;
+
+  cursor: pointer;
+
+  transition: background $duration-base $ease-out,
+              border-color $duration-base $ease-out;
+
+  &:hover {
+    background: $color-gray-50;
+    border-color: $color-gray-300;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+.header__user-name {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: inline;
+  }
+}
+
+.header__link {
+  color: $color-primary;
+  text-decoration: none;
+  font-weight: $weight-medium;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

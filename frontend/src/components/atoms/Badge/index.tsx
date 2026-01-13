@@ -1,43 +1,18 @@
-import React from 'react';
-import './badge.scss';
+import "./badge.scss";
 
-export type BadgeVariant = 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info';
-export type BadgeSize = 'small' | 'medium' | 'large';
-
-export interface BadgeProps {
-  variant?: BadgeVariant;
-  size?: BadgeSize;
-  solid?: boolean;
-  withDot?: boolean;
-  interactive?: boolean;
-  className?: string;
-  onClick?: () => void;
+type BadgeProps = {
+  variant?: "primary" | "success" | "error" | "warning";
+  size?: "sm" | "md" | "lg";
   children: React.ReactNode;
-}
+};
 
-export const Badge: React.FC<BadgeProps> = ({
-  variant = 'primary',
-  size = 'medium',
-  solid = false,
-  withDot = false,
-  interactive = false,
-  className = '',
-  onClick,
+const Badge = ({
+  variant = "primary",
+  size = "md",
   children,
-}) => {
-  const classes = [
-    'badge',
-    solid ? `badge--solid-${variant}` : `badge--${variant}`,
-    size !== 'medium' && `badge--${size}`,
-    withDot && 'badge--with-dot',
-    interactive && 'badge--interactive',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
+}: BadgeProps) => {
   return (
-    <span className={classes} onClick={onClick}>
+    <span className={`badge badge--${variant} badge--${size}`}>
       {children}
     </span>
   );

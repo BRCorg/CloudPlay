@@ -1,110 +1,108 @@
-import React, { useState } from 'react';
-import { Avatar } from '../../atoms/Avatar';
-import { Input } from '../../atoms/Input';
-import { Button } from '../../atoms/Button';
-import { Text } from '../../atoms/Text';
-import { Spinner } from '../../atoms/Spinner';
-import './postForm.scss';
+import React, { useState } from "react";
+import "./postForm.scss";
 
-interface PostFormProps {
-  onSubmit?: (data: { title: string; content: string; image?: string }) => void;
-  currentUser?: {
-    name: string;
-    avatar?: string;
-  };
-  isLoading?: boolean;
-  className?: string;
-}
+import Avatar from "../../atoms/Avatar";
+import Input from "../../atoms/Input";
+import Textarea from "../../atoms/InputTextArea";
+import Button from "../../atoms/Button";
+import Spinner from "../../atoms/Spinner";
 
-export const PostForm: React.FC<PostFormProps> = ({
-  onSubmit,
-  currentUser,
-  isLoading = false,
-  className = '',
-}) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [image, setImage] = useState('');
+type PostData = {
+  title: string;
+  content: string;
+  image?: string;
+};
+
+type CurrentUser = {
+  name: string;
+  avatar?: string;
+};
+
+export type PostFormProps = {
+  user?: CurrentUser;
+  loading?: boolean;
+  onSubmit: (data: PostData) => void;
+};
+
+const PostForm = ({ user, loading = false, onSubmit }: PostFormProps) => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [image, setImage] = useState<string>("");
+
+  const canSubmit = title.trim().length > 0 && content.trim().length > 0 && !loading;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit?.({ title, content, image: image || undefined });
-    setTitle('');
-    setContent('');
-    setImage('');
+    if (!canSubmit) return;
+
+    onSubmit({
+      title: title.trim(),
+      content: content.trim(),
+      image: image.trim() ? image.trim() : undefined,
+    });
+
+    setTitle("");
+    setContent("");
+    setImage("");
+  };
+
+  const handleAddImage = () => {
+    const url = window.prompt("Enter image URL:");
+    if (url) setImage(url.trim());
   };
 
   return (
-    <form className={`post-form ${className}`} onSubmit={handleSubmit}>
-      {currentUser && (
-        <div className="post-form__header">
-          <Avatar
-            src={currentUser.avatar}
-            alt={currentUser.name}
-            fallback={currentUser.name.charAt(0).toUpperCase()}
-            size="small"
-            shape="square"
-          />
-          <div className="post-form__user-info">
-            <Text weight="semibold" className="post-form__username">
-              {currentUser.name}
-            </Text>
-          </div>
-        </div>
+    <form className="post-form" onSubmit={handleSubmit}>
+      {user && (
+        <header className="post-form__header">
+          <Avatar src={user.avatar} alt={user.name} size="sm" />
+          <p className="post-form__username">{user.name}</p>
+        </header>
       )}
 
       <div className="post-form__field">
         <Input
-          type="text"
           placeholder="Post title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          required
         />
       </div>
 
       <div className="post-form__field">
-        <Input
-          multiline
+        <Textarea
           placeholder="What's on your mind?"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={4}
-          className="post-form__textarea"
+          required
         />
       </div>
 
       {image && (
-        <div className="post-form__image-preview">
-          <img src={image} alt="Preview" />
-          <Button
+        <div className="post-form__preview">
+          <img className="post-form__preview-img" src={image} alt="Post preview" />
+          <button
             type="button"
-            variant="ghost"
-            size="small"
-            className="post-form__remove-image"
-            onClick={() => setImage('')}
+            className="post-form__remove"
+            onClick={() => setImage("")}
+            aria-label="Remove image"
           >
             ✕
-          </Button>
+          </button>
         </div>
       )}
 
       <div className="post-form__actions">
-        <div className="post-form__toolbar">
-          <Button
-            type="button"
-            variant="ghost"
-            className="post-form__tool-button"
-            onClick={() => {
-              const url = prompt('Enter image URL:');
-              if (url) setImage(url);
-            }}
-          >
-            🖼️
-          </Button>
-        </div>
+        <Button type="button" variant="secondary" onClick={handleAddImage}>
+          Add image
+        </Button>
 
-        <Button type="submit" variant="primary" disabled={isLoading || !title || !content}>
-          {isLoading ? <><Spinner size="small" variant="light" /> Posting...</> : 'Post'}
+        <Button type="submit" disabled={!canSubmit}>
+          <span className="post-form__submit">
+            {loading && <Spinner size="sm" />}
+            {loading ? "Posting..." : "Post"}
+          </span>
         </Button>
       </div>
     </form>

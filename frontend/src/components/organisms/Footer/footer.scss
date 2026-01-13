@@ -1,0 +1,33 @@
+@import "../../../../public/assets/scss/variables";
+
+.footer {
+  margin-top: $space-10;
+  padding: $space-6 0;
+
+  text-align: center;
+
+  border-top: $border-width solid $border-color;
+  color: $color-gray-600;
+}
+
+.footer__logo {
+  margin-bottom: $space-3;
+
+  font-size: $text-lg;
+  font-weight: $weight-bold;
+  color: $color-black;
+}
+
+.footer__divider {
+  width: 80px;
+  height: 2px;
+
+  margin: 0 auto $space-3;
+
+  background: $border-color;
+}
+
+.footer__copyright {
+  margin: 0;
+  font-size: $text-sm;
+}

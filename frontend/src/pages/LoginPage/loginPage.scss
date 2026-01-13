@@ -1,103 +1,68 @@
-@import '../../../public/assets/scss/variables';
+@import "../../../public/assets/scss/variables";
 
 .login-page {
-  min-height: 100vh;
-  display: flex;
-  background: $color-white;
+  padding: $space-16 0;
+  background: $color-gray-50;
 }
 
 .login-page__container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  width: 100%;
-  min-height: 100vh;
+  @include container;
+  max-width: 480px;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-// Left side - Marketing content
-.login-page__left {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: $space-16 $space-12;
-  background: $color-gray-50;
-  border-right: $border-width solid $border-color;
+  gap: $space-6;
 
-  @media (max-width: 1024px) {
-    display: none;
+  background: $color-white;
+  border: $border-width solid $border-color;
+  border-radius: $radius-xl;
+  padding: $space-10;
+
+  box-shadow: $shadow-sm;
+
+  @media (max-width: 640px) {
+    padding: $space-6;
   }
 }
 
-.login-page__logo {
+.login-page__header {
   display: flex;
-  align-items: center;
-  gap: $space-3;
-  font-size: $text-2xl;
-  font-weight: $weight-bold;
-  color: $color-black;
-  margin-bottom: $space-12;
+  flex-direction: column;
+  gap: $space-2;
+  padding-bottom: $space-5;
+  border-bottom: $border-width solid $border-color;
+}
 
-  span {
-    font-size: $text-3xl;
+.login-page__brand {
+  margin: 0;
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  color: $color-gray-600;
+
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+
+  &::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: $radius-full;
+    background: $color-primary;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
   }
 }
 
 .login-page__title {
-  font-size: $text-4xl;
+  margin: 0;
+  font-size: $text-3xl;
   font-weight: $weight-bold;
   color: $color-black;
-  line-height: $leading-tight;
   letter-spacing: $tracking-tight;
-  margin-bottom: $space-6;
 }
 
 .login-page__subtitle {
-  font-size: $text-lg;
-  color: $color-gray-600;
-  line-height: $leading-relaxed;
-  margin-bottom: $space-12;
-}
-
-.login-page__features {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
-}
-
-.login-page__feature {
-  display: flex;
-  align-items: flex-start;
-  gap: $space-4;
-}
-
-.login-page__feature-icon {
-  font-size: $text-3xl;
-  flex-shrink: 0;
-}
-
-.login-page__feature-text {
-  display: flex;
-  flex-direction: column;
-  gap: $space-1;
-}
-
-// Right side - Form
-.login-page__right {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: $space-12 $space-8;
-  background: $color-white;
-
-  @media (max-width: 640px) {
-    padding: $space-8 $space-4;
-  }
-}
-
-.login-page__form-container {
-  width: 100%;
-  max-width: 440px;
+  margin: 0;
+  color: $color-gray-700;
+  line-height: $leading-normal;
 }

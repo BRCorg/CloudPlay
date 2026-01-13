@@ -1,66 +1,26 @@
-import React, { useState } from 'react';
-import { LikeIcon } from '../../atoms/LikeIcon';
-import { Text } from '../../atoms/Text';
-import './likeButton.scss';
+import "./likeButton.scss";
+import LikeIcon from "../../atoms/LikeIcon";
 
-export interface LikeButtonProps {
+export type LikeButtonProps = {
+  liked: boolean;
   count?: number;
-  isLiked?: boolean;
-  onToggle?: (isLiked: boolean) => void;
-  size?: 'small' | 'medium' | 'large';
   iconOnly?: boolean;
-  className?: string;
-}
+  onToggle: (next: boolean) => void;
+};
 
-export const LikeButton: React.FC<LikeButtonProps> = ({
-  count = 0,
-  isLiked: controlledIsLiked,
-  onToggle,
-  size = 'medium',
-  iconOnly = false,
-  className = '',
-}) => {
-  const [internalIsLiked, setInternalIsLiked] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  const isLiked = controlledIsLiked !== undefined ? controlledIsLiked : internalIsLiked;
-
-  const handleClick = () => {
-    const newIsLiked = !isLiked;
-
-    if (controlledIsLiked === undefined) {
-      setInternalIsLiked(newIsLiked);
-    }
-
-    if (newIsLiked) {
-      setIsAnimating(true);
-      setTimeout(() => setIsAnimating(false), 400);
-    }
-
-    onToggle?.(newIsLiked);
-  };
-
-  const classes = [
-    'like-button',
-    isLiked && 'like-button--liked',
-    isAnimating && 'like-button--animating',
-    iconOnly && 'like-button--icon-only',
-    size !== 'medium' && `like-button--${size}`,
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+const LikeButton = ({ liked, iconOnly = false, onToggle }: LikeButtonProps) => {
+  const handleClick = () => onToggle(!liked);
 
   return (
-    <button className={classes} onClick={handleClick}>
-      <span className="like-button__icon">
-        <LikeIcon liked={isLiked} size={size} />
-      </span>
-      {!iconOnly && (
-        <Text as="span" size="sm" className="like-button__count">
-          {count}
-        </Text>
-      )}
+    <button
+      type="button"
+      className={`like-button ${liked ? "like-button--liked" : ""} ${iconOnly ? "like-button--icon-only" : ""}`.trim()}
+      onClick={handleClick}
+      aria-pressed={liked}
+      aria-label={liked ? "Unlike" : "Like"}
+    >
+      <LikeIcon liked={liked} />
+
     </button>
   );
 };

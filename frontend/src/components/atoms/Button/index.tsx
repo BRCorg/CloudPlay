@@ -1,41 +1,21 @@
-import React from 'react';
-import './button.scss';
+import "./button.scss";
 
-interface ButtonProps {
+type ButtonProps = {
+  variant?: "primary" | "secondary" | "outline";
+  size?: "sm" | "md" | "lg";
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-  size?: 'small' | 'medium' | 'large';
-  fullWidth?: boolean;
-  disabled?: boolean;
-  onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
-  className?: string;
-}
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const Button: React.FC<ButtonProps> = ({
+const Button = ({
+  variant = "primary",
+  size = "md",
   children,
-  variant = 'primary',
-  size = 'medium',
-  fullWidth = false,
-  disabled = false,
-  onClick,
-  type = 'button',
-  className = '',
-}) => {
-  const classNames = [
-    'button',
-    `button--${variant}`,
-    size !== 'medium' && `button--${size}`,
-    fullWidth && 'button--full',
-    className,
-  ].filter(Boolean).join(' ');
-
+  ...props
+}: ButtonProps) => {
   return (
     <button
-      type={type}
-      className={classNames}
-      onClick={onClick}
-      disabled={disabled}
+      className={`button button--${variant} button--${size}`}
+      {...props}
     >
       {children}
     </button>

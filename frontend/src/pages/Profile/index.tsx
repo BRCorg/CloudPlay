@@ -1,142 +1,89 @@
-import React, { useState } from 'react';
-import { ProfileLayout } from '../../components/templates/ProfileLayout';
-import { Header } from '../../components/organismes/Header';
-import { Footer } from '../../components/organismes/Footer';
-import { UserProfile } from '../../components/organismes/UserProfile';
-import { PostList } from '../../components/organismes/PostList';
-import { UserCard } from '../../components/molecules/UserCard';
-import { Button } from '../../components/atoms/Button';
-import { Text } from '../../components/atoms/Text';
-import './profile.scss';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./profile.scss";
 
-// Mock data
+import MainLayout from "../../components/templates/MainLayout";
+import Header from "../../components/organisms/Header";
+import Footer from "../../components/organisms/Footer";
+
+import UserProfile from "../../components/organisms/UserProfile";
+import PostList from "../../components/organisms/PostList";
+import Button from "../../components/atoms/Button";
+
 const MOCK_USER = {
-  id: '1',
-  name: 'John Doe',
-  username: 'johndoe',
+  name: "John Doe",
+  username: "johndoe",
   avatar: undefined,
-  coverImage: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200',
-  bio: 'Software developer passionate about creating amazing user experiences. Love React, TypeScript, and all things web.',
-  location: 'San Francisco, CA',
-  website: 'https://johndoe.dev',
-  joinDate: 'January 2024',
-};
-
-const MOCK_STATS = {
-  posts: 42,
-  followers: 1234,
-  following: 567,
-  likes: 890,
+  bio: "Software developer passionate about creating amazing user experiences.",
 };
 
 const MOCK_POSTS = [
   {
-    id: '1',
-    title: 'My Journey as a Developer',
-    content: 'Started coding 5 years ago and never looked back. Here is my story...',
-    author: { name: 'John Doe', avatar: undefined },
+    id: "1",
+    title: "My Journey as a Developer",
+    content: "Started coding 5 years ago and never looked back. Here is my story...",
+    author: { name: "John Doe", avatar: undefined },
     likes: 120,
     comments: 34,
-    timestamp: '1 day ago',
-    isLiked: true,
+    timestamp: "1 day ago",
+    liked: true,
   },
   {
-    id: '2',
-    title: 'Building a Design System',
-    content: 'Design systems are essential for maintaining consistency across your applications.',
-    author: { name: 'John Doe', avatar: undefined },
+    id: "2",
+    title: "Building a Design System",
+    content: "Design systems are essential for maintaining consistency across your applications.",
+    author: { name: "John Doe", avatar: undefined },
     likes: 89,
     comments: 22,
-    timestamp: '3 days ago',
-    isLiked: false,
+    timestamp: "3 days ago",
+    liked: false,
   },
-];
-
-const SUGGESTED_USERS = [
-  { name: 'Jane Smith', username: 'janesmith', bio: 'UX Designer' },
-  { name: 'Mike Johnson', username: 'mikej', bio: 'Full Stack Dev' },
-  { name: 'Sarah Wilson', username: 'sarahw', bio: 'Product Manager' },
 ];
 
 const CURRENT_USER = {
-  name: 'John Doe',
+  name: "John Doe",
   avatar: undefined,
 };
 
-export const Profile: React.FC = () => {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const isOwnProfile = true; // This would come from auth context
+const Profile = () => {
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState(MOCK_POSTS);
 
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
+  const handleOpenPost = (id: string) => {
+    navigate(`/posts/${id}`);
   };
 
-  const handleEdit = () => {
-    console.log('Edit profile');
-  };
-
-  const handleBack = () => {
-    console.log('Navigate back');
+  const handleToggleLike = (id: string, next: boolean) => {
+    setPosts((prev) =>
+      prev.map((p) => {
+        if (p.id !== id) return p;
+        const likes = p.likes ?? 0;
+        return {
+          ...p,
+          liked: next,
+          likes: next ? likes + 1 : Math.max(0, likes - 1),
+        };
+      })
+    );
   };
 
   return (
-    <ProfileLayout
-      header={
-        <Header
-          currentUser={CURRENT_USER}
-          onLogoClick={() => console.log('Logo clicked')}
-          onProfileClick={() => console.log('Profile clicked')}
-          onLogout={() => console.log('Logout')}
-        />
-      }
+    <MainLayout
+      header={<Header user={CURRENT_USER} onLogoClick={() => navigate("/")} />}
       footer={<Footer />}
-      profile={
-        <UserProfile
-          user={MOCK_USER}
-          stats={MOCK_STATS}
-          isOwnProfile={isOwnProfile}
-          isFollowing={isFollowing}
-          onFollow={handleFollow}
-          onEdit={handleEdit}
-        />
-      }
-      sidebar={
-        <div className="profile__sidebar">
-          <Text as="h3" size="lg" weight="semibold" className="profile__sidebar-title">
-            Suggested for you
-          </Text>
-          <div className="profile__suggestions">
-            {SUGGESTED_USERS.map((user) => (
-              <UserCard
-                key={user.username}
-                name={user.name}
-                username={user.username}
-                bio={user.bio}
-                variant="minimal"
-                action={
-                  <Button variant="outline" size="small">
-                    Follow
-                  </Button>
-                }
-              />
-            ))}
-          </div>
-        </div>
-      }
-      backLink={{
-        label: 'Back',
-        onClick: handleBack,
-      }}
-      className="profile"
     >
-      <div className="profile__content">
-        <PostList
-          posts={MOCK_POSTS}
-          onPostClick={(postId) => console.log('Navigate to post:', postId)}
-          onLike={(postId) => console.log('Like post:', postId)}
-        />
-      </div>
-    </ProfileLayout>
+      <section className="profile">
+        <div className="profile__container">
+          <Button variant="secondary" size="sm" onClick={() => navigate("/posts")}>
+            ← Back
+          </Button>
+
+          <UserProfile user={MOCK_USER} />
+
+          <PostList posts={posts} onOpenPost={handleOpenPost} onToggleLike={handleToggleLike} />
+        </div>
+      </section>
+    </MainLayout>
   );
 };
 

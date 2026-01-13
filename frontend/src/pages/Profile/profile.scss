@@ -1,40 +1,13 @@
-@import '../../../public/assets/scss/variables';
+@import "../../../public/assets/scss/variables";
 
 .profile {
+  padding: $space-8 0 $space-12;
+}
+
+.profile__container {
+  @include container;
+
   display: flex;
   flex-direction: column;
   gap: $space-8;
-}
-
-.profile__tabs {
-  display: flex;
-  gap: $space-2;
-  border-bottom: $border-width solid $border-color;
-}
-
-.profile__tab {
-  padding: $space-4 $space-6;
-  font-size: $text-base;
-  font-weight: $weight-medium;
-  color: $color-gray-600;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: all $duration-base $ease;
-
-  &:hover {
-    color: $color-black;
-  }
-
-  &--active {
-    color: $color-black;
-    border-bottom-color: $color-black;
-  }
-}
-
-.profile__content {
-  display: flex;
-  flex-direction: column;
-  gap: $space-6;
 }
