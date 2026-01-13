@@ -1,138 +1,99 @@
 import { useState } from "react";
-import "./signupPage.scss";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { signup } from "../../redux/auth/authSlice";
+import { useNavigate } from "react-router-dom";
+import type { ZodFieldError, ApiError } from "../../redux/auth/types";
 
-import MainLayout from "../../components/templates/MainLayout";
-import Input from "../../components/atoms/Input";
-import Button from "../../components/atoms/Button";
-import Label from "../../components/atoms/Label";
+export default function Signup() {
+  const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.auth);
+  const navigate = useNavigate();
 
-const SignupPage = () => {
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("username", username);
+    formData.append("password", password);
+
+    const resultAction = await dispatch(signup(formData));
+
+    if (signup.fulfilled.match(resultAction)) {
+      // Redirection immédiate après succès
+      navigate("/profile-setup", { replace: true });
+    }
+    // Sinon erreurs gérées via state.error
   };
 
-  const passwordsMatch =
-    form.password.trim().length > 0 &&
-    form.confirmPassword.trim().length > 0 &&
-    form.password === form.confirmPassword;
-
-  const canSubmit =
-    form.username.trim().length > 0 &&
-    form.email.trim().length > 0 &&
-    form.password.trim().length > 0 &&
-    form.confirmPassword.trim().length > 0 &&
-    passwordsMatch &&
-    !loading;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!canSubmit) return;
-
-    setLoading(true);
-    console.log("Signup:", form);
-
-    setTimeout(() => setLoading(false), 1000);
+  // Fonction pour récupérer les erreurs par champ
+  const getFieldError = (field: string) => {
+    const apiError = error as ApiError | null;
+    if (apiError?.details && Array.isArray(apiError.details)) {
+      const fieldError = apiError.details.find((e: ZodFieldError) =>
+        e.path.includes(field)
+      );
+      return fieldError?.message;
+    }
+    return null;
   };
 
   return (
-    <MainLayout>
-      <section className="signup-page">
-        <div className="signup-page__container">
-          <header className="signup-page__header">
-            <p className="signup-page__brand">CloudPlay</p>
-            <h1 className="signup-page__title">Inscription</h1>
-          </header>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+          autoComplete="email"
+        />
+        {getFieldError("email") && (
+          <div style={{ color: "red" }}>{getFieldError("email")}</div>
+        )}
+      </div>
 
-          <form className="signup-page__form" onSubmit={handleSubmit}>
-            <div className="signup-page__field">
-              <Label htmlFor="username" required>
-                Nom d’utilisateur
-              </Label>
-              <Input
-                id="username"
-                name="username"
-                placeholder="Choisissez un nom d’utilisateur"
-                value={form.username}
-                onChange={onChange}
-                required
-              />
-            </div>
+      <div>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username"
+          required
+          autoComplete="username"
+        />
+        {getFieldError("username") && (
+          <div style={{ color: "red" }}>{getFieldError("username")}</div>
+        )}
+      </div>
 
-            <div className="signup-page__field">
-              <Label htmlFor="email" required>
-                Adresse e-mail
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="vous@exemple.com"
-                value={form.email}
-                onChange={onChange}
-                required
-              />
-            </div>
+      <div>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+          autoComplete="new-password"
+        />
+        {getFieldError("password") && (
+          <div style={{ color: "red" }}>{getFieldError("password")}</div>
+        )}
+      </div>
 
-            <div className="signup-page__field">
-              <Label htmlFor="password" required>
-                Mot de passe
-              </Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Créez un mot de passe"
-                value={form.password}
-                onChange={onChange}
-                required
-              />
-            </div>
+      <button type="submit" disabled={loading}>
+        {loading ? "Inscription..." : "S'inscrire"}
+      </button>
 
-            <div className="signup-page__field">
-              <Label htmlFor="confirmPassword" required>
-                Confirmer le mot de passe
-              </Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirmez votre mot de passe"
-                value={form.confirmPassword}
-                onChange={onChange}
-                required
-              />
-
-              {form.confirmPassword && !passwordsMatch && (
-                <p className="signup-page__error" role="alert">
-                  Les mots de passe ne correspondent pas.
-                </p>
-              )}
-            </div>
-
-            <Button type="submit" disabled={!canSubmit}>
-              {loading ? "Création en cours…" : "Créer un compte"}
-            </Button>
-          </form>
-
-          <footer className="signup-page__footer">
-            <p className="signup-page__muted">
-              Vous avez déjà un compte ? <a href="/login">Se connecter</a>
-            </p>
-          </footer>
-        </div>
-      </section>
-    </MainLayout>
+      {/* Message générique si présent */}
+      {error && typeof error === "object" && error.error && (
+        <div style={{ color: "red", marginTop: "10px" }}>{error.error}</div>
+      )}
+    </form>
   );
-};
-
-export default SignupPage;
+}
