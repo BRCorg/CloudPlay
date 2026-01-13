@@ -25,7 +25,7 @@ export default function ProfileSetup() {
 const navigate = useNavigate();
 
 const handleSave = async () => {
-  if (!avatar) return navigate("/me");
+  if (!avatar) return navigate("/");
 
   const formData = new FormData();
   formData.append("file", avatar);
@@ -33,7 +33,7 @@ const handleSave = async () => {
   const resultAction = await dispatch(updateProfile(formData));
 
   if (updateProfile.fulfilled.match(resultAction)) {
-    navigate("/me"); // Redirige vers la page profil
+    navigate("/"); // Redirige vers la page profil
   }
 };
 

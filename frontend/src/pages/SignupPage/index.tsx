@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { signup } from "../../redux/auth/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +6,7 @@ import type { ZodFieldError, ApiError } from "../../redux/auth/types";
 
 export default function Signup() {
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const { loading, error, user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -16,21 +16,24 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (loading) return; // Empêche le double submit
+
     const formData = new FormData();
     formData.append("email", email);
     formData.append("username", username);
     formData.append("password", password);
 
-    const resultAction = await dispatch(signup(formData));
-
-    if (signup.fulfilled.match(resultAction)) {
-      // Redirection immédiate après succès
-      navigate("/profile-setup", { replace: true });
-    }
-    // Sinon erreurs gérées via state.error
+    await dispatch(signup(formData));
   };
 
-  // Fonction pour récupérer les erreurs par champ
+  // Redirige automatiquement vers /profile-setup dès que l'utilisateur est connecté
+  useEffect(() => {
+    if (user) {
+      navigate("/profile-setup", { replace: true });
+    }
+  }, [user, navigate]);
+
+  // Récupère l'erreur d'un champ spécifique
   const getFieldError = (field: string) => {
     const apiError = error as ApiError | null;
     if (apiError?.details && Array.isArray(apiError.details)) {
@@ -90,7 +93,7 @@ export default function Signup() {
         {loading ? "Inscription..." : "S'inscrire"}
       </button>
 
-      {/* Message générique si présent */}
+      {/* Message générique si erreur non liée à un champ */}
       {error && typeof error === "object" && error.error && (
         <div style={{ color: "red", marginTop: "10px" }}>{error.error}</div>
       )}
