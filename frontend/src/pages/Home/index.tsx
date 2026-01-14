@@ -1,108 +1,95 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { logout } from "../../redux/auth/authSlice";
 import type { RootState } from "../../app/store";
-
+ 
 import MainLayout from "../../components/templates/MainLayout";
 import Header from "../../components/organisms/Header";
 import Footer from "../../components/organisms/Footer";
-
+ 
 import Button from "../../components/atoms/Button";
-import Badge from "../../components/atoms/Badge";
-
+ 
+import { initParallaxEffect, initParticles } from "./home";
 import "./home.scss";
-
+ 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state: RootState) => state.auth);
-
+ 
+  useEffect(() => {
+    // Initialize interactive effects
+    initParallaxEffect();
+    initParticles();
+  }, []);
+ 
   const handleLogout = async () => {
     await dispatch(logout());
     navigate("/login");
   };
-
-
-
-
+ 
+ 
+ 
+ 
   return (
-    <MainLayout 
+    <MainLayout
       header={
-        <Header 
+        <Header
           onLogoClick={() => navigate("/")}
           user={user ? { name: user.username, avatar: user.avatar } : undefined}
           onProfileClick={() => navigate("/profile")}
           onLogout={handleLogout}
         />
-      } 
+      }
       footer={<Footer />}
     >
       <section className="home">
+        <div className="home__particles"></div>
+        <div className="home__decor home__decor--1"></div>
+        <div className="home__decor home__decor--2"></div>
+ 
         <div className="home__container">
-          <header className="home__header">
-            <Badge variant="warning">Prototype frontend</Badge>
-
+          <div className="home__hero">
+            <p className="home__tagline">Next Generation Cloud Platform</p>
             <h1 className="home__title">CloudPlay</h1>
-
             <p className="home__description">
-              Projet React (Vite + React Router) avec données mockées. L’objectif : une UI simple,
-              cohérente et maintenable, prête pour une soutenance et un portfolio.
+              Découvrez l'avenir du partage et de la collaboration dans le cloud.
+              Une expérience immersive où vos idées prennent vie.
             </p>
-
-                {!isAuthenticated && (
-                  <div className="home__actions">
-                    <Button size="lg" onClick={() => navigate("/signup")}>Créer un compte</Button>
-                    <Button size="lg" variant="outline" onClick={() => navigate("/login")}>Se connecter</Button>
-                  </div>
-                )}
-
-            <button type="button" className="home__link" onClick={() => navigate("/posts")}>
-              Voir le feed de posts →
-            </button>
-          </header>
-
-          <div className="home__grid">
-            <section className="home__card">
-              <h2 className="home__card-title">Fonctionnalités (réelles)</h2>
-              <ul className="home__list">
-                <li className="home__list-item">
-                  <span className="home__bullet">📝</span>
-                  <span>Créer un post (titre, contenu, image optionnelle)</span>
-                </li>
-                <li className="home__list-item">
-                  <span className="home__bullet">❤️</span>
-                  <span>Liker un post et un commentaire (toggle)</span>
-                </li>
-                <li className="home__list-item">
-                  <span className="home__bullet">💬</span>
-                  <span>Lire / ajouter des commentaires</span>
-                </li>
-                <li className="home__list-item">
-                  <span className="home__bullet">👤</span>
-                  <span>Consulter un profil utilisateur</span>
-                </li>
-              </ul>
-            </section>
-
-            <section className="home__card">
-              <h2 className="home__card-title">Tech & contraintes</h2>
-
-              <p className="home__muted">
-                Pas d’OAuth, pas de follow, pas de notifications. Les chargements sont gérés au niveau
-                des pages (pas dans les layouts).
-              </p>
-
-              <div className="home__cta">
-                <Button variant="secondary" onClick={() => navigate("/posts")}>
-                  Explorer les posts
-                </Button>
+ 
+            {!isAuthenticated && (
+              <div className="home__actions">
+                <Button size="lg" onClick={() => navigate("/signup")}>Commencer l'expérience</Button>
+                <Button size="lg" variant="outline" onClick={() => navigate("/login")}>Se connecter</Button>
               </div>
-            </section>
+            )}
+ 
+            <button type="button" className="home__link" onClick={() => navigate("/posts")}>
+              Explorer le feed →
+            </button>
+          </div>
+ 
+          {/* Scrolling invitation text */}
+          <div className="home__scrolling-text">
+            <div className="home__scrolling-content">
+              <span>REJOIGNEZ LA RÉVOLUTION CLOUD</span>
+              <span className="separator">✦</span>
+              <span>CRÉEZ VOTRE COMPTE GRATUITEMENT</span>
+              <span className="separator">✦</span>
+              <span>PARTAGEZ VOS IDÉES AVEC LE MONDE</span>
+              <span className="separator">✦</span>
+              <span>CONNECTEZ-VOUS À L'INNOVATION</span>
+              <span className="separator">✦</span>
+              <span>EXPLOREZ L'INFINI DES POSSIBILITÉS</span>
+              <span className="separator">✦</span>
+            </div>
+ 
           </div>
         </div>
       </section>
     </MainLayout>
   );
 };
-
+ 
 export default Home;

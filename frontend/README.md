@@ -141,7 +141,7 @@ Le projet utilise ESLint avec les plugins suivants :
 
 ## 📝 License
 
-ISC
+ISC  
 
 ```js
 // eslint.config.js
