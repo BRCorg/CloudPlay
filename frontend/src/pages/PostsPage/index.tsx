@@ -87,13 +87,14 @@ const PostsPage = () => {
     navigate(`/posts/${id}`);
   };
 
-  const avatarUrl = user?.avatar ? `http://localhost:5000/uploads/${user.avatar}` : undefined;
   return (
     <MainLayout
       header={
         <Header
-          user={user ? { name: user.username, avatar: avatarUrl } : undefined}
+          user={user ? { name: user.username, avatar: user.avatar } : undefined}
           onLogoClick={() => navigate("/")}
+          onProfileClick={() => navigate("/profile")}
+          onLogout={() => navigate("/login")}
         />
       }
       footer={<Footer />}
@@ -109,7 +110,7 @@ const PostsPage = () => {
 
           <div className="posts-page__create">
             <PostForm
-              user={user ? { name: user.username, avatar: avatarUrl } : { name: "Anonymous", avatar: undefined }}
+              user={user ? { name: user.username, avatar: user.avatar } : { name: "Anonymous", avatar: undefined }}
               onSubmit={handleCreatePost}
               loading={loading}
             />
