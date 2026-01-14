@@ -5,34 +5,34 @@ import { useNavigate } from "react-router-dom";
 import type { ZodFieldError, ApiError } from "../../redux/auth/types";
 import type { RootState } from "../../app/store";
 import "./signupPage.scss";
-
+ 
 import MainLayout from "../../components/templates/MainLayout";
 import Input from "../../components/atoms/Input";
 import Button from "../../components/atoms/Button";
 import Label from "../../components/atoms/Label";
-
+ 
 const SignupPage = () => {
   const dispatch = useAppDispatch();
   const { loading, error, user } = useAppSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
-
+ 
   const [form, setForm] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-
+ 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
-
+ 
   const passwordsMatch =
     form.password.trim().length > 0 &&
     form.confirmPassword.trim().length > 0 &&
     form.password === form.confirmPassword;
-
+ 
   const canSubmit =
     form.username.trim().length > 0 &&
     form.email.trim().length > 0 &&
@@ -40,24 +40,25 @@ const SignupPage = () => {
     form.confirmPassword.trim().length > 0 &&
     passwordsMatch &&
     !loading;
-
-
-
+ 
+  useEffect(() => {
+    if (user) {
+      navigate("/profile-setup", { replace: true });
+    }
+  }, [user, navigate]);
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-
+ 
     const formData = new FormData();
     formData.append("email", form.email);
     formData.append("username", form.username);
     formData.append("password", form.password);
-
-    const result = await dispatch(signup(formData));
-    if (signup.fulfilled.match(result)) {
-      navigate("/profile-setup", { replace: true });
-    }
+ 
+    await dispatch(signup(formData));
   };
-
+ 
   // Fonction pour récupérer les erreurs par champ
   const getFieldError = (field: string) => {
     const apiError = error as ApiError | null;
@@ -69,7 +70,7 @@ const SignupPage = () => {
     }
     return null;
   };
-
+ 
   return (
     <MainLayout>
       <section className="signup-page">
@@ -78,7 +79,7 @@ const SignupPage = () => {
             <p className="signup-page__brand">CloudPlay</p>
             <h1 className="signup-page__title">Inscription</h1>
           </header>
-
+ 
           <form className="signup-page__form" onSubmit={handleSubmit}>
             <div className="signup-page__field">
               <Label htmlFor="username" required>
@@ -99,7 +100,7 @@ const SignupPage = () => {
                 </p>
               )}
             </div>
-
+ 
             <div className="signup-page__field">
               <Label htmlFor="email" required>
                 Adresse e-mail
@@ -120,7 +121,7 @@ const SignupPage = () => {
                 </p>
               )}
             </div>
-
+ 
             <div className="signup-page__field">
               <Label htmlFor="password" required>
                 Mot de passe
@@ -141,7 +142,7 @@ const SignupPage = () => {
                 </p>
               )}
             </div>
-
+ 
             <div className="signup-page__field">
               <Label htmlFor="confirmPassword" required>
                 Confirmer le mot de passe
@@ -156,18 +157,18 @@ const SignupPage = () => {
                 error={form.confirmPassword.length > 0 && !passwordsMatch}
                 required
               />
-
+ 
               {form.confirmPassword && !passwordsMatch && (
                 <p className="signup-page__error" role="alert">
                   Les mots de passe ne correspondent pas.
                 </p>
               )}
             </div>
-
+ 
             <Button type="submit" disabled={!canSubmit}>
               {loading ? "Création en cours…" : "Créer un compte"}
             </Button>
-
+ 
             {/* Message d'erreur générique */}
             {error && typeof error === "object" && error.error && (
               <p className="signup-page__error" role="alert">
@@ -175,7 +176,7 @@ const SignupPage = () => {
               </p>
             )}
           </form>
-
+ 
           <footer className="signup-page__footer">
             <p className="signup-page__muted">
               Vous avez déjà un compte ? <a href="/login">Se connecter</a>
@@ -186,5 +187,5 @@ const SignupPage = () => {
     </MainLayout>
   );
 };
-
+ 
 export default SignupPage;
