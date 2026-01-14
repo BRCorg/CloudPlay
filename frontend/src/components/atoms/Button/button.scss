@@ -49,33 +49,43 @@
   &--primary {
     background: $color-primary;
     border-color: $color-primary;
-    color: $color-white;
+    color: $color-navy-900;
+    font-weight: $weight-semibold;
+
+    box-shadow: 0 2px 8px rgba($color-turquoise, 0.25);
 
     &:hover:not(:disabled) {
       background: $color-primary-hover;
       border-color: $color-primary-hover;
+      box-shadow: 0 4px 12px rgba($color-turquoise, 0.35);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
     }
   }
 
   &--secondary {
     background: $color-white;
-    border-color: $border-color;
-    color: $color-black;
+    border-color: rgba($color-turquoise, 0.2);
+    color: $color-navy-900;
 
     &:hover:not(:disabled) {
-      background: $color-gray-50;
-      border-color: $color-gray-300;
+      background: $color-off-white;
+      border-color: $color-turquoise;
     }
   }
 
   &--outline {
     background: transparent;
-    border-color: $color-gray-300;
-    color: $color-black;
+    border-color: rgba($color-turquoise, 0.3);
+    color: $color-turquoise;
 
     &:hover:not(:disabled) {
-      background: $color-gray-50;
-      border-color: $color-black;
+      background: rgba($color-turquoise, 0.1);
+      border-color: $color-turquoise;
+      color: $color-turquoise-dark;
     }
   }
 }

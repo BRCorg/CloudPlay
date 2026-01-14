@@ -4,6 +4,12 @@ import { User } from "../models/User";
 import { z } from "zod";
 import { generateToken } from "../utils/jwt"; // On utilise l'utilitaire JWT
 
+// Helper pour construire l'URL complète de l'avatar
+const getAvatarUrl = (filename: string | undefined): string => {
+    if (!filename) return `${process.env.BASE_URL || "http://localhost:5000"}/uploads/default.webp`;
+    return `${process.env.BASE_URL || "http://localhost:5000"}/uploads/${filename}`;
+};
+
 // Validation avec Zod
 /**
  *  Ce que Zod fait ici :
@@ -40,7 +46,10 @@ export const signup = async (
 
         // Générer un token et connecter automatiquement l'utilisateur après l'inscription
         const token = generateToken(user._id.toString());
-        res.cookie("token", token, { httpOnly: true, sameSite: "lax" });
+        res.cookie("token", token, {
+            httpOnly: true,
+            path: "/"
+        });
 
         // Renvoie les infos utiles au front (sans mot de passe)
         res.status(201).json({
@@ -48,7 +57,7 @@ export const signup = async (
                 id: user._id,
                 email: user.email,
                 username: user.username,
-                avatar: user.avatar,
+                avatar: getAvatarUrl(user.avatar),
             },
         });
     } catch (err: any) {
@@ -94,8 +103,19 @@ export const login = async (
         const token = generateToken(user._id.toString());
 
         // On envoie le token dans un cookie HTTP-only pour la sécurité
-        res.cookie("token", token, { httpOnly: true, sameSite: "lax" });
-        res.json({ message: "Connexion réussie" });
+        res.cookie("token", token, {
+            httpOnly: true,
+            path: "/"
+        });
+        res.json({
+            message: "Connexion réussie",
+            user: {
+                _id: user._id,
+                email: user.email,
+                username: user.username,
+                avatar: getAvatarUrl(user.avatar),
+            },
+        });
     } catch (err) {
         next(err);
     }
@@ -110,7 +130,13 @@ export const logout = (_req: Request, res: Response) => {
 
 // ----- Fonction pour récupérer les infos de l'utilisateur connecté
 export const me = async (req: any, res: Response) => {
-    res.json(req.user);
+    const user = req.user;
+    res.json({
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        avatar: getAvatarUrl(user.avatar),
+    });
 };
 
 
@@ -129,5 +155,12 @@ export const updateProfile = async (req: any, res: Response) => {
         { new: true }
     );
 
-    res.json({ user: updatedUser });
+    res.json({
+        user: {
+            _id: updatedUser!._id,
+            email: updatedUser!.email,
+            username: updatedUser!.username,
+            avatar: getAvatarUrl(updatedUser!.avatar),
+        },
+    });
 };

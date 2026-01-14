@@ -6,8 +6,8 @@
 
   text-align: center;
 
-  border-top: $border-width solid $border-color;
-  color: $color-gray-600;
+  border-top: $border-width solid rgba($color-turquoise, 0.15);
+  color: $color-navy-700;
 }
 
 .footer__logo {
@@ -15,7 +15,11 @@
 
   font-size: $text-lg;
   font-weight: $weight-bold;
-  color: $color-black;
+
+  background: linear-gradient(135deg, $color-navy-900 0%, $color-turquoise 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .footer__divider {
@@ -24,7 +28,7 @@
 
   margin: 0 auto $space-3;
 
-  background: $border-color;
+  background: linear-gradient(90deg, transparent, $color-turquoise, transparent);
 }
 
 .footer__copyright {

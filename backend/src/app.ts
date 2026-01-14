@@ -14,7 +14,7 @@ app.use(cookieParser());
 
 // CORS : autoriser le front Vite et les cookies
 app.use(cors({
-    origin: "http://localhost:5173", // l'URL du front Vite
+    origin: ["http://localhost:5173", "http://localhost:5174"], // URLs du front Vite
     credentials: true,               // pour les cookies
 }));
 

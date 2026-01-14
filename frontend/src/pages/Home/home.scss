@@ -1,8 +1,15 @@
 @import "../../../public/assets/scss/variables";
 
 .home {
-  padding: $space-16 0;
-  background: $color-gray-50;
+  position: relative;
+  min-height: calc(100vh - 72px);
+  padding: $space-20 0;
+
+  // Navy and turquoise gradient background
+  background:
+    radial-gradient(circle at 20% 10%, rgba($color-turquoise, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba($color-navy-700, 0.08) 0%, transparent 45%),
+    linear-gradient(135deg, $color-off-white 0%, $color-light-bg 50%, darken($color-light-bg, 3%) 100%);
 }
 
 .home__container {
@@ -11,45 +18,92 @@
 
   display: flex;
   flex-direction: column;
-  gap: $space-8;
+  gap: $space-12;
 }
 
-/* Header card */
+/* Header card - Hero */
 .home__header {
-  background: $color-white;
-  border: $border-width solid $border-color;
-  border-radius: $radius-xl;
-  padding: $space-10;
+  position: relative;
+  background: linear-gradient(135deg, $color-white 0%, $color-off-white 100%);
+  border: 1px solid rgba($color-turquoise, 0.2);
+  border-radius: $radius-2xl;
+  padding: $space-12 $space-10;
   text-align: center;
+  overflow: hidden;
 
-  box-shadow: $shadow-sm;
+  box-shadow:
+    0 1px 3px rgba($color-turquoise, 0.12),
+    0 8px 24px rgba($color-navy-700, 0.08);
 
   display: flex;
   flex-direction: column;
-  gap: $space-5;
+  gap: $space-6;
+
+  // Animated entrance
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+
+  // Turquoise gradient overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 180px;
+    background: linear-gradient(180deg, rgba($color-turquoise, 0.08) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  // Subtle dot pattern
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba($color-navy-700, 0.04) 1px, transparent 0);
+    background-size: 20px 20px;
+    pointer-events: none;
+    opacity: 0.5;
+  }
 
   @media (max-width: 640px) {
-    padding: $space-6;
+    padding: $space-8 $space-6;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .home__title {
+  position: relative;
   margin: 0;
-  font-size: $text-5xl;
+  font-size: clamp($text-4xl, 6vw, $text-6xl);
   font-weight: $weight-bold;
-  color: $color-black;
-  letter-spacing: $tracking-tight;
+  letter-spacing: -0.04em;
+  line-height: $leading-tight;
 
-  @media (max-width: 640px) {
-    font-size: $text-4xl;
-  }
+  // Navy to turquoise gradient on text
+  background: linear-gradient(135deg, $color-navy-900 0%, $color-navy-700 50%, $color-turquoise 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .home__description {
   margin: 0;
   font-size: $text-lg;
-  color: $color-gray-700;
-  line-height: $leading-normal;
+  color: $color-navy-700;
+  line-height: $leading-relaxed;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
 .home__actions {
@@ -57,27 +111,48 @@
   justify-content: center;
   gap: $space-4;
   flex-wrap: wrap;
+
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
 }
 
 .home__link {
+  position: relative;
   background: none;
   border: none;
-  padding: 0;
+  padding: $space-1 0;
 
   width: fit-content;
   margin: 0 auto;
 
   font-size: $text-base;
-  font-weight: $weight-medium;
-  color: $color-primary;
+  font-weight: $weight-semibold;
+  color: $color-turquoise;
   cursor: pointer;
 
+  transition: all 0.2s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, $color-turquoise, $color-turquoise-dark);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   &:hover {
-    text-decoration: underline;
+    color: $color-turquoise-dark;
+
+    &::after {
+      width: 100%;
+    }
   }
 
   &:focus-visible {
-    @include focus-ring;
+    outline: 2px solid $color-turquoise;
+    outline-offset: 2px;
   }
 }
 
@@ -85,7 +160,9 @@
 .home__grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: $space-6;
+  gap: $space-8;
+
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -93,27 +170,82 @@
 }
 
 .home__card {
-  background: $color-white;
-  border: $border-width solid $border-color;
-  border-radius: $radius-xl;
-  padding: $space-8;
+  position: relative;
+  background: linear-gradient(135deg, $color-white 0%, $color-off-white 100%);
+  border: 1px solid rgba($color-turquoise, 0.15);
+  border-radius: $radius-2xl;
+  padding: $space-10 $space-8;
+  overflow: hidden;
 
-  box-shadow: $shadow-sm;
+  box-shadow:
+    0 1px 3px rgba($color-turquoise, 0.08),
+    0 4px 12px rgba($color-navy-700, 0.06);
 
   display: flex;
   flex-direction: column;
-  gap: $space-5;
+  gap: $space-6;
+
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Turquoise accent line on top
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, $color-turquoise, $color-turquoise-light);
+    opacity: 1;
+  }
+
+  // Turquoise glow corner
+  &::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba($color-turquoise, 0.12) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow:
+      0 12px 24px rgba($color-turquoise, 0.2),
+      0 20px 56px rgba($color-navy-700, 0.12);
+    border-color: rgba($color-turquoise, 0.35);
+    background: linear-gradient(135deg, $color-white 0%, lighten($color-turquoise-light, 20%) 100%);
+
+    &::after {
+      opacity: 1;
+    }
+  }
 
   @media (max-width: 640px) {
-    padding: $space-6;
+    padding: $space-8 $space-6;
   }
 }
 
 .home__card-title {
   margin: 0;
-  font-size: $text-xl;
-  font-weight: $weight-semibold;
-  color: $color-black;
+  font-size: $text-2xl;
+  font-weight: $weight-bold;
+  color: $color-navy-900;
+  letter-spacing: -0.02em;
+
+  // Gradient on hover
+  transition: all 0.3s ease;
+
+  .home__card:hover & {
+    background: linear-gradient(135deg, $color-navy-900 0%, $color-turquoise 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
 /* Lists */
@@ -132,15 +264,32 @@
   align-items: flex-start;
   gap: $space-3;
 
-  padding: $space-3 $space-4;
-  border: $border-width solid $border-color;
+  padding: $space-4 $space-5;
+  border: 1px solid rgba($color-turquoise, 0.12);
   border-radius: $radius-lg;
-  background: $color-gray-50;
+  background: linear-gradient(135deg, rgba($color-white, 0.9) 0%, rgba($color-off-white, 0.8) 100%);
+
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background: linear-gradient(135deg, lighten($color-turquoise-light, 25%) 0%, lighten($color-turquoise-light, 22%) 100%);
+    border-color: rgba($color-turquoise, 0.3);
+    transform: translateX(6px);
+    box-shadow: 0 2px 8px rgba($color-turquoise, 0.15);
+  }
 }
 
 .home__bullet {
   flex: 0 0 auto;
   line-height: 1.2;
+  font-size: $text-lg;
+
+  // Subtle animation on parent hover
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .home__list-item:hover & {
+    transform: scale(1.15);
+  }
 }
 
 /* Chips / muted text */
@@ -152,12 +301,24 @@
 
 .home__muted {
   margin: 0;
-  color: $color-gray-600;
-  line-height: $leading-normal;
+  color: $color-navy-700;
+  line-height: $leading-relaxed;
+  font-size: $text-base;
 }
 
 .home__cta {
   margin-top: auto;
   display: flex;
   justify-content: flex-start;
+}
+
+// Staggered animation for grid items
+.home__card {
+  &:nth-child(1) {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
+  }
+
+  &:nth-child(2) {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s backwards;
+  }
 }

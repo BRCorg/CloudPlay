@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
 import "./postsPage.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -15,7 +16,7 @@ const MOCK_POSTS = [
     title: "Getting Started with React",
     content:
       "React is a JavaScript library for building user interfaces. Learn the basics and start building amazing apps!",
-    author: { name: "John Doe", avatar: undefined },
+    author: { name: "John Doe", avatar: undefined as string | undefined },
     likes: 42,
     comments: 12,
     timestamp: "2 hours ago",
@@ -26,7 +27,7 @@ const MOCK_POSTS = [
     title: "TypeScript Best Practices",
     content:
       "TypeScript adds static typing to JavaScript. Here are some best practices to follow when using TypeScript in your projects.",
-    author: { name: "Jane Smith", avatar: undefined },
+    author: { name: "Jane Smith", avatar: undefined as string | undefined },
     likes: 38,
     comments: 8,
     timestamp: "5 hours ago",
@@ -37,7 +38,7 @@ const MOCK_POSTS = [
     title: "CSS Grid vs Flexbox",
     content:
       "When should you use CSS Grid and when should you use Flexbox? This guide will help you decide.",
-    author: { name: "Mike Johnson", avatar: undefined },
+    author: { name: "Mike Johnson", avatar: undefined as string | undefined },
     likes: 65,
     comments: 24,
     timestamp: "1 day ago",
@@ -45,22 +46,20 @@ const MOCK_POSTS = [
   },
 ];
 
-const CURRENT_USER = {
-  name: "Current User",
-  avatar: undefined,
-};
-
 const PostsPage = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState(MOCK_POSTS);
   const [loading] = useState(false);
+
+  // Récupérer l'utilisateur depuis Redux
+  const user = useAppSelector((state) => state.auth.user);
 
   const handleCreatePost = (data: { title: string; content: string; image?: string }) => {
     const newPost = {
       id: String(Date.now()),
       title: data.title,
       content: data.content,
-      author: CURRENT_USER,
+      author: user ? { name: user.username, avatar: user.avatar } : { name: "Anonymous", avatar: undefined },
       image: data.image,
       likes: 0,
       comments: 0,
@@ -89,7 +88,12 @@ const PostsPage = () => {
 
   return (
     <MainLayout
-      header={<Header user={CURRENT_USER} onLogoClick={() => navigate("/")} />}
+      header={
+        <Header
+          user={user ? { name: user.username, avatar: user.avatar } : undefined}
+          onLogoClick={() => navigate("/")}
+        />
+      }
       footer={<Footer />}
     >
       <section className="posts-page">
@@ -102,7 +106,11 @@ const PostsPage = () => {
           </header>
 
           <div className="posts-page__create">
-            <PostForm user={CURRENT_USER} onSubmit={handleCreatePost} loading={loading} />
+            <PostForm
+              user={user ? { name: user.username, avatar: user.avatar } : { name: "Anonymous", avatar: undefined }}
+              onSubmit={handleCreatePost}
+              loading={loading}
+            />
           </div>
 
           <PostList

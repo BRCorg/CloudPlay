@@ -2,7 +2,7 @@
 
 .login-page {
   padding: $space-16 0;
-  background: $color-gray-50;
+  background: linear-gradient(135deg, $color-off-white 0%, $color-light-bg 100%);
 }
 
 .login-page__container {
@@ -14,11 +14,13 @@
   gap: $space-6;
 
   background: $color-white;
-  border: $border-width solid $border-color;
+  border: $border-width solid rgba($color-turquoise, 0.2);
   border-radius: $radius-xl;
   padding: $space-10;
 
-  box-shadow: $shadow-sm;
+  box-shadow:
+    0 2px 8px rgba($color-turquoise, 0.1),
+    0 8px 24px rgba($color-navy-700, 0.08);
 
   @media (max-width: 640px) {
     padding: $space-6;
@@ -30,14 +32,14 @@
   flex-direction: column;
   gap: $space-2;
   padding-bottom: $space-5;
-  border-bottom: $border-width solid $border-color;
+  border-bottom: $border-width solid rgba($color-turquoise, 0.15);
 }
 
 .login-page__brand {
   margin: 0;
   font-size: $text-sm;
   font-weight: $weight-medium;
-  color: $color-gray-600;
+  color: $color-navy-700;
 
   display: inline-flex;
   align-items: center;
@@ -48,8 +50,8 @@
     width: 10px;
     height: 10px;
     border-radius: $radius-full;
-    background: $color-primary;
-    box-shadow: 0 0 0 3px rgba($color-primary, 0.12);
+    background: $color-turquoise;
+    box-shadow: 0 0 0 3px rgba($color-turquoise, 0.15);
   }
 }
 
@@ -57,12 +59,12 @@
   margin: 0;
   font-size: $text-3xl;
   font-weight: $weight-bold;
-  color: $color-black;
+  color: $color-navy-900;
   letter-spacing: $tracking-tight;
 }
 
 .login-page__subtitle {
   margin: 0;
-  color: $color-gray-700;
+  color: $color-navy-700;
   line-height: $leading-normal;
 }
