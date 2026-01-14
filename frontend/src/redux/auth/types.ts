@@ -22,4 +22,6 @@ export interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: ApiError | string | null;
+  hasFetchedMe: boolean; 
 }
+

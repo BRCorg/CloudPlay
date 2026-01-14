@@ -92,7 +92,7 @@ const PostsPage = () => {
     <MainLayout
       header={
         <Header
-          user={user ? { name: user.username, avatar: avatarUrl } : undefined}
+          user={user ? { name: user.username, avatar: user.avatar } : undefined}
           onLogoClick={() => navigate("/")}
         />
       }
