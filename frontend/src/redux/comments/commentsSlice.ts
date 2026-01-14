@@ -20,12 +20,19 @@ export const getComments = createAsyncThunk(
 // Create comment
 export const createComment = createAsyncThunk(
   'comments/createComment',
-  async ({ postId, content }: CreateCommentPayload) => {
-    const response = await axiosInstance.post(
-      `${API_URL}/posts/${postId}/comments`,
-      { content }
-    );
-    return response.data;
+  async ({ postId, content }: CreateCommentPayload, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        `${API_URL}/posts/${postId}/comments`,
+        { content }
+      );
+      return response.data;
+    } catch (err: any) {
+      if (err?.response?.data?.details && Array.isArray(err.response.data.details)) {
+        return rejectWithValue(err.response.data.details.map((issue: any) => issue.message));
+      }
+      return rejectWithValue(err?.response?.data?.error || err.message || 'Erreur création commentaire');
+    }
   }
 );
 

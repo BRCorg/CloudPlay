@@ -1,152 +1,116 @@
-import { Request, Response } from 'express';
-import Comment from '../models/Comment';
+import { Request, Response, NextFunction } from "express";
+import Comment from "../models/Comment";
+import { z, ZodError } from "zod";
 
-// Get comments for a post
-export const getComments = async (req: Request, res: Response): Promise<void> => {
+// ----- Validation Zod avec trim
+const commentSchema = z.object({
+  content: z.string().trim().min(1, { message: "Le contenu du commentaire est requis" }),
+});
+
+// ----- Récupérer tous les commentaires d'un post
+export const getComments = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.params;
-    
     const comments = await Comment.find({ post: postId })
-      .populate('author', 'username avatar')
+      .populate("author", "username avatar")
       .sort({ createdAt: -1 });
-    
+
     res.json(comments);
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ message: 'Server error' });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Create comment
-export const createComment = async (req: Request, res: Response): Promise<void> => {
+// ----- Créer un commentaire
+export const createComment = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const data = commentSchema.parse(req.body);
     const { postId } = req.params;
-    const { content } = req.body;
     const userId = (req as any).user.id;
 
-    if (!content || !content.trim()) {
-      res.status(400).json({ message: 'Content is required' });
-      return;
-    }
-
-    const comment = new Comment({
-      content: content.trim(),
+    const comment = await Comment.create({
+      ...data,
       author: userId,
       post: postId,
       likes: [],
     });
 
-    await comment.save();
-    await comment.populate('author', 'username avatar');
-
+    await comment.populate("author", "username avatar");
     res.status(201).json(comment);
-  } catch (error) {
-    console.error('Error creating comment:', error);
-    res.status(500).json({ message: 'Server error' });
+  } catch (err) {
+    if (err instanceof ZodError) return next(err);
+    next(err);
   }
 };
 
-// Update comment
-export const updateComment = async (req: Request, res: Response): Promise<void> => {
+// ----- Mettre à jour un commentaire
+export const updateComment = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const data = commentSchema.partial().parse(req.body);
     const { commentId } = req.params;
-    const { content } = req.body;
     const userId = (req as any).user.id;
 
     const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ error: "Commentaire non trouvé" });
+    if (comment.author.toString() !== userId) return res.status(403).json({ error: "Non autorisé" });
 
-    if (!comment) {
-      res.status(404).json({ message: 'Comment not found' });
-      return;
-    }
-
-    if (comment.author.toString() !== userId) {
-      res.status(403).json({ message: 'Not authorized to update this comment' });
-      return;
-    }
-
-    if (content && content.trim()) {
-      comment.content = content.trim();
-    }
-
+    Object.assign(comment, data);
     await comment.save();
-    await comment.populate('author', 'username avatar');
+    await comment.populate("author", "username avatar");
 
     res.json(comment);
-  } catch (error) {
-    console.error('Error updating comment:', error);
-    res.status(500).json({ message: 'Server error' });
+  } catch (err) {
+    if (err instanceof ZodError) return next(err);
+    next(err);
   }
 };
 
-// Delete comment
-export const deleteComment = async (req: Request, res: Response): Promise<void> => {
+// ----- Supprimer un commentaire
+export const deleteComment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { commentId } = req.params;
     const userId = (req as any).user.id;
 
     const comment = await Comment.findById(commentId);
+    if (!comment) return res.status(404).json({ error: "Commentaire non trouvé" });
+    if (comment.author.toString() !== userId) return res.status(403).json({ error: "Non autorisé" });
 
-    if (!comment) {
-      res.status(404).json({ message: 'Comment not found' });
-      return;
-    }
-
-    if (comment.author.toString() !== userId) {
-      res.status(403).json({ message: 'Not authorized to delete this comment' });
-      return;
-    }
-
-    await Comment.findByIdAndDelete(commentId);
-
-    res.json({ message: 'Comment deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting comment:', error);
-    res.status(500).json({ message: 'Server error' });
+    await comment.deleteOne();
+    res.json({ message: "Commentaire supprimé avec succès" });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Toggle like on comment
-export const toggleLikeComment = async (req: Request, res: Response): Promise<void> => {
+// ----- Toggle like sur un commentaire
+export const toggleLikeComment = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { commentId } = req.params;
     const userId = (req as any).user.id;
 
     const comment = await Comment.findById(commentId);
-
-    if (!comment) {
-      res.status(404).json({ message: 'Comment not found' });
-      return;
-    }
+    if (!comment) return res.status(404).json({ error: "Commentaire non trouvé" });
 
     const likeIndex = comment.likes.indexOf(userId);
-
-    if (likeIndex > -1) {
-      // Unlike
-      comment.likes.splice(likeIndex, 1);
-    } else {
-      // Like
-      comment.likes.push(userId);
-    }
+    if (likeIndex > -1) comment.likes.splice(likeIndex, 1);
+    else comment.likes.push(userId);
 
     await comment.save();
-    await comment.populate('author', 'username avatar');
+    await comment.populate("author", "username avatar");
 
     res.json(comment);
-  } catch (error) {
-    console.error('Error toggling like:', error);
-    res.status(500).json({ message: 'Server error' });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Get comment count for a post
-export const getCommentCount = async (req: Request, res: Response): Promise<void> => {
+// ----- Récupérer le nombre de commentaires pour un post
+export const getCommentCount = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { postId } = req.params;
     const count = await Comment.countDocuments({ post: postId });
     res.json({ count });
-  } catch (error) {
-    console.error('Error getting comment count:', error);
-    res.status(500).json({ message: 'Server error' });
+  } catch (err) {
+    next(err);
   }
 };

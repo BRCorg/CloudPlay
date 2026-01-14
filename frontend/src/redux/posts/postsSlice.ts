@@ -46,6 +46,11 @@ export const createPost = createAsyncThunk(
             });
             return res.data.post;
         } catch (err: any) {
+            // Si le backend renvoie un tableau d'erreurs Zod, on le transmet
+            if (err?.response?.data?.details && Array.isArray(err.response.data.details)) {
+                // On extrait les messages de chaque erreur Zod
+                return rejectWithValue(err.response.data.details.map((issue: any) => issue.message));
+            }
             return rejectWithValue(err?.response?.data?.error || err.message || "Erreur création post");
         }
     }

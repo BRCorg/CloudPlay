@@ -20,11 +20,8 @@ const LoginPage = () => {
     }
   };
 
-  const errorMessage = error && typeof error === "object" && error.error 
-    ? error.error 
-    : typeof error === "string" 
-    ? error 
-    : undefined;
+  // Passe tous les messages d'erreur (tableau ou string) à LoginForm
+  const errorMessage = error?.details || error?.error || error;
 
   return (
     <MainLayout>

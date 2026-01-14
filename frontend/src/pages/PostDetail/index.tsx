@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { getComments, updateComment, deleteComment, toggleLikeComment } from "../../redux/comments/commentsSlice";

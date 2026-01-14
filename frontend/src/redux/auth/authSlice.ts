@@ -47,6 +47,9 @@ export const login = createAsyncThunk(
             });
             return res.data;
         } catch (err: any) {
+            if (err?.response?.data?.details && Array.isArray(err.response.data.details)) {
+                return rejectWithValue(err.response.data.details.map((issue: any) => issue.message));
+            }
             return rejectWithValue(err.response?.data?.error || "Erreur login");
         }
     }

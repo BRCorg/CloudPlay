@@ -27,14 +27,15 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
   return (
     <form className="login-form" onSubmit={handleSubmit}>
       <header className="login-form__header">
-  <Text muted>Accédez à votre espace CloudPlay</Text>
-
+        <Text muted>Accédez à votre espace CloudPlay</Text>
       </header>
 
       {hasError && (
-        <p className="login-form__error" role="alert">
-          {error}
-        </p>
+        <div className="login-form__error" role="alert" style={{ color: 'red', marginBottom: '1rem' }}>
+          {Array.isArray(error)
+            ? error.map((errMsg, idx) => <div key={idx}>{errMsg}</div>)
+            : error}
+        </div>
       )}
 
       <div className="login-form__field">

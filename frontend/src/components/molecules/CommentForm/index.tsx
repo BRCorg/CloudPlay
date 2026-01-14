@@ -20,6 +20,7 @@ export type CommentFormProps = {
 const CommentForm = ({ postId, user }: CommentFormProps) => {
   const dispatch = useAppDispatch();
   const [content, setContent] = useState("");
+  const error = useAppSelector((state) => state.comments.error);
 
   const canSubmit = content.trim().length > 0;
 
@@ -43,6 +44,14 @@ const CommentForm = ({ postId, user }: CommentFormProps) => {
         </div>
       )}
       
+      {/* Error message display */}
+      {error && (
+        <div className="comment-form__error" style={{ color: 'red', marginBottom: '1rem' }}>
+          {Array.isArray(error)
+            ? error.map((errMsg, idx) => <div key={idx}>{errMsg}</div>)
+            : error}
+        </div>
+      )}
       <div className="comment-form__content">
         <Textarea
           placeholder="Ajouter un commentaire..."

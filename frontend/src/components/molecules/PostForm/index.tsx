@@ -26,7 +26,7 @@ export type PostFormProps = {
 
 const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialContent = "", initialImage, onCancel }: PostFormProps) => {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.posts);
+  const { loading, error } = useAppSelector((state) => state.posts);
   
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
@@ -124,6 +124,14 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
         </div>
       )}
 
+      {/* Error message display */}
+      {error && (
+        <div className="post-form__error" style={{ color: 'red', marginBottom: '1rem' }}>
+          {Array.isArray(error)
+            ? error.map((errMsg, idx) => <div key={idx}>{errMsg}</div>)
+            : error}
+        </div>
+      )}
       <div className="post-form__actions">
         <label className="post-form__file-label">
           <span className="post-form__file-button">
