@@ -12,7 +12,7 @@ export default function ProfileSetup() {
   
   const [avatar, setAvatar] = useState<File | null>(null);
   const [preview, setPreview] = useState(
-    user?.avatar ? `http://localhost:5000/uploads/${user.avatar}` : "http://localhost:5000/uploads/default.webp"
+    user?.avatar || "http://localhost:5000/uploads/default.webp"
   );
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {

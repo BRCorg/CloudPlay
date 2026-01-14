@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import "./postsPage.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -9,6 +9,7 @@ import Footer from "../../components/organisms/Footer";
 
 import PostList from "../../components/organisms/PostList";
 import PostForm from "../../components/molecules/PostForm";
+import { logout } from "../../redux/auth/authSlice";
 
 const MOCK_POSTS = [
   {
@@ -48,6 +49,13 @@ const MOCK_POSTS = [
 
 const PostsPage = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    navigate("/login");
+  };
+
   const [posts, setPosts] = useState(MOCK_POSTS);
   const [loading] = useState(false);
 
@@ -55,7 +63,7 @@ const PostsPage = () => {
   const user = useAppSelector((state) => state.auth.user);
 
   const handleCreatePost = (data: { title: string; content: string; image?: string }) => {
-    const avatarUrl = user?.avatar ? `http://localhost:5000/uploads/${user.avatar}` : undefined;
+    const avatarUrl = user?.avatar || undefined;
     const newPost = {
       id: String(Date.now()),
       title: data.title,
@@ -87,17 +95,26 @@ const PostsPage = () => {
     navigate(`/posts/${id}`);
   };
 
-  const avatarUrl = user?.avatar ? `http://localhost:5000/uploads/${user.avatar}` : undefined;
+  
+
+  const avatarUrl = user?.avatar || undefined;
   return (
     <MainLayout
-      header={
-        <Header
-          user={user ? { name: user.username, avatar: user.avatar } : undefined}
-          onLogoClick={() => navigate("/")}
-        />
+  header={
+    <Header
+      user={
+        user
+          ? { name: user.username, avatar: avatarUrl }
+          : undefined
       }
-      footer={<Footer />}
-    >
+      onLogoClick={() => navigate("/")}
+      onProfileClick={() => navigate("/profile")}
+      onLogout={handleLogout}
+    />
+  }
+  footer={<Footer />}
+>
+
       <section className="posts-page">
         <div className="posts-page__container">
           <header className="posts-page__header">
