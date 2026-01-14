@@ -22,12 +22,15 @@ const Home = () => {
     navigate("/login");
   };
 
+
+
+
   return (
     <MainLayout 
       header={
         <Header 
           onLogoClick={() => navigate("/")}
-          user={isAuthenticated && user ? { name: user.username, avatar: user.avatar ? `http://localhost:5000/uploads/${user.avatar}` : undefined } : undefined}
+          user={user ? { name: user.username, avatar: user.avatar } : undefined}
           onProfileClick={() => navigate("/profile")}
           onLogout={handleLogout}
         />
@@ -46,14 +49,12 @@ const Home = () => {
               cohérente et maintenable, prête pour une soutenance et un portfolio.
             </p>
 
-            <div className="home__actions">
-              <Button size="lg" onClick={() => navigate("/signup")}>
-                Créer un compte
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => navigate("/login")}>
-                Se connecter
-              </Button>
-            </div>
+                {!isAuthenticated && (
+                  <div className="home__actions">
+                    <Button size="lg" onClick={() => navigate("/signup")}>Créer un compte</Button>
+                    <Button size="lg" variant="outline" onClick={() => navigate("/login")}>Se connecter</Button>
+                  </div>
+                )}
 
             <button type="button" className="home__link" onClick={() => navigate("/posts")}>
               Voir le feed de posts →

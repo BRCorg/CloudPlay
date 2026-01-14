@@ -76,13 +76,14 @@ const Profile = () => {
     return null;
   }
 
-  const avatarUrl = preview || (user.avatar ? `http://localhost:5000/uploads/${user.avatar}` : "http://localhost:5000/uploads/default.webp");
+  const avatarUrl = preview || user.avatar || "http://localhost:5000/uploads/default.webp";
 
+  // Utilise user.avatar directement (déjà une URL complète)
   return (
     <MainLayout
       header={
         <Header 
-          user={{ name: user.username, avatar: user.avatar ? `http://localhost:5000/uploads/${user.avatar}` : undefined }}
+          user={{ name: user.username, avatar: user.avatar }}
           onLogoClick={() => navigate("/")}
           onProfileClick={() => navigate("/profile")}
           onLogout={handleLogout}

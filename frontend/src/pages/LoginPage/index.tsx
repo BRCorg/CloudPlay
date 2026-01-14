@@ -16,7 +16,7 @@ const LoginPage = () => {
     const resultAction = await dispatch(login({ email, password }));
 
     if (login.fulfilled.match(resultAction)) {
-      navigate("/posts");
+      navigate("/");
     }
   };
 

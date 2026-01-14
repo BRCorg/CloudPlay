@@ -41,12 +41,7 @@ const SignupPage = () => {
     passwordsMatch &&
     !loading;
 
-  // Redirige automatiquement vers /profile-setup dès que l'utilisateur est connecté
-  useEffect(() => {
-    if (user) {
-      navigate("/profile-setup", { replace: true });
-    }
-  }, [user, navigate]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +52,10 @@ const SignupPage = () => {
     formData.append("username", form.username);
     formData.append("password", form.password);
 
-    await dispatch(signup(formData));
+    const result = await dispatch(signup(formData));
+    if (signup.fulfilled.match(result)) {
+      navigate("/profile-setup", { replace: true });
+    }
   };
 
   // Fonction pour récupérer les erreurs par champ

@@ -9,12 +9,14 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 
   console.log("ProtectedRoute - isAuthenticated:", isAuthenticated, "loading:", loading, "user:", user);
 
+
+
   if (loading) {
     return (<p>Chargement...</p>);
   }
 
-  if (!isAuthenticated) {
-    console.log("ProtectedRoute - Redirection vers /login");
+  // On ne redirige vers /login que si loading est fini ET qu'on n'est pas authentifié
+  if (!loading && !isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

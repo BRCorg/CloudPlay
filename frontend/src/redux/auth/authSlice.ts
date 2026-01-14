@@ -59,7 +59,8 @@ export const login = createAsyncThunk(
 
 //----- Action asynchrone pour la déconnexion
 export const logout = createAsyncThunk("auth/logout", async () => {
-    await axios.post("/api/auth/logout", {}, { withCredentials: true });
+    await api.post("/api/auth/logout", {}, { withCredentials: true });
+    // Optionnel : tu pourrais aussi faire un fetchMe ici pour forcer le reset du state
 });
 
 //----- Action asynchrone pour récupérer les informations de l'utilisateur connecté
