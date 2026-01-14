@@ -17,14 +17,17 @@ const initialState: PostState = {
 };
 
 // Thunk pour récupérer les posts
+import type { AxiosError } from "axios";
+
 export const getPosts = createAsyncThunk(
     "posts/getPosts",
     async (_, { rejectWithValue }) => {
         try {
             const res = await api.get("/api/posts");
             return res.data.posts;
-        } catch (err: any) {
-            return rejectWithValue(err?.response?.data?.error || err.message || "Erreur récupération posts");
+        } catch (err) {
+            const error = err as AxiosError<{ error?: string }>;
+            return rejectWithValue(error.response?.data?.error || error.message || "Erreur récupération posts");
         }
     }
 );
@@ -45,13 +48,9 @@ export const createPost = createAsyncThunk(
                 headers: { "Content-Type": "multipart/form-data" },
             });
             return res.data.post;
-        } catch (err: any) {
-            // Si le backend renvoie un tableau d'erreurs Zod, on le transmet
-            if (err?.response?.data?.details && Array.isArray(err.response.data.details)) {
-                // On extrait les messages de chaque erreur Zod
-                return rejectWithValue(err.response.data.details.map((issue: any) => issue.message));
-            }
-            return rejectWithValue(err?.response?.data?.error || err.message || "Erreur création post");
+        } catch (err) {
+            const error = err as AxiosError<{ error?: string }>;
+            return rejectWithValue(error.response?.data?.error || error.message || "Erreur création post");
         }
     }
 );
@@ -63,8 +62,23 @@ export const deletePost = createAsyncThunk(
         try {
             await api.delete(`/api/posts/${postId}`);
             return postId;
-        } catch (err: any) {
-            return rejectWithValue(err?.response?.data?.error || err.message || "Erreur suppression post");
+        } catch (err) {
+            const error = err as AxiosError<{ error?: string }>;
+            return rejectWithValue(error.response?.data?.error || error.message || "Erreur suppression post");
+        }
+    }
+);
+
+// Thunk pour toggle like sur un post
+export const toggleLikePost = createAsyncThunk(
+    "posts/toggleLikePost",
+    async (postId: string, { rejectWithValue }) => {
+        try {
+            const res = await api.post(`/api/posts/${postId}/like`);
+            return res.data;
+        } catch (err) {
+            const error = err as AxiosError<{ message?: string }>;
+            return rejectWithValue(error.response?.data?.message || error.message || "Erreur like post");
         }
     }
 );
@@ -85,8 +99,9 @@ export const updatePost = createAsyncThunk(
                 headers: { "Content-Type": "multipart/form-data" },
             });
             return res.data.post;
-        } catch (err: any) {
-            return rejectWithValue(err?.response?.data?.error || err.message || "Erreur mise à jour post");
+        } catch (err) {
+            const error = err as AxiosError<{ error?: string }>;
+            return rejectWithValue(error.response?.data?.error || error.message || "Erreur mise à jour post");
         }
     }
 );
@@ -147,6 +162,12 @@ const postSlice = createSlice({
             .addCase(updatePost.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(toggleLikePost.fulfilled, (state, action) => {
+                const index = state.posts.findIndex((p) => p._id === action.payload._id);
+                if (index !== -1) {
+                    state.posts[index] = action.payload;
+                }
             });
     },
 });

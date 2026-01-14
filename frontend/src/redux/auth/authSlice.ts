@@ -1,3 +1,12 @@
+// Type guard pour ApiError
+function isApiError(payload: unknown): payload is ApiError {
+    return (
+        typeof payload === 'object' &&
+        payload !== null &&
+        'error' in payload &&
+        typeof (payload as { error?: unknown }).error === 'string'
+    );
+}
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { ApiError, AuthState } from "./types";
 import api from "../../api/authAPI";
@@ -26,11 +35,14 @@ export const signup = createAsyncThunk(
                 withCredentials: true,
             });
             return res.data;
-        } catch (err: any) {
-            if (!err.response) {
+        } catch (err) {
+            if (typeof err === 'object' && err && 'response' in err && !(err as { response?: unknown }).response) {
                 return rejectWithValue("Serveur indisponible");
             }
-            return rejectWithValue(err.response.data as ApiError);
+            if (typeof err === 'object' && err && 'response' in err) {
+                return rejectWithValue((err as { response: { data?: unknown } }).response.data as ApiError);
+            }
+            return rejectWithValue("Erreur signup");
         }
     }
 );
@@ -46,11 +58,22 @@ export const login = createAsyncThunk(
                 withCredentials: true,
             });
             return res.data;
-        } catch (err: any) {
-            if (err?.response?.data?.details && Array.isArray(err.response.data.details)) {
-                return rejectWithValue(err.response.data.details.map((issue: any) => issue.message));
+        } catch (err) {
+            if (
+                typeof err === 'object' &&
+                err &&
+                'response' in err &&
+                (err as { response?: { data?: { details?: unknown } } }).response?.data?.details &&
+                Array.isArray((err as { response?: { data?: { details?: unknown[] } } }).response?.data?.details)
+            ) {
+                // Retourner un ApiError structuré pour que le front puisse afficher les erreurs par champ
+                return rejectWithValue({ error: "Erreur de validation", details: (err as { response: { data: { details: { message: string }[] } } }).response.data.details });
             }
-            return rejectWithValue(err.response?.data?.error || "Erreur login");
+            // Cas d'identifiants invalides ou autre
+            if (typeof err === 'object' && err && 'response' in err) {
+                return rejectWithValue({ error: (err as { response?: { data?: { error?: string } } }).response?.data?.error || "Erreur login" });
+            }
+            return rejectWithValue({ error: "Erreur login" });
         }
     }
 );
@@ -77,8 +100,11 @@ export const fetchMe = createAsyncThunk(
         try {
             const res = await api.get("/api/auth/me", { withCredentials: true });
             return res.data;
-        } catch (err: any) {
-            return rejectWithValue(err.response?.data?.error || "Erreur fetchMe");
+        } catch (err) {
+            if (typeof err === 'object' && err && 'response' in err) {
+                return rejectWithValue((err as { response?: { data?: { error?: string } } }).response?.data?.error || "Erreur fetchMe");
+            }
+            return rejectWithValue("Erreur fetchMe");
         }
     }
 );
@@ -94,9 +120,15 @@ export const updateProfile = createAsyncThunk(
                 withCredentials: true,
             });
             return res.data.user; // On renvoie l'utilisateur mis à jour
-        } catch (err: any) {
-            if (!err.response) return rejectWithValue("Serveur indisponible");
-            return rejectWithValue(err.response.data?.error || "Erreur mise à jour profil");
+        } catch (err) {
+            if (typeof err === 'object' && err && 'response' in err && !(err as { response?: unknown }).response) {
+                return rejectWithValue("Serveur indisponible");
+            }
+            if (typeof err === 'object' && err && 'response' in err) {
+                // Toujours renvoyer l’objet d’erreur complet (avec details) comme pour signup
+                return rejectWithValue((err as { response: { data?: unknown } }).response.data as ApiError);
+            }
+            return rejectWithValue("Erreur mise à jour profil");
         }
     }
 );
@@ -106,7 +138,11 @@ export const updateProfile = createAsyncThunk(
 const authSlice = createSlice({
     name: "auth",
     initialState,
-    reducers: {},
+    reducers: {
+        clearError(state) {
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
 
@@ -123,12 +159,17 @@ const authSlice = createSlice({
             })
             .addCase(signup.rejected, (state, action) => {
                 state.loading = false;
-                const payload = action.payload as ApiError | any;
-
-                state.error = {
-                    error: typeof payload?.error === "string" ? payload.error : "Erreur signup",
-                    details: Array.isArray(payload?.error) ? payload.error : undefined,
-                };
+                const payload = action.payload as unknown;
+                if (isApiError(payload)) {
+                    state.error = {
+                        error: payload.error,
+                        details: payload.details,
+                    };
+                } else {
+                    state.error = {
+                        error: "Erreur signup",
+                    };
+                }
                 state.hasFetchedMe = true;
             })
 
@@ -146,7 +187,17 @@ const authSlice = createSlice({
             })
             .addCase(login.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                const payload = action.payload as unknown;
+                if (isApiError(payload)) {
+                    state.error = {
+                        error: payload.error,
+                        details: payload.details,
+                    };
+                } else {
+                    state.error = {
+                        error: "Erreur login",
+                    };
+                }
                 state.hasFetchedMe = true;
             })
 
@@ -189,9 +240,25 @@ const authSlice = createSlice({
             })
             .addCase(updateProfile.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as AuthState["error"];
+                const payload = action.payload as unknown;
+                if (
+                    typeof payload === 'object' &&
+                    payload !== null &&
+                    'error' in payload &&
+                    typeof (payload as { error?: unknown }).error === 'string'
+                ) {
+                    state.error = {
+                        error: (payload as { error: string }).error,
+                        details: (payload as { details?: unknown }).details as import("./types").ZodFieldError[] | undefined,
+                    };
+                } else {
+                    state.error = {
+                        error: typeof payload === 'string' ? payload : 'Erreur mise à jour profil',
+                    };
+                }
             });
     },
 });
 
+export const { clearError } = authSlice.actions;
 export default authSlice.reducer;

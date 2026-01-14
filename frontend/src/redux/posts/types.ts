@@ -10,6 +10,7 @@ export interface Post {
     username: string;
     avatar?: string;
   };
+  likes?: string[];
   commentCount?: number;
   createdAt: string;
   updatedAt: string;

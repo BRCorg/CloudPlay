@@ -1,4 +1,5 @@
-@import "../../../../public/assets/scss/variables";
+@use "../../../../public/assets/scss/variables" as *;
+
 
 .post-form {
   display: flex;

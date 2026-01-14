@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { signup } from "../../redux/auth/authSlice";
 import { useNavigate } from "react-router-dom";
-import type { ZodFieldError, ApiError } from "../../redux/auth/types";
+import { getFieldError } from "../../utils/getFieldError";
 import type { RootState } from "../../app/store";
 import "./signupPage.scss";
  
@@ -59,17 +59,8 @@ const SignupPage = () => {
     await dispatch(signup(formData));
   };
  
-  // Fonction pour récupérer les erreurs par champ
-  const getFieldError = (field: string) => {
-    const apiError = error as ApiError | null;
-    if (apiError?.details && Array.isArray(apiError.details)) {
-      const fieldError = apiError.details.find((e: ZodFieldError) =>
-        e.path.includes(field)
-      );
-      return fieldError?.message;
-    }
-    return null;
-  };
+  // Utilise le helper centralisé
+  const getSignupFieldError = (field: string) => getFieldError(error ?? null, field);
  
   return (
     <MainLayout>
@@ -91,12 +82,12 @@ const SignupPage = () => {
                 placeholder="Choisissez un nom d'utilisateur"
                 value={form.username}
                 onChange={onChange}
-                error={!!getFieldError("username")}
+                error={!!getSignupFieldError("username")}
                 required
               />
-              {getFieldError("username") && (
+              {getSignupFieldError("username") && (
                 <p className="signup-page__error" role="alert">
-                  {getFieldError("username")}
+                  {getSignupFieldError("username")}
                 </p>
               )}
             </div>
@@ -112,12 +103,12 @@ const SignupPage = () => {
                 placeholder="vous@exemple.com"
                 value={form.email}
                 onChange={onChange}
-                error={!!getFieldError("email")}
+                error={!!getSignupFieldError("email")}
                 required
               />
-              {getFieldError("email") && (
+              {getSignupFieldError("email") && (
                 <p className="signup-page__error" role="alert">
-                  {getFieldError("email")}
+                  {getSignupFieldError("email")}
                 </p>
               )}
             </div>
@@ -133,12 +124,12 @@ const SignupPage = () => {
                 placeholder="Créez un mot de passe"
                 value={form.password}
                 onChange={onChange}
-                error={!!getFieldError("password")}
+                error={!!getSignupFieldError("password")}
                 required
               />
-              {getFieldError("password") && (
+              {getSignupFieldError("password") && (
                 <p className="signup-page__error" role="alert">
-                  {getFieldError("password")}
+                  {getSignupFieldError("password")}
                 </p>
               )}
             </div>
@@ -169,8 +160,8 @@ const SignupPage = () => {
               {loading ? "Création en cours…" : "Créer un compte"}
             </Button>
  
-            {/* Message d'erreur générique */}
-            {error && typeof error === "object" && error.error && (
+            {/* Message d'erreur générique (affiché seulement s'il n'y a pas de details Zod) */}
+            {error && typeof error === "object" && error.error && !("details" in error) && (
               <p className="signup-page__error" role="alert">
                 {error.error}
               </p>

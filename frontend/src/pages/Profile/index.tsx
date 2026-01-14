@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { logout, updateProfile } from "../../redux/auth/authSlice";
+import { logout, updateProfile, clearError } from "../../redux/auth/authSlice";
 import type { RootState } from "../../app/store";
 import "./profile.scss";
 
@@ -9,11 +9,15 @@ import MainLayout from "../../components/templates/MainLayout";
 import Header from "../../components/organisms/Header";
 import Footer from "../../components/organisms/Footer";
 import Button from "../../components/atoms/Button";
+import Input from "../../components/atoms/Input";
+import Label from "../../components/atoms/Label";
+import Avatar from "../../components/atoms/Avatar";
+import { getFieldError } from "../../utils/getFieldError";
 
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user, loading } = useAppSelector((state: RootState) => state.auth);
+  const { user, loading, error } = useAppSelector((state: RootState) => state.auth);
   
   const [avatar, setAvatar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -59,9 +63,11 @@ const Profile = () => {
       setIsEditingUsername(false);
       setNewUsername("");
     }
+    // NE PAS fermer l’édition si erreur, pour laisser l’erreur visible
   };
 
   const handleEditUsername = () => {
+    dispatch(clearError());
     setNewUsername(user?.username || "");
     setIsEditingUsername(true);
   };
@@ -76,7 +82,11 @@ const Profile = () => {
     return null;
   }
 
-  const avatarUrl = preview || user.avatar || "http://localhost:5000/uploads/default.webp";
+  const getAvatarUrl = (avatar: string | undefined) =>
+    avatar && avatar.startsWith("http")
+      ? avatar
+      : `http://localhost:5000/uploads/${avatar || "default.webp"}`;
+  const avatarUrl = preview || getAvatarUrl(user.avatar);
 
   // Utilise user.avatar directement (déjà une URL complète)
   return (
@@ -97,17 +107,13 @@ const Profile = () => {
             <h1 className="profile__title">Mon Profil</h1>
             
             <div className="profile__avatar-section">
-              <img 
-                src={avatarUrl} 
-                alt={user.username}
-                className="profile__avatar"
-              />
+              <Avatar src={avatarUrl} alt={user.username} size="lg" className="profile__avatar" />
               
               <div className="profile__upload">
-                <label htmlFor="avatar-input" className="profile__upload-label">
+                <Label htmlFor="avatar-input" className="profile__upload-label">
                   Changer la photo
-                </label>
-                <input
+                </Label>
+                <Input
                   id="avatar-input"
                   type="file"
                   accept="image/*"
@@ -128,18 +134,33 @@ const Profile = () => {
                 <span className="profile__label">Nom d'utilisateur</span>
                 {isEditingUsername ? (
                   <div className="profile__edit-group">
-                    <input
+                    <Label htmlFor="username-edit" required>
+                      Nouveau nom d'utilisateur
+                    </Label>
+                    <Input
+                      id="username-edit"
                       type="text"
                       value={newUsername}
                       onChange={(e) => setNewUsername(e.target.value)}
                       className="profile__input"
                       autoFocus
+                      placeholder="Nouveau nom d'utilisateur"
+                      error={!!getFieldError(error ?? null, 'username')}
                     />
+                    {/* Affichage de l'erreur de validation du username */}
+                    {getFieldError(error ?? null, 'username') && (
+                      <div className="profile__field-error" role="alert">
+                        {getFieldError(error ?? null, 'username')}
+                      </div>
+                    )}
                     <div className="profile__edit-actions">
                       <Button size="sm" onClick={handleUpdateUsername} disabled={loading}>
                         ✓
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => setIsEditingUsername(false)}>
+                      <Button size="sm" variant="outline" onClick={() => {
+                        dispatch(clearError());
+                        setIsEditingUsername(false);
+                      }}>
                         ✕
                       </Button>
                     </div>

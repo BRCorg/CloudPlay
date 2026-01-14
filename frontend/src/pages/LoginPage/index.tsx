@@ -21,7 +21,7 @@ const LoginPage = () => {
   };
 
   // Passe tous les messages d'erreur (tableau ou string) à LoginForm
-  const errorMessage = error?.details || error?.error || error;
+  // Utilise getFieldError pour extraire les erreurs de champ (si besoin d'affichage direct ici)
 
   return (
     <MainLayout>
@@ -32,7 +32,7 @@ const LoginPage = () => {
             <h1 className="login-page__title">Connexion</h1>
           </div>
 
-          <LoginForm onSubmit={handleSubmit} error={errorMessage} loading={loading} />
+          <LoginForm onSubmit={handleSubmit} error={error} loading={loading} />
         </div>
       </section>
     </MainLayout>

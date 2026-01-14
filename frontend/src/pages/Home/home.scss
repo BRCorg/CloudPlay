@@ -1,4 +1,5 @@
-@import "../../../public/assets/scss/variables";
+@use "sass:color";
+@use "../../../public/assets/scss/variables" as *;
 
 .home {
   position: relative;
@@ -9,7 +10,7 @@
   background:
     radial-gradient(circle at 20% 10%, rgba($color-turquoise, 0.12) 0%, transparent 40%),
     radial-gradient(circle at 80% 90%, rgba($color-navy-700, 0.08) 0%, transparent 45%),
-    linear-gradient(135deg, $color-off-white 0%, $color-light-bg 50%, darken($color-light-bg, 3%) 100%);
+    linear-gradient(135deg, $color-off-white 0%, $color-light-bg 50%, color.adjust($color-light-bg, $lightness: -3%) 100%);
 }
 
 .home__container {
@@ -218,7 +219,7 @@
       0 12px 24px rgba($color-turquoise, 0.2),
       0 20px 56px rgba($color-navy-700, 0.12);
     border-color: rgba($color-turquoise, 0.35);
-    background: linear-gradient(135deg, $color-white 0%, lighten($color-turquoise-light, 20%) 100%);
+    background: linear-gradient(135deg, $color-white 0%, color.adjust($color-turquoise-light, $lightness: 20%) 100%);
 
     &::after {
       opacity: 1;
@@ -272,7 +273,7 @@
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background: linear-gradient(135deg, lighten($color-turquoise-light, 25%) 0%, lighten($color-turquoise-light, 22%) 100%);
+    background: linear-gradient(135deg, color.adjust($color-turquoise-light, $lightness: 25%) 0%, color.adjust($color-turquoise-light, $lightness: 22%) 100%);
     border-color: rgba($color-turquoise, 0.3);
     transform: translateX(6px);
     box-shadow: 0 2px 8px rgba($color-turquoise, 0.15);

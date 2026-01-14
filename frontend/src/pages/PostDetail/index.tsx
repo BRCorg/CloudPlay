@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { getComments, updateComment, deleteComment, toggleLikeComment } from "../../redux/comments/commentsSlice";
+import { toggleLikePost } from "../../redux/posts/postsSlice";
 import "./postDetail.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -64,6 +65,12 @@ const PostDetail = () => {
     dispatch(toggleLikeComment(commentId));
   };
 
+  const handleLikePost = async () => {
+    if (id) {
+      await dispatch(toggleLikePost(id));
+    }
+  };
+
   return (
     <MainLayout
       header={
@@ -93,10 +100,10 @@ const PostDetail = () => {
               image={post.image ? `http://localhost:5000/uploads/${post.image}` : undefined}
 
               timestamp={new Date(post.createdAt).toLocaleDateString()}
-              likes={0}
+              likes={post.likes?.length || 0}
               comments={comments.length}
-              liked={false}
-              onLike={() => {}}
+              liked={user ? post.likes?.includes(user._id) || false : false}
+              onToggleLike={handleLikePost}
               onOpen={() => {}}
             />
           </div>

@@ -1,4 +1,4 @@
-@import '../../../public/assets/scss/variables';
+@use '../../../public/assets/scss/variables' as *;
 
 .profile-setup {
   min-height: 100vh;

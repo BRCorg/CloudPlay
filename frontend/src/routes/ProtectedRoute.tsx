@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     (state) => state.auth
   );
 
-  // ⏳ On attend la réponse de /me
+  //  On attend la réponse de /me
   if (!hasFetchedMe) {
     return <p>Chargement...</p>;
   }

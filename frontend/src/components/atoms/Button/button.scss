@@ -1,4 +1,4 @@
-@import "../../../../public/assets/scss/variables";
+@use "../../../../public/assets/scss/variables" as *;
 
 .button {
   display: inline-flex;
@@ -14,6 +14,7 @@
 
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 
   transition: background $duration-base $ease-out,
               border-color $duration-base $ease-out,

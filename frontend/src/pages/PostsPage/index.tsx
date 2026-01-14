@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { getPosts, createPost, deletePost } from "../../redux/posts/postsSlice";
+import { getPosts, deletePost, toggleLikePost } from "../../redux/posts/postsSlice";
 import "./postsPage.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -24,8 +24,8 @@ const PostsPage = () => {
     dispatch(getPosts());
   }, [dispatch]);
 
-  const handleToggleLike = (id: string, next: boolean) => {
-    // TODO: implémenter l'API like
+  const handleToggleLike = async (id: string) => {
+    await dispatch(toggleLikePost(id));
   };
 
   const handleOpenPost = (id: string) => {
@@ -94,14 +94,14 @@ const PostsPage = () => {
                 avatar: post.author?.avatar ? `http://localhost:5000/uploads/${post.author.avatar}` : undefined,
               },
               image: post.image ? `http://localhost:5000/uploads/${post.image}` : undefined,
-              likes: 0,
+              likes: post.likes?.length || 0,
               comments: post.commentCount || 0,
               timestamp: new Date(post.createdAt).toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
               }),
-              liked: false,
+              liked: user ? post.likes?.includes(user._id) || false : false,
               isAuthor: user?._id === post.author?._id,
               onEdit: () => handleEditPost(post._id),
               onDelete: () => handleDeletePost(post._id),

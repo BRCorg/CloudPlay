@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import type { CommentState, CreateCommentPayload, UpdateCommentPayload, IComment } from './types';
+import type { CommentState, CreateCommentPayload, UpdateCommentPayload } from './types';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -27,11 +27,20 @@ export const createComment = createAsyncThunk(
         { content }
       );
       return response.data;
-    } catch (err: any) {
-      if (err?.response?.data?.details && Array.isArray(err.response.data.details)) {
-        return rejectWithValue(err.response.data.details.map((issue: any) => issue.message));
+    } catch (err) {
+      if (
+        typeof err === 'object' &&
+        err &&
+        'response' in err &&
+        (err as { response?: { data?: { details?: unknown } } }).response?.data?.details &&
+        Array.isArray((err as { response?: { data?: { details?: unknown[] } } }).response?.data?.details)
+      ) {
+        return rejectWithValue((err as { response: { data: { details: { message: string }[] } } }).response.data.details.map((issue) => issue.message));
       }
-      return rejectWithValue(err?.response?.data?.error || err.message || 'Erreur création commentaire');
+      if (typeof err === 'object' && err && 'response' in err) {
+        return rejectWithValue((err as { response?: { data?: { error?: string } } }).response?.data?.error || (err as Error).message || 'Erreur création commentaire');
+      }
+      return rejectWithValue((err as Error).message || 'Erreur création commentaire');
     }
   }
 );

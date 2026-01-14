@@ -1,4 +1,6 @@
-@import "../../../../public/assets/scss/variables";
+@use "../../../../public/assets/scss/variables" as *;
+
+
 
 .post-card {
   background: $color-white;
