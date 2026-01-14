@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes";
+import postsRoutes from "./routes/postsRoutes";
 import { errorMiddleware } from "./middlewares/errorMiddleware";
 import cors from "cors";
 import path from "path";
@@ -20,6 +21,7 @@ app.use(cors({
 
 
 app.use("/api/auth", authRoutes);
+app.use("/api/posts", postsRoutes);
 
 app.use(errorMiddleware);
 

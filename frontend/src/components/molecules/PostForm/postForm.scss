@@ -83,6 +83,35 @@
   gap: $space-3;
 }
 
+.post-form__file-label {
+  cursor: pointer;
+}
+
+.post-form__file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  
+  padding: $space-3 $space-4;
+  border: $border-width solid $border-color;
+  border-radius: $radius-md;
+  
+  background: $color-white;
+  color: $color-black;
+  
+  font-size: $text-sm;
+  font-weight: $weight-medium;
+  
+  cursor: pointer;
+  transition: all $duration-base $ease-out;
+  
+  &:hover {
+    background: $color-gray-50;
+    border-color: $color-gray-400;
+  }
+}
+
 .post-form__submit {
   display: inline-flex;
   align-items: center;
