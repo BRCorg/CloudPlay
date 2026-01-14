@@ -77,12 +77,13 @@ frontend/
 
 ## 📜 Scripts disponibles
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Lance le serveur de développement avec HMR |
-| `npm run build` | Compile TypeScript et build pour la production |
-| `npm run preview` | Prévisualise le build de production |
-| `npm run lint` | Vérifie le code avec ESLint |
+`npm run dev` - Lance le serveur de développement avec HMR 
+
+`npm run build` - Compile TypeScript et build pour la production 
+
+`npm run preview` - Prévisualise le build de production 
+
+`npm run lint` - Vérifie le code avec ESLint 
 
 ## 🎨 Architecture des composants (Atomic Design)
 
@@ -109,6 +110,28 @@ Le projet utilise l'architecture **Atomic Design** pour organiser les composants
 - `vite` - Build tool et serveur de développement
 - `typescript` - Typage statique
 - `eslint` - Linting du code
+
+## 🖼️ Upload d'images (flux recommandé)
+
+Le frontend suit le pattern suivant pour les images (avatar ou image de post) :
+
+1. Uploader l'image séparément en `POST` vers l'endpoint d'upload (`/api/upload/avatar` ou `/api/upload/post`) avec un `FormData` contenant le champ `file`.
+2. Le backend renvoie `201` et un objet `{ url, filename }` (URL publique vers `/uploads/<filename>`).
+3. Inclure la `url` reçue dans le payload JSON lors de la création de l'entité (ex: `avatar` pour l'inscription, `image` pour le post).
+
+Exemple minimal (axios) :
+```ts
+const form = new FormData()
+form.append('file', file)
+const uploadRes = await axios.post(`${import.meta.env.VITE_API_URL}/upload/avatar`, form)
+const avatarUrl = uploadRes.data.url
+await axios.post(`${import.meta.env.VITE_API_URL}/register`, { username, email, password, avatar: avatarUrl })
+```
+
+Remarques :
+- L'API attend le champ `file` (middleware `.single('file')`).
+- Le code client peut aussi envoyer directement un `FormData` contenant tous les champs (champs textes + `file`) si le backend applique le middleware d'upload sur la route cible.
+- Pour la redirection côté client, utilisez `react-router` (`useNavigate`) ou `window.location.href`.
 
 ## 🔧 Configuration ESLint
 
