@@ -11,22 +11,22 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-// Get comments for a post
+//---- voir les commentaires pour un post
 router.get('/posts/:postId/comments', getComments);
 
-// Get comment count for a post
+//--- nombre de commentaires pour un post
 router.get('/posts/:postId/comments/count', getCommentCount);
 
-// Create comment (auth required)
+//--- ajouter un commentaire (auth required)
 router.post('/posts/:postId/comments', authMiddleware, createComment);
 
-// Update comment (auth required)
+//--- mettre à jour un commentaire (auth required)
 router.put('/comments/:commentId', authMiddleware, updateComment);
 
-// Delete comment (auth required)
+//--- supprimer un commentaire (auth required)
 router.delete('/comments/:commentId', authMiddleware, deleteComment);
 
-// Toggle like on comment (auth required)
+//--- like un commentaire (auth required)
 router.post('/comments/:commentId/like', authMiddleware, toggleLikeComment);
 
 export default router;

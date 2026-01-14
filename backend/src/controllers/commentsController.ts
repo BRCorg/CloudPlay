@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Comment from '../models/Comment';
 
-// Get comments for a post
+// voir commentaires pour un post
 export const getComments = async (req: Request, res: Response): Promise<void> => {
   try {
     const { postId } = req.params;
@@ -17,7 +17,7 @@ export const getComments = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
-// Create comment
+// créer commentaire
 export const createComment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { postId } = req.params;
@@ -46,7 +46,7 @@ export const createComment = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Update comment
+// mettre à jour un commentaire
 export const updateComment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { commentId } = req.params;
@@ -79,7 +79,7 @@ export const updateComment = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Delete comment
+// supprimer un commentaire
 export const deleteComment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { commentId } = req.params;
@@ -106,7 +106,7 @@ export const deleteComment = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Toggle like on comment
+// like un commentaire
 export const toggleLikeComment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { commentId } = req.params;
@@ -122,10 +122,10 @@ export const toggleLikeComment = async (req: Request, res: Response): Promise<vo
     const likeIndex = comment.likes.indexOf(userId);
 
     if (likeIndex > -1) {
-      // Unlike
+      // unlike
       comment.likes.splice(likeIndex, 1);
     } else {
-      // Like
+      // like
       comment.likes.push(userId);
     }
 
@@ -139,7 +139,7 @@ export const toggleLikeComment = async (req: Request, res: Response): Promise<vo
   }
 };
 
-// Get comment count for a post
+// nombre de commentaires pour un post
 export const getCommentCount = async (req: Request, res: Response): Promise<void> => {
   try {
     const { postId } = req.params;

@@ -64,6 +64,19 @@ export const deletePost = createAsyncThunk(
     }
 );
 
+// Thunk pour toggle like sur un post
+export const toggleLikePost = createAsyncThunk(
+    "posts/toggleLikePost",
+    async (postId: string, { rejectWithValue }) => {
+        try {
+            const res = await api.post(`/api/posts/${postId}/like`);
+            return res.data;
+        } catch (err: any) {
+            return rejectWithValue(err?.response?.data?.message || err.message || "Erreur like post");
+        }
+    }
+);
+
 // Thunk pour mettre à jour un post
 export const updatePost = createAsyncThunk(
     "posts/updatePost",
@@ -142,6 +155,12 @@ const postSlice = createSlice({
             .addCase(updatePost.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(toggleLikePost.fulfilled, (state, action) => {
+                const index = state.posts.findIndex((p) => p._id === action.payload._id);
+                if (index !== -1) {
+                    state.posts[index] = action.payload;
+                }
             });
     },
 });

@@ -59,20 +59,30 @@
   padding: $space-1 $space-2;
   cursor: pointer;
   font-size: $text-sm;
-  color: $color-text-muted;
+  color: $color-gray-400;
   transition: all $duration-fast $ease;
   border-radius: $radius-sm;
   display: flex;
   align-items: center;
   gap: $space-1;
 
-  &:hover {
+  &:hover:not(.comment-item__like--active) {
     background: $color-gray-100;
   }
 
   &--active {
     color: $color-error;
+
+    &:hover {
+      opacity: 0.8;
+    }
   }
+}
+
+.comment-item__like-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 .comment-item__action-btn {
