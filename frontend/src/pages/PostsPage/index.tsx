@@ -95,7 +95,7 @@ const PostsPage = () => {
               },
               image: post.image ? `http://localhost:5000/uploads/${post.image}` : undefined,
               likes: 0,
-              comments: 0,
+              comments: post.commentCount || 0,
               timestamp: new Date(post.createdAt).toLocaleDateString("fr-FR", {
                 day: "numeric",
                 month: "short",

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Post } from "../models/Post";
+import Comment from "../models/Comment";
 
 export const createPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -25,7 +26,19 @@ export const getPosts = async (req: Request, res: Response, next: NextFunction) 
     const posts = await Post.find()
       .populate("author", "username avatar")
       .sort({ createdAt: -1 });
-    res.json({ posts });
+    
+    // Add comment count to each post
+    const postsWithCommentCount = await Promise.all(
+      posts.map(async (post) => {
+        const commentCount = await Comment.countDocuments({ post: post._id });
+        return {
+          ...post.toObject(),
+          commentCount,
+        };
+      })
+    );
+    
+    res.json({ posts: postsWithCommentCount });
   } catch (err) {
     next(err);
   }

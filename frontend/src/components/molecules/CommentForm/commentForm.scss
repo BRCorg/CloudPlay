@@ -1,0 +1,29 @@
+@use "../../../../public/assets/scss/variables" as *;
+
+.comment-form {
+  display: flex;
+  gap: $space-3;
+  padding: $space-4;
+  background: $color-bg-secondary;
+  border-radius: $radius-md;
+}
+
+.comment-form__header {
+  flex-shrink: 0;
+}
+
+.comment-form__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.comment-form__content textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.comment-form__content button {
+  align-self: flex-end;
+}

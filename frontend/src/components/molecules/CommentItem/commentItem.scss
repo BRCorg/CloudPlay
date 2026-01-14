@@ -1,30 +1,22 @@
-@import "../../../../public/assets/scss/variables";
+@use "../../../../public/assets/scss/variables" as *;
 
 .comment-item {
   display: flex;
-  gap: $space-4;
+  gap: $space-3;
   padding: $space-4 0;
-
   border-bottom: $border-width solid $border-color;
 
   &:last-child {
     border-bottom: none;
   }
-
-  &--nested {
-    padding-left: $space-6;
-  }
-
-  &--highlighted {
-    background: $color-gray-50;
-    border-radius: $radius-md;
-    padding: $space-4;
-  }
 }
 
-.comment-item__body {
+.comment-item__avatar {
+  flex-shrink: 0;
+}
+
+.comment-item__content {
   flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: $space-2;
@@ -37,30 +29,21 @@
 }
 
 .comment-item__author {
-  padding: 0;
-  background: none;
-  border: none;
-
+  font-weight: $weight-semibold;
+  color: $color-text-primary;
   font-size: $text-sm;
-  font-weight: $weight-medium;
-  color: $color-black;
-
-  cursor: pointer;
-
-  &:focus-visible {
-    @include focus-ring;
-  }
 }
 
-.comment-item__timestamp {
-  font-size: $text-sm;
-  color: $color-gray-600;
+.comment-item__time {
+  font-size: $text-xs;
+  color: $color-text-muted;
 }
 
 .comment-item__text {
   margin: 0;
-  color: $color-gray-700;
-  line-height: $leading-normal;
+  color: $color-text-secondary;
+  line-height: $leading-relaxed;
+  font-size: $text-sm;
 }
 
 .comment-item__actions {
@@ -71,12 +54,57 @@
 }
 
 .comment-item__like {
-  display: inline-flex;
+  background: none;
+  border: none;
+  padding: $space-1 $space-2;
+  cursor: pointer;
+  font-size: $text-sm;
+  color: $color-text-muted;
+  transition: all $duration-fast $ease;
+  border-radius: $radius-sm;
+  display: flex;
   align-items: center;
   gap: $space-1;
+
+  &:hover {
+    background: $color-gray-100;
+  }
+
+  &--active {
+    color: $color-error;
+  }
 }
 
-.comment-item__count {
-  font-size: $text-sm;
-  color: $color-gray-600;
+.comment-item__action-btn {
+  background: none;
+  border: none;
+  padding: $space-1 $space-2;
+  cursor: pointer;
+  font-size: $text-xs;
+  color: $color-text-muted;
+  transition: all $duration-fast $ease;
+  border-radius: $radius-sm;
+
+  &:hover {
+    background: $color-gray-100;
+    color: $color-text-primary;
+  }
+
+  &--delete:hover {
+    background: rgba($color-error, 0.1);
+    color: $color-error;
+  }
 }
+
+.comment-item__edit {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.comment-item__edit-actions {
+  display: flex;
+  gap: $space-2;
+  align-self: flex-end;
+}
+

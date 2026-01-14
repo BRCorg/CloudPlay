@@ -1,0 +1,17 @@
+@use "../../../../public/assets/scss/variables" as *;
+
+.comment-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-list--empty {
+  padding: $space-8 $space-4;
+  text-align: center;
+}
+
+.comment-list__empty-text {
+  margin: 0;
+  color: $color-text-muted;
+  font-size: $text-sm;
+}

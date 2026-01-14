@@ -3,6 +3,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../redux/auth/authSlice";
 import postReducer from "../redux/posts/postsSlice";
+import commentsReducer from "../redux/comments/commentsSlice";
 
 
 // D'abord, on configure le store avec les différents slices
@@ -10,6 +11,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     posts: postReducer,
+    comments: commentsReducer,
   },
 });
 

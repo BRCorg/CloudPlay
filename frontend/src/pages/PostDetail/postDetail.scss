@@ -1,4 +1,4 @@
-@import "../../../public/assets/scss/variables";
+@use "../../../public/assets/scss/variables" as *;
 
 .post-detail {
   padding: $space-8 0 $space-12;
@@ -24,8 +24,18 @@
   border-radius: $radius-lg;
   background: $color-white;
   padding: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
 
   @media (max-width: 640px) {
     padding: $space-4;
   }
+}
+
+.post-detail__comments-title {
+  margin: 0;
+  font-size: $text-xl;
+  font-weight: $weight-semibold;
+  color: $color-text-primary;
 }

@@ -10,6 +10,7 @@ export interface Post {
     username: string;
     avatar?: string;
   };
+  commentCount?: number;
   createdAt: string;
   updatedAt: string;
 }

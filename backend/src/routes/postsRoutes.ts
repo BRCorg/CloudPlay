@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { createPost, getPosts, updatePost, deletePost } from "../controllers/postsController";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { uploadSingleFileMiddleware } from "../middlewares/validateUpload";
