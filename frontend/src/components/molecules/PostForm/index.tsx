@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { createPost } from "../../../redux/posts/postsSlice";
+import { createPost, updatePost } from "../../../redux/posts/postsSlice";
 import "./postForm.scss";
 
 import Avatar from "../../atoms/Avatar";
@@ -16,16 +16,28 @@ type CurrentUser = {
 
 export type PostFormProps = {
   user?: CurrentUser;
+  editMode?: boolean;
+  postId?: string;
+  initialTitle?: string;
+  initialContent?: string;
+  initialImage?: string;
+  onCancel?: () => void;
 };
 
-const PostForm = ({ user }: PostFormProps) => {
+const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialContent = "", initialImage, onCancel }: PostFormProps) => {
   const dispatch = useAppDispatch();
   const { loading } = useAppSelector((state) => state.posts);
   
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [title, setTitle] = useState(initialTitle);
+  const [content, setContent] = useState(initialContent);
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(initialImage || null);
+
+  useEffect(() => {
+    setTitle(initialTitle);
+    setContent(initialContent);
+    setPreview(initialImage || null);
+  }, [initialTitle, initialContent, initialImage]);
 
   const canSubmit = title.trim().length > 0 && content.trim().length > 0 && !loading;
 
@@ -45,16 +57,26 @@ const PostForm = ({ user }: PostFormProps) => {
     e.preventDefault();
     if (!canSubmit) return;
 
-    await dispatch(createPost({
-      title: title.trim(),
-      content: content.trim(),
-      file: file || undefined,
-    }));
+    if (editMode && postId) {
+      await dispatch(updatePost({
+        id: postId,
+        title: title.trim(),
+        content: content.trim(),
+        file: file || undefined,
+      }));
+      onCancel?.();
+    } else {
+      await dispatch(createPost({
+        title: title.trim(),
+        content: content.trim(),
+        file: file || undefined,
+      }));
 
-    setTitle("");
-    setContent("");
-    setFile(null);
-    setPreview(null);
+      setTitle("");
+      setContent("");
+      setFile(null);
+      setPreview(null);
+    }
   };
 
   return (
@@ -105,7 +127,7 @@ const PostForm = ({ user }: PostFormProps) => {
       <div className="post-form__actions">
         <label className="post-form__file-label">
           <span className="post-form__file-button">
-            📷 Choisir fichier
+             Choisir image
           </span>
           <input
             type="file"
@@ -115,10 +137,16 @@ const PostForm = ({ user }: PostFormProps) => {
           />
         </label>
 
+        {editMode && onCancel && (
+          <Button type="button" onClick={onCancel} variant="secondary">
+            Annuler
+          </Button>
+        )}
+
         <Button type="submit" disabled={!canSubmit}>
           <span className="post-form__submit">
             {loading && <Spinner size="sm" />}
-            {loading ? "Posting..." : "Post"}
+            {loading ? (editMode ? "Updating..." : "Posting...") : (editMode ? "Update" : "Post")}
           </span>
         </Button>
       </div>

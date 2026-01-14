@@ -34,3 +34,17 @@
 .posts-page__create {
   width: 100%;
 }
+
+.posts-page__edit {
+  background: $color-bg-secondary;
+  border-radius: $radius-lg;
+  padding: $space-6;
+  border: 2px solid $color-primary;
+}
+
+.posts-page__edit-title {
+  margin: 0 0 $space-4;
+  font-size: $text-xl;
+  font-weight: $weight-semibold;
+  color: $color-primary;
+}

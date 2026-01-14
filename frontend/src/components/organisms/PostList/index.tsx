@@ -16,6 +16,9 @@ export type Post = {
   comments?: number;
   timestamp?: string;
   liked?: boolean;
+  isAuthor?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 };
 
 export type PostListProps = {
@@ -62,6 +65,9 @@ const PostList = ({ posts, loading = false, onOpenPost, onToggleLike }: PostList
           liked={p.liked ?? false}
           onOpen={onOpenPost ? () => onOpenPost(p.id) : undefined}
           onToggleLike={onToggleLike ? (next) => onToggleLike(p.id, next) : undefined}
+          isAuthor={p.isAuthor}
+          onEdit={p.onEdit}
+          onDelete={p.onDelete}
         />
       ))}
     </div>

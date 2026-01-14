@@ -30,3 +30,51 @@ export const getPosts = async (req: Request, res: Response, next: NextFunction) 
     next(err);
   }
 };
+
+export const updatePost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { title, content } = req.body;
+    const userId = (req as any).user.id;
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post non trouvé" });
+    }
+
+    if (post.author.toString() !== userId) {
+      return res.status(403).json({ error: "Non autorisé" });
+    }
+
+    post.title = title || post.title;
+    post.content = content || post.content;
+    if (req.file) {
+      post.image = req.file.filename;
+    }
+
+    await post.save();
+    await post.populate("author", "username avatar");
+    res.json({ post });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deletePost = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = (req as any).user.id;
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post non trouvé" });
+    }
+
+    if (post.author.toString() !== userId) {
+      return res.status(403).json({ error: "Non autorisé" });
+    }
+
+    await post.deleteOne();
+    res.json({ message: "Post supprimé" });
+  } catch (err) {
+    next(err);
+  }
+};

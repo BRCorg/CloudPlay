@@ -20,6 +20,9 @@ export type PostCardProps = {
   onToggleLike?: (next: boolean) => void;
 
   onOpen?: () => void;
+  isAuthor?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 };
 
 const PostCard = ({
@@ -33,6 +36,9 @@ const PostCard = ({
   liked = false,
   onToggleLike,
   onOpen,
+  isAuthor = false,
+  onEdit,
+  onDelete,
 }: PostCardProps) => {
   const canLike = Boolean(onToggleLike);
 
@@ -51,21 +57,63 @@ const PostCard = ({
           <h3 className="post-card__title">{title}</h3>
           <p className="post-card__text">{content}</p>
         </div>
-
-        {image && <img className="post-card__image" src={image} alt={title} />}
       </button>
 
-      <footer className="post-card__footer">
-        {canLike && (
-          <span className="post-card__like">
-            <LikeIcon liked={liked} onClick={() => onToggleLike?.(!liked)} />
-            {likes > 0 && <span className="post-card__count">{likes}</span>}
-          </span>
-        )}
+      {image && (
+        <img
+          className="post-card__image"
+          src={image}
+          alt={title}
+          loading="lazy"
+        />
+      )}
 
-        <span className="post-card__comments" aria-label="Comments">
-          💬 {comments}
-        </span>
+      <footer className="post-card__footer">
+        <div className="post-card__footer-left">
+          {canLike && (
+            <span className="post-card__like">
+              <LikeIcon liked={liked} onClick={() => onToggleLike?.(!liked)} />
+              {likes > 0 && <span className="post-card__count">{likes}</span>}
+            </span>
+          )}
+
+          <span className="post-card__comments" aria-label="Comments">
+            💬 {comments}
+          </span>
+        </div>
+
+        {isAuthor && (
+          <div className="post-card__actions">
+            {onEdit && (
+              <button
+                type="button"
+                className="post-card__action-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit();
+                }}
+                title="Modifier"
+              >
+                ✏️
+              </button>
+            )}
+            {onDelete && (
+              <button
+                type="button"
+                className="post-card__action-btn post-card__action-btn--delete"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.confirm("Voulez-vous vraiment supprimer ce post ?")) {
+                    onDelete();
+                  }
+                }}
+                title="Supprimer"
+              >
+                🗑️
+              </button>
+            )}
+          </div>
+        )}
       </footer>
     </article>
   );

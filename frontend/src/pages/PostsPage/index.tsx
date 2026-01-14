@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { getPosts, createPost } from "../../redux/posts/postsSlice";
+import { getPosts, createPost, deletePost } from "../../redux/posts/postsSlice";
 import "./postsPage.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -17,6 +17,8 @@ const PostsPage = () => {
   
   const user = useAppSelector((state) => state.auth.user);
   const { posts, loading } = useAppSelector((state) => state.posts);
+  
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(getPosts());
@@ -29,6 +31,16 @@ const PostsPage = () => {
   const handleOpenPost = (id: string) => {
     navigate(`/posts/${id}`);
   };
+
+  const handleEditPost = (id: string) => {
+    setEditingPostId(id);
+  };
+
+  const handleDeletePost = async (id: string) => {
+    await dispatch(deletePost(id));
+  };
+
+  const editingPost = posts.find(p => p._id === editingPostId);
 
   return (
     <MainLayout
@@ -52,9 +64,24 @@ const PostsPage = () => {
           </header>
 
           <div className="posts-page__create">
-            <PostForm
-              user={user ? { name: user.username, avatar: user.avatar } : undefined}
-            />
+            {editingPost ? (
+              <div className="posts-page__edit">
+                <h3 className="posts-page__edit-title">Modifier le post</h3>
+                <PostForm
+                  user={user ? { name: user.username, avatar: user.avatar } : undefined}
+                  editMode
+                  postId={editingPost._id}
+                  initialTitle={editingPost.title}
+                  initialContent={editingPost.content}
+                  initialImage={editingPost.image ? `http://localhost:5000/uploads/${editingPost.image}` : undefined}
+                  onCancel={() => setEditingPostId(null)}
+                />
+              </div>
+            ) : (
+              <PostForm
+                user={user ? { name: user.username, avatar: user.avatar } : undefined}
+              />
+            )}
           </div>
 
           <PostList
@@ -75,6 +102,9 @@ const PostsPage = () => {
                 year: "numeric",
               }),
               liked: false,
+              isAuthor: user?._id === post.author?._id,
+              onEdit: () => handleEditPost(post._id),
+              onDelete: () => handleDeletePost(post._id),
             }))}
             loading={loading}
             onOpenPost={handleOpenPost}
