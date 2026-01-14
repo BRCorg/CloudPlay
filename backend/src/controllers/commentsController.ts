@@ -82,35 +82,47 @@ export const deleteComment = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-// ----- Toggle like sur un commentaire
-export const toggleLikeComment = async (req: Request, res: Response, next: NextFunction) => {
+// like un commentaire
+export const toggleLikeComment = async (req: Request, res: Response): Promise<void> => {
   try {
     const { commentId } = req.params;
     const userId = (req as any).user.id;
 
     const comment = await Comment.findById(commentId);
-    if (!comment) return res.status(404).json({ error: "Commentaire non trouvé" });
+
+    if (!comment) {
+      res.status(404).json({ message: 'Comment not found' });
+      return;
+    }
 
     const likeIndex = comment.likes.indexOf(userId);
-    if (likeIndex > -1) comment.likes.splice(likeIndex, 1);
-    else comment.likes.push(userId);
+
+    if (likeIndex > -1) {
+      // unlike
+      comment.likes.splice(likeIndex, 1);
+    } else {
+      // like
+      comment.likes.push(userId);
+    }
 
     await comment.save();
-    await comment.populate("author", "username avatar");
+    await comment.populate('author', 'username avatar');
 
     res.json(comment);
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-// ----- Récupérer le nombre de commentaires pour un post
-export const getCommentCount = async (req: Request, res: Response, next: NextFunction) => {
+// nombre de commentaires pour un post
+export const getCommentCount = async (req: Request, res: Response): Promise<void> => {
   try {
     const { postId } = req.params;
     const count = await Comment.countDocuments({ post: postId });
     res.json({ count });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    console.error('Error getting comment count:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

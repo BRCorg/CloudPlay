@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "../../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { createComment } from "../../../redux/comments/commentsSlice";
+import { getFieldError } from "../../../utils/getFieldError";
 import "./commentForm.scss";
 
 import Avatar from "../../atoms/Avatar";
@@ -21,16 +22,20 @@ const CommentForm = ({ postId, user }: CommentFormProps) => {
   const dispatch = useAppDispatch();
   const [content, setContent] = useState("");
 
+  const error = useAppSelector((state) => state.comments.error);
+  const contentError = getFieldError(error, "content");
   const canSubmit = content.trim().length > 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
 
-    await dispatch(createComment({
-      postId,
-      content: content.trim(),
-    }));
+    await dispatch(
+      createComment({
+        postId,
+        content: content.trim(),
+      })
+    );
 
     setContent("");
   };
@@ -42,7 +47,7 @@ const CommentForm = ({ postId, user }: CommentFormProps) => {
           <Avatar src={user.avatar} alt={user.name} size="sm" />
         </div>
       )}
-      
+
       <div className="comment-form__content">
         <Textarea
           placeholder="Ajouter un commentaire..."
@@ -51,7 +56,11 @@ const CommentForm = ({ postId, user }: CommentFormProps) => {
           rows={2}
           required
         />
-        
+        {contentError && (
+          <p className="comment-form__error" role="alert">
+            {contentError}
+          </p>
+        )}
         <Button type="submit" disabled={!canSubmit} size="sm">
           Commenter
         </Button>

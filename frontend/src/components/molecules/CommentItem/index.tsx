@@ -11,7 +11,8 @@ export type CommentItemProps = {
   currentUserId?: string;
   onEdit: (commentId: string, content: string) => void;
   onDelete: (commentId: string) => void;
-  onLike: (commentId: string) => void;
+  onLike?: (commentId: string) => void;
+  onReply?: (commentId: string) => void;
 };
 
 const CommentItem = ({ comment, currentUserId, onEdit, onDelete, onLike }: CommentItemProps) => {
@@ -87,7 +88,7 @@ const CommentItem = ({ comment, currentUserId, onEdit, onDelete, onLike }: Comme
             <div className="comment-item__actions">
               <button 
                 className={`comment-item__like ${isLiked ? 'comment-item__like--active' : ''}`}
-                onClick={() => onLike(comment._id)}
+                onClick={() => onLike && onLike(comment._id)}
               >
                 <svg viewBox="0 0 24 24" className="comment-item__like-icon" fill={isLiked ? "currentColor" : "none"}>
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L4.22 13.45 12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

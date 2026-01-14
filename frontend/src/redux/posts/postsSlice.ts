@@ -1,7 +1,7 @@
-//--------------------- Redux slice pour la gestion des posts ---------------------//
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import type { PostState } from "./types";
+import type { AxiosError } from "axios";
 
 const API_URL = "http://localhost:5000";
 
@@ -16,8 +16,18 @@ const initialState: PostState = {
     posts: [],
 };
 
-// Thunk pour récupérer les posts
-import type { AxiosError } from "axios";
+export const getPostById = createAsyncThunk(
+    "posts/getPostById",
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const res = await api.get(`/api/posts/${id}`);
+            return res.data.post;
+        } catch (err) {
+            const error = err as AxiosError<{ error?: string }>;
+            return rejectWithValue(error.response?.data?.error || error.message || "Erreur récupération post");
+        }
+    }
+);
 
 export const getPosts = createAsyncThunk(
     "posts/getPosts",
@@ -32,7 +42,6 @@ export const getPosts = createAsyncThunk(
     }
 );
 
-// Thunk pour créer un post avec upload d'image
 export const createPost = createAsyncThunk(
     "posts/createPost",
     async (data: { title: string; content: string; file?: File }, { rejectWithValue }) => {
@@ -49,13 +58,12 @@ export const createPost = createAsyncThunk(
             });
             return res.data.post;
         } catch (err) {
-            const error = err as AxiosError<{ error?: string }>;
-            return rejectWithValue(error.response?.data?.error || error.message || "Erreur création post");
+            const error = err as AxiosError;
+            return rejectWithValue(error.response?.data || error.message || "Erreur création post");
         }
     }
 );
 
-// Thunk pour supprimer un post
 export const deletePost = createAsyncThunk(
     "posts/deletePost",
     async (postId: string, { rejectWithValue }) => {
@@ -69,7 +77,6 @@ export const deletePost = createAsyncThunk(
     }
 );
 
-// Thunk pour toggle like sur un post
 export const toggleLikePost = createAsyncThunk(
     "posts/toggleLikePost",
     async (postId: string, { rejectWithValue }) => {
@@ -83,7 +90,6 @@ export const toggleLikePost = createAsyncThunk(
     }
 );
 
-// Thunk pour mettre à jour un post
 export const updatePost = createAsyncThunk(
     "posts/updatePost",
     async (data: { id: string; title: string; content: string; file?: File }, { rejectWithValue }) => {
@@ -100,18 +106,20 @@ export const updatePost = createAsyncThunk(
             });
             return res.data.post;
         } catch (err) {
-            const error = err as AxiosError<{ error?: string }>;
-            return rejectWithValue(error.response?.data?.error || error.message || "Erreur mise à jour post");
+            const error = err as AxiosError;
+            return rejectWithValue(error.response?.data || error.message || "Erreur mise à jour post");
         }
     }
 );
 
-
-// Création du slice
 const postSlice = createSlice({
     name: "posts",
     initialState,
-    reducers: {},
+    reducers: {
+        clearPostError(state) {
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getPosts.pending, (state) => {
@@ -136,7 +144,7 @@ const postSlice = createSlice({
             })
             .addCase(createPost.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                state.error = action.payload ?? action.error ?? null;
             })
             .addCase(deletePost.pending, (state) => {
                 state.loading = true;
@@ -161,15 +169,26 @@ const postSlice = createSlice({
             })
             .addCase(updatePost.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                state.error = action.payload ?? action.error ?? null;
             })
             .addCase(toggleLikePost.fulfilled, (state, action) => {
                 const index = state.posts.findIndex((p) => p._id === action.payload._id);
                 if (index !== -1) {
                     state.posts[index] = action.payload;
                 }
+            })
+            .addCase(getPostById.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.posts.findIndex((p) => p._id === action.payload._id);
+                if (index !== -1) {
+                    state.posts[index] = action.payload;
+                } else {
+                    state.posts = [action.payload, ...state.posts];
+                }
             });
     },
 });
+
+export const { clearPostError } = postSlice.actions;
 
 export default postSlice.reducer;

@@ -38,9 +38,9 @@ export const createComment = createAsyncThunk(
         return rejectWithValue((err as { response: { data: { details: { message: string }[] } } }).response.data.details.map((issue) => issue.message));
       }
       if (typeof err === 'object' && err && 'response' in err) {
-        return rejectWithValue((err as { response?: { data?: { error?: string } } }).response?.data?.error || (err as Error).message || 'Erreur création commentaire');
+        return rejectWithValue((err as { response?: { data?: { error?: string } } }).response?.data?.error || (err as unknown as Error).message || 'Erreur création commentaire');
       }
-      return rejectWithValue((err as Error).message || 'Erreur création commentaire');
+      return rejectWithValue((err as unknown as Error).message || 'Erreur création commentaire');
     }
   }
 );

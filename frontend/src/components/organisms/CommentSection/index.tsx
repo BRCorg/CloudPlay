@@ -6,26 +6,14 @@ import Button from "../../atoms/Button";
 import Text from "../../atoms/Text";
 import Textarea from "../../atoms/InputTextArea";
 import Spinner from "../../atoms/Spinner";
+
 import CommentItem from "../../molecules/CommentItem";
+import type { IComment } from "../../../redux/comments/types";
 
-export type Comment = {
-  id: string;
-  author: {
-    name: string;
-    avatar?: string;
-  };
-  content: string;
-  timestamp: string;
-  likes?: number;
-  liked?: boolean;
-};
-
-export type CommentSectionProps = {
-  comments: Comment[];
-  user?: { name: string; avatar?: string };
-
+type CommentSectionProps = {
+  comments: IComment[];
+  user?: { _id: string; username: string; avatar?: string };
   loading?: boolean;
-
   onAdd: (content: string) => void;
   onLike?: (id: string) => void;
   onReply?: (id: string) => void;
@@ -60,7 +48,7 @@ const CommentSection = ({
 
       {user && (
         <form className="comment-section__form" onSubmit={handleSubmit}>
-          <Avatar src={user.avatar} alt={user.name} size="sm" />
+          <Avatar src={user.avatar} alt={user.username} size="sm" />
 
           <div className="comment-section__form-body">
             <Textarea
@@ -99,14 +87,12 @@ const CommentSection = ({
         <div className="comment-section__list">
           {comments.map((c) => (
             <CommentItem
-              key={c.id}
-              author={c.author}
-              content={c.content}
-              timestamp={c.timestamp}
-              likes={c.likes ?? 0}
-              liked={c.liked ?? false}
-              onLike={onLike ? () => onLike(c.id) : undefined}
-              onReply={onReply ? () => onReply(c.id) : undefined}
+              key={c._id}
+              comment={c}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              onLike={onLike ? () => onLike(c._id) : undefined}
+              onReply={onReply ? () => onReply(c._id) : undefined}
             />
           ))}
         </div>

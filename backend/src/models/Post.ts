@@ -7,6 +7,7 @@ const postSchema = new Schema(
     content: { type: String, required: true },
     image: { type: String }, // URL de l'image uploadée
     author: { type: Types.ObjectId, ref: "User", required: true }, // référence au User
+    likes: [{ type: Types.ObjectId, ref: "User" }], // tableau des users qui ont liké
   },
   { timestamps: true }
 );

@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { createPost, updatePost } from "../../../redux/posts/postsSlice";
+import { useAppDispatch } from "../../../app/hooks";
+import { createPost, updatePost, clearPostError } from "../../../redux/posts/postsSlice";
+import { getFieldError } from '../../../utils/getFieldError';
 import "./postForm.scss";
+import type { ApiError } from '../../../redux/auth/types';
 
 import Avatar from "../../atoms/Avatar";
 import Input from "../../atoms/Input";
 import Textarea from "../../atoms/InputTextArea";
 import Button from "../../atoms/Button";
 import Spinner from "../../atoms/Spinner";
+import Text from '../../atoms/Text';
+import Label from '../../atoms/Label';
 
 type CurrentUser = {
   name: string;
@@ -22,11 +26,12 @@ export type PostFormProps = {
   initialContent?: string;
   initialImage?: string;
   onCancel?: () => void;
+  error?: string | string[] | ApiError | null;
+  loading?: boolean;
 };
 
-const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialContent = "", initialImage, onCancel }: PostFormProps) => {
+const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialContent = "", initialImage, onCancel, error = null, loading = false }: PostFormProps) => {
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state) => state.posts);
   
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
@@ -34,11 +39,12 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
   const [preview, setPreview] = useState<string | null>(initialImage || null);
 
   useEffect(() => {
+    dispatch(clearPostError());
     if (title !== initialTitle) setTitle(initialTitle);
     if (content !== initialContent) setContent(initialContent);
     if (preview !== (initialImage || null)) setPreview(initialImage || null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialTitle, initialContent, initialImage]);
+  }, [initialTitle, initialContent, initialImage, dispatch]);
 
   const canSubmit = title.trim().length > 0 && content.trim().length > 0 && !loading;
 
@@ -59,13 +65,16 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
     if (!canSubmit) return;
 
     if (editMode && postId) {
-      await dispatch(updatePost({
+      const result = await dispatch(updatePost({
         id: postId,
         title: title.trim(),
         content: content.trim(),
         file: file || undefined,
       }));
-      onCancel?.();
+      // Ne ferme le formulaire que si l'update est réussie
+      if (!('error' in result)) {
+        onCancel?.();
+      }
     } else {
       await dispatch(createPost({
         title: title.trim(),
@@ -82,6 +91,17 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
 
   return (
     <form className="post-form" onSubmit={handleSubmit}>
+      {typeof error === 'string' && (
+        <Text className="text--error">{error}</Text>
+      )}
+      {Array.isArray(error) && error.length > 0 && (
+        <div>
+          {error.map((err, idx) => (
+            <Text className="text--error" key={idx}>{err}</Text>
+          ))}
+        </div>
+      )}
+
       {user && (
         <header className="post-form__header">
           <Avatar src={user.avatar} alt={user.name} size="sm" />
@@ -90,22 +110,32 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
       )}
 
       <div className="post-form__field">
+        <Label htmlFor="post-title" required>Post title</Label>
         <Input
+          id="post-title"
           placeholder="Post title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
         />
+        {getFieldError(error, 'title') && (
+          <Text className="text--error">{getFieldError(error, 'title')}</Text>
+        )}
       </div>
 
       <div className="post-form__field">
+        <Label htmlFor="post-content" required>Contenu</Label>
         <Textarea
+          id="post-content"
           placeholder="What's on your mind?"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={4}
           required
         />
+        {getFieldError(error, 'content') && (
+          <Text className="text--error">{getFieldError(error, 'content')}</Text>
+        )}
       </div>
 
       {preview && (
@@ -134,7 +164,7 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            style={{ display: "none" }}
+            className="post-form__file-input"
           />
         </label>
 

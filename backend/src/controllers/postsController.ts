@@ -1,3 +1,15 @@
+// ----- Récupérer un post par son id
+export const getPostById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const post = await Post.findById(req.params.id).populate("author", "username avatar");
+    if (!post) return res.status(404).json({ error: "Post non trouvé" });
+    // Compter les commentaires associés
+    const commentCount = await Comment.countDocuments({ post: post._id });
+    res.json({ post: { ...post.toObject(), commentCount } });
+  } catch (err) {
+    next(err);
+  }
+};
 import { Request, Response, NextFunction } from "express";
 import { Post } from "../models/Post";
 import Comment from "../models/Comment";
@@ -92,5 +104,37 @@ export const deletePost = async (req: Request, res: Response, next: NextFunction
     res.json({ message: "Post supprimé avec succès" });
   } catch (err) {
     next(err);
+  }
+};
+
+export const toggleLikePost = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { postId } = req.params;
+    const userId = (req as any).user.id;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      res.status(404).json({ message: 'Post not found' });
+      return;
+    }
+
+    const likeIndex = post.likes.indexOf(userId);
+
+    if (likeIndex > -1) {
+      // unlike
+      post.likes.splice(likeIndex, 1);
+    } else {
+      // like
+      post.likes.push(userId);
+    }
+
+    await post.save();
+    await post.populate('author', 'username avatar');
+
+    res.json(post);
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

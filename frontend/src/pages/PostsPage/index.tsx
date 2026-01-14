@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { getPosts, deletePost, toggleLikePost } from "../../redux/posts/postsSlice";
+import {
+  getPosts,
+  deletePost,
+  toggleLikePost,
+} from "../../redux/posts/postsSlice";
 import "./postsPage.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -14,15 +18,34 @@ import PostForm from "../../components/molecules/PostForm";
 const PostsPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  
+
   const user = useAppSelector((state) => state.auth.user);
-  const { posts, loading } = useAppSelector((state) => state.posts);
-  
+  const { posts, loading, error } = useAppSelector((state) => state.posts);
+  // Cast error to the correct type for PostForm
+  const postFormError = error as
+    | string
+    | string[]
+    | import("../../redux/auth/types").ApiError
+    | null;
+
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
 
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (editingPostId) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [editingPostId]);
+
+  // Clear error when switching to edit mode
+  useEffect(() => {
+    if (editingPostId) {
+      dispatch({ type: "posts/clearPostError" });
+    }
+  }, [editingPostId, dispatch]);
 
   const handleToggleLike = async (id: string) => {
     await dispatch(toggleLikePost(id));
@@ -40,7 +63,7 @@ const PostsPage = () => {
     await dispatch(deletePost(id));
   };
 
-  const editingPost = posts.find(p => p._id === editingPostId);
+  const editingPost = posts.find((p) => p._id === editingPostId);
 
   return (
     <MainLayout
@@ -68,18 +91,34 @@ const PostsPage = () => {
               <div className="posts-page__edit">
                 <h3 className="posts-page__edit-title">Modifier le post</h3>
                 <PostForm
-                  user={user ? { name: user.username, avatar: user.avatar } : undefined}
+                  user={
+                    user
+                      ? { name: user.username, avatar: user.avatar }
+                      : undefined
+                  }
                   editMode
                   postId={editingPost._id}
                   initialTitle={editingPost.title}
                   initialContent={editingPost.content}
-                  initialImage={editingPost.image ? `http://localhost:5000/uploads/${editingPost.image}` : undefined}
+                  initialImage={
+                    editingPost.image
+                      ? `http://localhost:5000/uploads/${editingPost.image}`
+                      : undefined
+                  }
                   onCancel={() => setEditingPostId(null)}
+                  error={postFormError}
+                  loading={loading}
                 />
               </div>
             ) : (
               <PostForm
-                user={user ? { name: user.username, avatar: user.avatar } : undefined}
+                user={
+                  user
+                    ? { name: user.username, avatar: user.avatar }
+                    : undefined
+                }
+                error={postFormError}
+                loading={loading}
               />
             )}
           </div>
@@ -91,9 +130,13 @@ const PostsPage = () => {
               content: post.content,
               author: {
                 name: post.author?.username || "Anonymous",
-                avatar: post.author?.avatar ? `http://localhost:5000/uploads/${post.author.avatar}` : undefined,
+                avatar: post.author?.avatar
+                  ? `http://localhost:5000/uploads/${post.author.avatar}`
+                  : undefined,
               },
-              image: post.image ? `http://localhost:5000/uploads/${post.image}` : undefined,
+              image: post.image
+                ? `http://localhost:5000/uploads/${post.image}`
+                : undefined,
               likes: post.likes?.length || 0,
               comments: post.commentCount || 0,
               timestamp: new Date(post.createdAt).toLocaleDateString("fr-FR", {

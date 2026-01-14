@@ -18,6 +18,6 @@ export interface Post {
 
 export interface PostState {
   loading: boolean;
-  error: string | null;
+  error: string | null | { [key: string]: any } | string[];
   posts: Post[];
 }

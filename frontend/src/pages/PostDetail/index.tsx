@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { getComments, updateComment, deleteComment, toggleLikeComment } from "../../redux/comments/commentsSlice";
-import { toggleLikePost } from "../../redux/posts/postsSlice";
+import { toggleLikePost, getPostById } from "../../redux/posts/postsSlice";
 import "./postDetail.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -19,7 +19,7 @@ const PostDetail = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const user = useAppSelector((state) => state.auth.user);
-  const { posts } = useAppSelector((state) => state.posts);
+  const { posts, loading } = useAppSelector((state) => state.posts);
   const { comments } = useAppSelector((state) => state.comments);
   
   const post = posts.find((p) => p._id === id);
@@ -27,10 +27,14 @@ const PostDetail = () => {
   useEffect(() => {
     if (id) {
       dispatch(getComments(id));
+      if (!post) {
+        dispatch(getPostById(id));
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
 
-  if (!post) {
+  if (!post || loading) {
     return (
       <MainLayout
         header={
@@ -45,7 +49,7 @@ const PostDetail = () => {
       >
         <div className="post-detail">
           <div className="post-detail__container">
-            <p>Post non trouvé</p>
+            <p>{loading ? "Chargement..." : "Post non trouvé"}</p>
             <Button onClick={() => navigate("/posts")}>← Retour aux posts</Button>
           </div>
         </div>
