@@ -5,6 +5,13 @@ export interface Post {
   title: string;
   content: string;
   image?: string;
+  author?: {
+    _id: string;
+    username: string;
+    avatar?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PostState {

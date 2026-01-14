@@ -1,16 +1,23 @@
 @import "../../../../public/assets/scss/variables";
 
 .post-list {
-  width: 100%;
+  column-count: 3;
+  column-gap: $space-6;
 
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: $space-6;
+  @media (max-width: 1024px) {
+    column-count: 2;
+  }
 
   @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+    column-count: 1;
   }
 }
+
+.post-card {
+  break-inside: avoid;
+  margin-bottom: $space-6;
+}
+
 
 .post-list--center,
 .post-list--empty {

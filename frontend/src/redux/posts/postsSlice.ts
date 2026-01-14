@@ -3,38 +3,85 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import type { PostState } from "./types";
 
+const API_URL = "http://localhost:5000";
+
+const api = axios.create({
+    baseURL: API_URL,
+    withCredentials: true,
+});
+
 const initialState: PostState = {
     loading: false,
     error: null,
     posts: [],
 };
 
+// Thunk pour récupérer les posts
+export const getPosts = createAsyncThunk(
+    "posts/getPosts",
+    async (_, { rejectWithValue }) => {
+        try {
+            const res = await api.get("/api/posts");
+            return res.data.posts;
+        } catch (err: any) {
+            return rejectWithValue(err?.response?.data?.error || err.message || "Erreur récupération posts");
+        }
+    }
+);
+
 // Thunk pour créer un post avec upload d'image
 export const createPost = createAsyncThunk(
     "posts/createPost",
     async (data: { title: string; content: string; file?: File }, { rejectWithValue }) => {
         try {
-            
-            // On gère l'upload de l'image si elle est fournie
-            let imageUrl: string | null = null;
-
+            const formData = new FormData();
+            formData.append("title", data.title);
+            formData.append("content", data.content);
             if (data.file) {
-                const form = new FormData();
-                form.append("file", data.file);
-                const uploadRes = await axios.post("/api/upload/post", form, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                });
-                imageUrl = uploadRes.data?.url ?? null;
+                formData.append("file", data.file);
             }
 
-            // Ensuite, on crée le post avec les données et l'URL de l'image si disponible
-            const payload = { title: data.title, content: data.content, ...(imageUrl ? { image: imageUrl } : {}) };
-            
-            // Appel API pour créer le post
-            const res = await axios.post("/api/posts", payload);
-            return res.data;
+            const res = await api.post("/api/posts", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            return res.data.post;
         } catch (err: any) {
             return rejectWithValue(err?.response?.data?.error || err.message || "Erreur création post");
+        }
+    }
+);
+
+// Thunk pour supprimer un post
+export const deletePost = createAsyncThunk(
+    "posts/deletePost",
+    async (postId: string, { rejectWithValue }) => {
+        try {
+            await api.delete(`/api/posts/${postId}`);
+            return postId;
+        } catch (err: any) {
+            return rejectWithValue(err?.response?.data?.error || err.message || "Erreur suppression post");
+        }
+    }
+);
+
+// Thunk pour mettre à jour un post
+export const updatePost = createAsyncThunk(
+    "posts/updatePost",
+    async (data: { id: string; title: string; content: string; file?: File }, { rejectWithValue }) => {
+        try {
+            const formData = new FormData();
+            formData.append("title", data.title);
+            formData.append("content", data.content);
+            if (data.file) {
+                formData.append("file", data.file);
+            }
+
+            const res = await api.put(`/api/posts/${data.id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            return res.data.post;
+        } catch (err: any) {
+            return rejectWithValue(err?.response?.data?.error || err.message || "Erreur mise à jour post");
         }
     }
 );
@@ -47,15 +94,52 @@ const postSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
+            .addCase(getPosts.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getPosts.fulfilled, (state, action) => {
+                state.loading = false;
+                state.posts = action.payload;
+            })
+            .addCase(getPosts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
             .addCase(createPost.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(createPost.fulfilled, (state, action) => {
                 state.loading = false;
-                state.posts.push(action.payload); 
+                state.posts = [action.payload, ...state.posts];
             })
             .addCase(createPost.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(deletePost.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deletePost.fulfilled, (state, action) => {
+                state.loading = false;
+                state.posts = state.posts.filter((p) => p._id !== action.payload);
+            })
+            .addCase(deletePost.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+            .addCase(updatePost.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(updatePost.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.posts.findIndex((p) => p._id === action.payload._id);
+                if (index !== -1) {
+                    state.posts[index] = action.payload;
+                }
+            })
+            .addCase(updatePost.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             });

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppSelector, useAppDispatch } from "../../app/hooks";
+import { getPosts, createPost, deletePost } from "../../redux/posts/postsSlice";
 import "./postsPage.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -9,131 +10,102 @@ import Footer from "../../components/organisms/Footer";
 
 import PostList from "../../components/organisms/PostList";
 import PostForm from "../../components/molecules/PostForm";
-import { logout } from "../../redux/auth/authSlice";
-
-const MOCK_POSTS = [
-  {
-    id: "1",
-    title: "Getting Started with React",
-    content:
-      "React is a JavaScript library for building user interfaces. Learn the basics and start building amazing apps!",
-    author: { name: "John Doe", avatar: undefined as string | undefined },
-    likes: 42,
-    comments: 12,
-    timestamp: "2 hours ago",
-    liked: false,
-  },
-  {
-    id: "2",
-    title: "TypeScript Best Practices",
-    content:
-      "TypeScript adds static typing to JavaScript. Here are some best practices to follow when using TypeScript in your projects.",
-    author: { name: "Jane Smith", avatar: undefined as string | undefined },
-    likes: 38,
-    comments: 8,
-    timestamp: "5 hours ago",
-    liked: true,
-  },
-  {
-    id: "3",
-    title: "CSS Grid vs Flexbox",
-    content:
-      "When should you use CSS Grid and when should you use Flexbox? This guide will help you decide.",
-    author: { name: "Mike Johnson", avatar: undefined as string | undefined },
-    likes: 65,
-    comments: 24,
-    timestamp: "1 day ago",
-    liked: false,
-  },
-];
 
 const PostsPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
-  const handleLogout = async () => {
-    await dispatch(logout());
-    navigate("/login");
-  };
-
-  const [posts, setPosts] = useState(MOCK_POSTS);
-  const [loading] = useState(false);
-
-  // Récupérer l'utilisateur depuis Redux
+  
   const user = useAppSelector((state) => state.auth.user);
+  const { posts, loading } = useAppSelector((state) => state.posts);
+  
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
 
-  const handleCreatePost = (data: { title: string; content: string; image?: string }) => {
-    const avatarUrl = user?.avatar || undefined;
-    const newPost = {
-      id: String(Date.now()),
-      title: data.title,
-      content: data.content,
-      author: user ? { name: user.username, avatar: avatarUrl } : { name: "Anonymous", avatar: undefined },
-      image: data.image,
-      likes: 0,
-      comments: 0,
-      timestamp: "Just now",
-      liked: false,
-    };
-    setPosts((prev) => [newPost, ...prev]);
-  };
+  useEffect(() => {
+    dispatch(getPosts());
+  }, [dispatch]);
 
   const handleToggleLike = (id: string, next: boolean) => {
-    setPosts((prev) =>
-      prev.map((p) => {
-        if (p.id !== id) return p;
-        return {
-          ...p,
-          liked: next,
-          likes: next ? (p.likes ?? 0) + 1 : Math.max(0, (p.likes ?? 0) - 1),
-        };
-      })
-    );
+    // TODO: implémenter l'API like
   };
 
   const handleOpenPost = (id: string) => {
     navigate(`/posts/${id}`);
   };
 
-  
+  const handleEditPost = (id: string) => {
+    setEditingPostId(id);
+  };
 
-  const avatarUrl = user?.avatar || undefined;
+  const handleDeletePost = async (id: string) => {
+    await dispatch(deletePost(id));
+  };
+
+  const editingPost = posts.find(p => p._id === editingPostId);
+
   return (
     <MainLayout
-  header={
-    <Header
-      user={
-        user
-          ? { name: user.username, avatar: avatarUrl }
-          : undefined
+      header={
+        <Header
+          user={user ? { name: user.username, avatar: user.avatar } : undefined}
+          onLogoClick={() => navigate("/")}
+          onProfileClick={() => navigate("/profile")}
+          onLogout={() => navigate("/login")}
+        />
       }
-      onLogoClick={() => navigate("/")}
-      onProfileClick={() => navigate("/profile")}
-      onLogout={handleLogout}
-    />
-  }
-  footer={<Footer />}
->
-
+      footer={<Footer />}
+    >
       <section className="posts-page">
         <div className="posts-page__container">
           <header className="posts-page__header">
             <h1 className="posts-page__title">Posts</h1>
             <p className="posts-page__subtitle">
-              Partagez un post et découvrez ceux des autres (données mockées).
+              Partagez un post et découvrez ceux des autres.
             </p>
           </header>
 
           <div className="posts-page__create">
-            <PostForm
-              user={user ? { name: user.username, avatar: avatarUrl } : { name: "Anonymous", avatar: undefined }}
-              onSubmit={handleCreatePost}
-              loading={loading}
-            />
+            {editingPost ? (
+              <div className="posts-page__edit">
+                <h3 className="posts-page__edit-title">Modifier le post</h3>
+                <PostForm
+                  user={user ? { name: user.username, avatar: user.avatar } : undefined}
+                  editMode
+                  postId={editingPost._id}
+                  initialTitle={editingPost.title}
+                  initialContent={editingPost.content}
+                  initialImage={editingPost.image ? `http://localhost:5000/uploads/${editingPost.image}` : undefined}
+                  onCancel={() => setEditingPostId(null)}
+                />
+              </div>
+            ) : (
+              <PostForm
+                user={user ? { name: user.username, avatar: user.avatar } : undefined}
+              />
+            )}
           </div>
 
           <PostList
-            posts={posts}
+            posts={posts.map((post) => ({
+              id: post._id,
+              title: post.title,
+              content: post.content,
+              author: {
+                name: post.author?.username || "Anonymous",
+                avatar: post.author?.avatar ? `http://localhost:5000/uploads/${post.author.avatar}` : undefined,
+              },
+              image: post.image ? `http://localhost:5000/uploads/${post.image}` : undefined,
+              likes: 0,
+              comments: 0,
+              timestamp: new Date(post.createdAt).toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              }),
+              liked: false,
+              isAuthor: user?._id === post.author?._id,
+              onEdit: () => handleEditPost(post._id),
+              onDelete: () => handleDeletePost(post._id),
+            }))}
             loading={loading}
             onOpenPost={handleOpenPost}
             onToggleLike={handleToggleLike}

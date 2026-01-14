@@ -29,6 +29,13 @@
     background: $color-gray-50;
   }
 }
+.post-card {
+  align-self: flex-start;
+}
+
+.post-card__main {
+  align-items: stretch;
+}
 
 .post-card__header {
   display: flex;
@@ -97,10 +104,40 @@
   border-top: $border-width solid $border-color;
 }
 
+.post-card__footer-left {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
 .post-card__like {
   display: inline-flex;
   align-items: center;
   gap: $space-1;
+}
+
+.post-card__actions {
+  display: flex;
+  gap: $space-2;
+}
+
+.post-card__action-btn {
+  background: none;
+  border: none;
+  padding: $space-2;
+  cursor: pointer;
+  font-size: $text-lg;
+  transition: all $duration-fast $ease;
+  border-radius: $radius-sm;
+
+  &:hover {
+    background: $color-gray-100;
+  }
+
+  &--delete:hover {
+    background: rgba($color-error, 0.1);
+    color: $color-error;
+  }
 }
 
 .post-card__count {

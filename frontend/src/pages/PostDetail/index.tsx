@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
 import "./postDetail.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -10,58 +11,42 @@ import CommentSection from "../../components/organisms/CommentSection";
 import PostCard from "../../components/molecules/PostCard";
 import Button from "../../components/atoms/Button";
 
-const MOCK_POST = {
-  id: "1",
-  title: "Getting Started with React",
-  content: `React is a JavaScript library for building user interfaces...`,
-  author: { name: "John Doe", avatar: undefined },
-  image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800",
-  likes: 42,
-  timestamp: "2 hours ago",
-  liked: false,
-};
-
-const MOCK_COMMENTS = [
-  {
-    id: "1",
-    author: { name: "Jane Smith", avatar: undefined },
-    content: "Great article! Very helpful for beginners.",
-    timestamp: "1 hour ago",
-    likes: 5,
-    liked: false,
-  },
-  {
-    id: "2",
-    author: { name: "Mike Johnson", avatar: undefined },
-    content: "I learned React using this approach and it worked really well!",
-    timestamp: "30 minutes ago",
-    likes: 3,
-    liked: true,
-  },
-];
-
-const CURRENT_USER = {
-  name: "Current User",
-  avatar: undefined,
-};
-
 const PostDetail = () => {
   const navigate = useNavigate();
-  const [post, setPost] = useState(MOCK_POST);
-  const [comments, setComments] = useState(MOCK_COMMENTS);
+  const { id } = useParams();
+  const user = useAppSelector((state) => state.auth.user);
+  const { posts } = useAppSelector((state) => state.posts);
+  
+  const post = posts.find((p) => p._id === id);
+  const [comments, setComments] = useState<any[]>([]);
 
-  const handleToggleLike = (next: boolean) => {
-    setPost((p) => ({
-      ...p,
-      liked: next,
-      likes: next ? p.likes + 1 : Math.max(0, p.likes - 1),
-    }));
-  };
+  if (!post) {
+    return (
+      <MainLayout
+        header={
+          <Header 
+            user={user ? { name: user.username, avatar: user.avatar } : undefined}
+            onLogoClick={() => navigate("/")}
+            onProfileClick={() => navigate("/profile")}
+            onLogout={() => navigate("/login")}
+          />
+        }
+        footer={<Footer />}
+      >
+        <div className="post-detail">
+          <div className="post-detail__container">
+            <p>Post non trouvé</p>
+            <Button onClick={() => navigate("/posts")}>← Retour aux posts</Button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   const handleAddComment = (content: string) => {
     const newComment = {
       id: String(Date.now()),
-      author: { name: CURRENT_USER.name, avatar: CURRENT_USER.avatar },
+      author: { name: user?.username || "Anonymous", avatar: user?.avatar },
       content,
       timestamp: "Just now",
       likes: 0,
@@ -86,7 +71,14 @@ const PostDetail = () => {
 
   return (
     <MainLayout
-      header={<Header user={CURRENT_USER} onLogoClick={() => navigate("/")} />}
+      header={
+        <Header 
+          user={user ? { name: user.username, avatar: user.avatar } : undefined}
+          onLogoClick={() => navigate("/")}
+          onProfileClick={() => navigate("/profile")}
+          onLogout={() => navigate("/login")}
+        />
+      }
       footer={<Footer />}
     >
       <div className="post-detail">
@@ -99,20 +91,31 @@ const PostDetail = () => {
             <PostCard
               title={post.title}
               content={post.content}
-              author={post.author}
-              image={post.image}
-              likes={post.likes}
+              author={{
+                name: post.author?.username || "Unknown",
+                avatar: post.author?.avatar
+                  ? post.author.avatar.startsWith('http')
+                    ? post.author.avatar
+                    : `http://localhost:5000/uploads/${post.author.avatar}`
+                  : undefined,
+              }}
+              image={post.image
+                ? post.image.startsWith('http')
+                  ? post.image
+                  : `http://localhost:5000/uploads/${post.image}`
+                : undefined}
+              timestamp={new Date(post.createdAt).toLocaleDateString()}
+              likes={0}
               comments={comments.length}
-              timestamp={post.timestamp}
-              liked={post.liked}
-              onToggleLike={handleToggleLike}
+              liked={false}
+              onOpen={() => {}}
             />
           </div>
 
           <div className="post-detail__comments">
             <CommentSection
               comments={comments}
-              user={CURRENT_USER}
+              user={user ? { name: user.username, avatar: user.avatar } : undefined}
               onAdd={handleAddComment}
               onLike={handleLikeComment}
             />

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../../app/hooks";
+import { createPost, updatePost } from "../../../redux/posts/postsSlice";
 import "./postForm.scss";
 
 import Avatar from "../../atoms/Avatar";
@@ -7,12 +9,6 @@ import Textarea from "../../atoms/InputTextArea";
 import Button from "../../atoms/Button";
 import Spinner from "../../atoms/Spinner";
 
-type PostData = {
-  title: string;
-  content: string;
-  image?: string;
-};
-
 type CurrentUser = {
   name: string;
   avatar?: string;
@@ -20,35 +16,67 @@ type CurrentUser = {
 
 export type PostFormProps = {
   user?: CurrentUser;
-  loading?: boolean;
-  onSubmit: (data: PostData) => void;
+  editMode?: boolean;
+  postId?: string;
+  initialTitle?: string;
+  initialContent?: string;
+  initialImage?: string;
+  onCancel?: () => void;
 };
 
-const PostForm = ({ user, loading = false, onSubmit }: PostFormProps) => {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [image, setImage] = useState<string>("");
+const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialContent = "", initialImage, onCancel }: PostFormProps) => {
+  const dispatch = useAppDispatch();
+  const { loading } = useAppSelector((state) => state.posts);
+  
+  const [title, setTitle] = useState(initialTitle);
+  const [content, setContent] = useState(initialContent);
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(initialImage || null);
+
+  useEffect(() => {
+    setTitle(initialTitle);
+    setContent(initialContent);
+    setPreview(initialImage || null);
+  }, [initialTitle, initialContent, initialImage]);
 
   const canSubmit = title.trim().length > 0 && content.trim().length > 0 && !loading;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
 
-    onSubmit({
-      title: title.trim(),
-      content: content.trim(),
-      image: image.trim() ? image.trim() : undefined,
-    });
+    if (editMode && postId) {
+      await dispatch(updatePost({
+        id: postId,
+        title: title.trim(),
+        content: content.trim(),
+        file: file || undefined,
+      }));
+      onCancel?.();
+    } else {
+      await dispatch(createPost({
+        title: title.trim(),
+        content: content.trim(),
+        file: file || undefined,
+      }));
 
-    setTitle("");
-    setContent("");
-    setImage("");
-  };
-
-  const handleAddImage = () => {
-    const url = window.prompt("Enter image URL:");
-    if (url) setImage(url.trim());
+      setTitle("");
+      setContent("");
+      setFile(null);
+      setPreview(null);
+    }
   };
 
   return (
@@ -79,13 +107,16 @@ const PostForm = ({ user, loading = false, onSubmit }: PostFormProps) => {
         />
       </div>
 
-      {image && (
+      {preview && (
         <div className="post-form__preview">
-          <img className="post-form__preview-img" src={image} alt="Post preview" />
+          <img className="post-form__preview-img" src={preview} alt="Post preview" />
           <button
             type="button"
             className="post-form__remove"
-            onClick={() => setImage("")}
+            onClick={() => {
+              setFile(null);
+              setPreview(null);
+            }}
             aria-label="Remove image"
           >
             ✕
@@ -94,14 +125,28 @@ const PostForm = ({ user, loading = false, onSubmit }: PostFormProps) => {
       )}
 
       <div className="post-form__actions">
-        <Button type="button" variant="secondary" onClick={handleAddImage}>
-          Add image
-        </Button>
+        <label className="post-form__file-label">
+          <span className="post-form__file-button">
+             Choisir image
+          </span>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+        </label>
+
+        {editMode && onCancel && (
+          <Button type="button" onClick={onCancel} variant="secondary">
+            Annuler
+          </Button>
+        )}
 
         <Button type="submit" disabled={!canSubmit}>
           <span className="post-form__submit">
             {loading && <Spinner size="sm" />}
-            {loading ? "Posting..." : "Post"}
+            {loading ? (editMode ? "Updating..." : "Posting...") : (editMode ? "Update" : "Post")}
           </span>
         </Button>
       </div>
