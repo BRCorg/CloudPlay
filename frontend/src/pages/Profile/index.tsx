@@ -14,16 +14,19 @@ import Label from "../../components/atoms/Label";
 import Avatar from "../../components/atoms/Avatar";
 import { getFieldError } from "../../utils/getFieldError";
 
+// Page de profil utilisateur : permet de voir et modifier son profil
 const Profile = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user, loading, error } = useAppSelector((state: RootState) => state.auth);
-  
+
+  // États locaux pour la gestion de l'avatar et du username
   const [avatar, setAvatar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState("");
 
+  // Gestion du changement d'avatar (prévisualisation)
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setAvatar(file);
@@ -34,6 +37,7 @@ const Profile = () => {
     }
   };
 
+  // Envoie la nouvelle photo de profil au backend
   const handleUpdateAvatar = async () => {
     if (!avatar) return;
 
@@ -48,6 +52,7 @@ const Profile = () => {
     }
   };
 
+  // Envoie le nouveau username au backend
   const handleUpdateUsername = async () => {
     if (!newUsername.trim() || newUsername === user?.username) {
       setIsEditingUsername(false);
@@ -66,29 +71,33 @@ const Profile = () => {
     // NE PAS fermer l’édition si erreur, pour laisser l’erreur visible
   };
 
+  // Passe en mode édition du username
   const handleEditUsername = () => {
     dispatch(clearError());
     setNewUsername(user?.username || "");
     setIsEditingUsername(true);
   };
 
+  // Déconnexion utilisateur
   const handleLogout = async () => {
     await dispatch(logout());
     navigate("/login");
   };
 
+  // Redirige vers la page de connexion si pas d'utilisateur
   if (!user) {
     navigate("/login");
     return null;
   }
 
+  // Génère l'URL de l'avatar à afficher
   const getAvatarUrl = (avatar: string | undefined) =>
     avatar && avatar.startsWith("http")
       ? avatar
       : `http://localhost:5000/uploads/${avatar || "default.webp"}`;
   const avatarUrl = preview || getAvatarUrl(user.avatar);
 
-  // Utilise user.avatar directement (déjà une URL complète)
+  // ------------------- Rendu du composant -------------------//
   return (
     <MainLayout
       header={
@@ -106,6 +115,7 @@ const Profile = () => {
           <div className="profile__card">
             <h1 className="profile__title">Mon Profil</h1>
             
+            {/* Section avatar + upload */}
             <div className="profile__avatar-section">
               <Avatar src={avatarUrl} alt={user.username} size="lg" className="profile__avatar" />
               
@@ -122,6 +132,7 @@ const Profile = () => {
                 />
               </div>
 
+              {/* Bouton pour enregistrer la nouvelle photo */}
               {avatar && (
                 <Button onClick={handleUpdateAvatar} disabled={loading}>
                   {loading ? "Enregistrement..." : "Enregistrer"}
@@ -129,6 +140,7 @@ const Profile = () => {
               )}
             </div>
 
+            {/* Infos utilisateur et édition du username */}
             <div className="profile__info">
               <div className="profile__field">
                 <span className="profile__label">Nom d'utilisateur</span>
@@ -168,19 +180,21 @@ const Profile = () => {
                 ) : (
                   <div className="profile__value-group">
                     <span className="profile__value">{user.username}</span>
-                    <button onClick={handleEditUsername} className="profile__edit-btn">
+                    <Button onClick={handleEditUsername} className="profile__edit-btn" size="sm" variant="secondary">
                       Modifier
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
               
+              {/* Affichage de l'email */}
               <div className="profile__field">
                 <span className="profile__label">Email</span>
                 <span className="profile__value">{user.email}</span>
               </div>
             </div>
 
+            {/* Bouton de déconnexion */}
             <div className="profile__actions">
               <Button variant="outline" onClick={handleLogout}>
                 Se déconnecter

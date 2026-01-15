@@ -30,24 +30,30 @@ export type PostFormProps = {
   loading?: boolean;
 };
 
+
+// Composant PostForm : formulaire pour créer ou éditer un post
 const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialContent = "", initialImage, onCancel, error = null, loading = false }: PostFormProps) => {
   const dispatch = useAppDispatch();
-  
-  const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(initialImage || null);
 
+  // États locaux pour les champs du formulaire
+  const [title, setTitle] = useState(initialTitle); // Titre du post
+  const [content, setContent] = useState(initialContent); // Contenu du post
+  const [file, setFile] = useState<File | null>(null); // Fichier image sélectionné
+  const [preview, setPreview] = useState<string | null>(initialImage || null); // Aperçu de l'image
+
+  // Réinitialise les champs du formulaire uniquement lors d'un changement de postId (ou au montage)
   useEffect(() => {
     dispatch(clearPostError());
-    if (title !== initialTitle) setTitle(initialTitle);
-    if (content !== initialContent) setContent(initialContent);
-    if (preview !== (initialImage || null)) setPreview(initialImage || null);
+    setTitle(initialTitle);
+    setContent(initialContent);
+    setPreview(initialImage || null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialTitle, initialContent, initialImage, dispatch]);
+  }, [postId, dispatch]);
 
+  // Vérifie si le formulaire peut être soumis
   const canSubmit = title.trim().length > 0 && content.trim().length > 0 && !loading;
 
+  // Gestion du changement de fichier image
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -60,11 +66,13 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
     }
   };
 
+  // Soumission du formulaire (création ou édition)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
 
     if (editMode && postId) {
+      // Mode édition : met à jour le post existant
       const result = await dispatch(updatePost({
         id: postId,
         title: title.trim(),
@@ -76,12 +84,14 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
         onCancel?.();
       }
     } else {
+      // Mode création : crée un nouveau post
       await dispatch(createPost({
         title: title.trim(),
         content: content.trim(),
         file: file || undefined,
       }));
 
+      // Réinitialise les champs après création
       setTitle("");
       setContent("");
       setFile(null);
@@ -89,11 +99,14 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
     }
   };
 
+  // ------------------- Rendu du composant -------------------//
   return (
     <form className="post-form" onSubmit={handleSubmit}>
+      {/* Affiche une erreur globale si présente (string) */}
       {typeof error === 'string' && (
         <Text className="text--error">{error}</Text>
       )}
+      {/* Affiche une liste d'erreurs si error est un tableau */}
       {Array.isArray(error) && error.length > 0 && (
         <div>
           {error.map((err, idx) => (
@@ -102,6 +115,7 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
         </div>
       )}
 
+      {/* Affiche l'utilisateur courant (avatar + nom) si fourni */}
       {user && (
         <header className="post-form__header">
           <Avatar src={user.avatar} alt={user.name} size="sm" />
@@ -109,6 +123,7 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
         </header>
       )}
 
+      {/* Champ titre du post */}
       <div className="post-form__field">
         <Label htmlFor="post-title" required>Post title</Label>
         <Input
@@ -118,11 +133,13 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
           onChange={(e) => setTitle(e.target.value)}
           required
         />
+        {/* Affiche une erreur spécifique au titre si présente */}
         {getFieldError(error, 'title') && (
           <Text className="text--error">{getFieldError(error, 'title')}</Text>
         )}
       </div>
 
+      {/* Champ contenu du post */}
       <div className="post-form__field">
         <Label htmlFor="post-content" required>Contenu</Label>
         <Textarea
@@ -133,11 +150,13 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
           rows={4}
           required
         />
+        {/* Affiche une erreur spécifique au contenu si présente */}
         {getFieldError(error, 'content') && (
           <Text className="text--error">{getFieldError(error, 'content')}</Text>
         )}
       </div>
 
+      {/* Aperçu de l'image sélectionnée (si présente) */}
       {preview && (
         <div className="post-form__preview">
           <img className="post-form__preview-img" src={preview} alt="Post preview" />
@@ -155,7 +174,9 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
         </div>
       )}
 
+      {/* Actions du formulaire : upload image, annuler, soumettre */}
       <div className="post-form__actions">
+        {/* Bouton pour choisir une image */}
         <label className="post-form__file-label">
           <span className="post-form__file-button">
              Choisir image
@@ -168,12 +189,14 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
           />
         </label>
 
+        {/* Bouton annuler (en mode édition) */}
         {editMode && onCancel && (
           <Button type="button" onClick={onCancel} variant="secondary">
             Annuler
           </Button>
         )}
 
+        {/* Bouton soumettre (créer ou éditer) */}
         <Button type="submit" disabled={!canSubmit}>
           <span className="post-form__submit">
             {loading && <Spinner size="sm" />}

@@ -1,14 +1,19 @@
+
+// Importation des outils Redux et d'Axios
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import type { CommentState, CreateCommentPayload, UpdateCommentPayload } from './types';
 
+// URL de base de l'API
 const API_URL = 'http://localhost:5000/api';
 
+// Instance Axios configurée pour l'API
 const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Get comments for a post
+
+// Récupérer les commentaires d'un post
 export const getComments = createAsyncThunk(
   'comments/getComments',
   async (postId: string) => {
@@ -17,7 +22,8 @@ export const getComments = createAsyncThunk(
   }
 );
 
-// Create comment
+
+// Créer un commentaire
 export const createComment = createAsyncThunk(
   'comments/createComment',
   async ({ postId, content }: CreateCommentPayload, { rejectWithValue }) => {
@@ -28,6 +34,7 @@ export const createComment = createAsyncThunk(
       );
       return response.data;
     } catch (err) {
+      // Gestion des erreurs de validation (Zod)
       if (
         typeof err === 'object' &&
         err &&
@@ -37,15 +44,18 @@ export const createComment = createAsyncThunk(
       ) {
         return rejectWithValue((err as { response: { data: { details: { message: string }[] } } }).response.data.details.map((issue) => issue.message));
       }
+      // Gestion des autres erreurs API
       if (typeof err === 'object' && err && 'response' in err) {
         return rejectWithValue((err as { response?: { data?: { error?: string } } }).response?.data?.error || (err as unknown as Error).message || 'Erreur création commentaire');
       }
+      // Erreur générique
       return rejectWithValue((err as unknown as Error).message || 'Erreur création commentaire');
     }
   }
 );
 
-// Update comment
+
+// Mettre à jour un commentaire
 export const updateComment = createAsyncThunk(
   'comments/updateComment',
   async ({ commentId, content }: UpdateCommentPayload) => {
@@ -57,7 +67,8 @@ export const updateComment = createAsyncThunk(
   }
 );
 
-// Delete comment
+
+// Supprimer un commentaire
 export const deleteComment = createAsyncThunk(
   'comments/deleteComment',
   async (commentId: string) => {
@@ -66,7 +77,8 @@ export const deleteComment = createAsyncThunk(
   }
 );
 
-// Toggle like on comment
+
+// Like ou unlike un commentaire
 export const toggleLikeComment = createAsyncThunk(
   'comments/toggleLikeComment',
   async (commentId: string) => {
@@ -77,23 +89,28 @@ export const toggleLikeComment = createAsyncThunk(
   }
 );
 
+
+// État initial des commentaires
 const initialState: CommentState = {
   comments: [],
   loading: false,
   error: null,
 };
 
+
+// Création du slice Redux pour la gestion des commentaires
 const commentsSlice = createSlice({
   name: 'comments',
   initialState,
   reducers: {
+    // Action pour vider la liste des commentaires
     clearComments: (state) => {
       state.comments = [];
     },
   },
   extraReducers: (builder) => {
     builder
-      // Get comments
+      // ----- Récupération des commentaires d'un post -----
       .addCase(getComments.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -104,10 +121,10 @@ const commentsSlice = createSlice({
       })
       .addCase(getComments.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to fetch comments';
+        state.error = action.error.message || 'Echec récupération commentaires';
       })
-      
-      // Create comment
+
+      // ----- Création d'un commentaire -----
       .addCase(createComment.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -118,23 +135,27 @@ const commentsSlice = createSlice({
       })
       .addCase(createComment.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to create comment';
+        state.error = action.error.message || 'Echec création commentaire';
       })
-      
-      // Update comment
+
+      // ----- Mise à jour d'un commentaire -----
       .addCase(updateComment.fulfilled, (state, action) => {
         const index = state.comments.findIndex(c => c._id === action.payload._id);
         if (index !== -1) {
           state.comments[index] = action.payload;
         }
       })
-      
-      // Delete comment
+      .addCase(updateComment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Echec mise à jour commentaire';
+      })
+
+      // ----- Suppression d'un commentaire -----
       .addCase(deleteComment.fulfilled, (state, action) => {
         state.comments = state.comments.filter(c => c._id !== action.payload);
       })
-      
-      // Toggle like
+
+      // ----- Like/unlike d'un commentaire -----
       .addCase(toggleLikeComment.fulfilled, (state, action) => {
         const index = state.comments.findIndex(c => c._id === action.payload._id);
         if (index !== -1) {

@@ -28,28 +28,32 @@ export type PostListProps = {
   onToggleLike?: (id: string, next: boolean) => void;
 };
 
+// Composant PostList : affiche une liste de posts ou des messages selon l'état
 const PostList = ({ posts, loading = false, onOpenPost, onToggleLike }: PostListProps) => {
+  // Affiche un spinner de chargement si loading est true
   if (loading) {
     return (
       <div className="post-list post-list--center" role="status">
         <Spinner size="md" />
-        <p className="post-list__muted">Loading posts...</p>
+        <p className="post-list__muted">Chargement des posts...</p>
       </div>
     );
   }
 
+  // Affiche un message si aucun post n'est présent
   if (posts.length === 0) {
     return (
       <div className="post-list post-list--empty">
         <div className="post-list__empty-icon">📝</div>
-        <p className="post-list__empty-title">No posts yet</p>
+        <p className="post-list__empty-title">Aucun post pour l'instant</p>
         <p className="post-list__muted">
-          Be the first to create a post and share your thoughts!
+          Soyez le premier à créer un post et à partager vos idées !
         </p>
       </div>
     );
   }
 
+  // Affiche la liste des posts
   return (
     <div className="post-list">
       {posts.map((p) => (

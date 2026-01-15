@@ -1,27 +1,32 @@
 import "./likeButton.scss";
 import LikeIcon from "../../atoms/LikeIcon";
+import Button from "../../atoms/Button";
 
+// Type des props du composant LikeButton
 export type LikeButtonProps = {
   liked: boolean;
-  count?: number;
   iconOnly?: boolean;
   onToggle: (next: boolean) => void;
 };
 
+// Composant LikeButton pour gérer les likes
 const LikeButton = ({ liked, iconOnly = false, onToggle }: LikeButtonProps) => {
+  // Gestion du clic sur le bouton
   const handleClick = () => onToggle(!liked);
 
   return (
-    <button
+    <Button
       type="button"
-      className={`like-button ${liked ? "like-button--liked" : ""} ${iconOnly ? "like-button--icon-only" : ""}`.trim()}
+      className={`like-button ${liked ? "like-button--liked" : ""} ${iconOnly ? "like-button--icon-only" : ""
+        }`.trim()}
       onClick={handleClick}
+      variant={liked ? "primary" : "secondary"}
+      size={iconOnly ? "sm" : undefined}
       aria-pressed={liked}
       aria-label={liked ? "Unlike" : "Like"}
     >
       <LikeIcon liked={liked} />
-
-    </button>
+    </Button>
   );
 };
 

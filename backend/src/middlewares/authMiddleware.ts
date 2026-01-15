@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import { User } from "../models/User";
 import { verifyToken } from "../utils/jwt";
 
 // ------ Middleware pour protéger les routes
 export const authMiddleware = async (
-  req: any,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -25,8 +25,13 @@ export const authMiddleware = async (
     // Si l'utilisateur n'existe pas, on renvoie une erreur
     if (!user) return res.status(401).json({ error: "Utilisateur non trouvé" });
 
-    // On attache l'utilisateur à la requête pour les prochains middlewares/contrôleurs
-    req.user = user;
+    // On attache un objet user typé (pour correspondre à Express.Request)
+    req.user = {
+      _id: user._id.toString(),
+      email: user.email,
+      username: user.username,
+      avatar: user.avatar,
+    };
     next();
   } catch {
     res.status(401).json({ error: "Token invalide" });

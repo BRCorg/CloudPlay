@@ -6,6 +6,7 @@ import {
   deletePost,
   toggleLikePost,
 } from "../../redux/posts/postsSlice";
+import type { ApiError } from "../../redux/auth/types";
 import "./postsPage.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -15,56 +16,67 @@ import Footer from "../../components/organisms/Footer";
 import PostList from "../../components/organisms/PostList";
 import PostForm from "../../components/molecules/PostForm";
 
+// Page d'affichage et de gestion des posts
 const PostsPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  // Récupère l'utilisateur courant et les posts depuis le store
   const user = useAppSelector((state) => state.auth.user);
   const { posts, loading, error } = useAppSelector((state) => state.posts);
   // Cast error to the correct type for PostForm
   const postFormError = error as
     | string
     | string[]
-    | import("../../redux/auth/types").ApiError
+    | ApiError
     | null;
 
+  // Gère l'état du post en cours d'édition
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
 
+  // Charge les posts au montage
   useEffect(() => {
     dispatch(getPosts());
   }, [dispatch]);
 
+  // Remonte en haut de la page lors du passage en mode édition
   useEffect(() => {
     if (editingPostId) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [editingPostId]);
 
-  // Clear error when switching to edit mode
+  // Efface l'erreur lors du passage en mode édition
   useEffect(() => {
     if (editingPostId) {
       dispatch({ type: "posts/clearPostError" });
     }
   }, [editingPostId, dispatch]);
 
+  // Gestion du like sur un post
   const handleToggleLike = async (id: string) => {
     await dispatch(toggleLikePost(id));
   };
 
+  // Ouvre le détail d'un post
   const handleOpenPost = (id: string) => {
     navigate(`/posts/${id}`);
   };
 
+  // Passe en mode édition pour un post
   const handleEditPost = (id: string) => {
     setEditingPostId(id);
   };
 
+  // Supprime un post
   const handleDeletePost = async (id: string) => {
     await dispatch(deletePost(id));
   };
 
+  // Trouve le post en cours d'édition
   const editingPost = posts.find((p) => p._id === editingPostId);
 
+  // ------------------- Rendu du composant -------------------//
   return (
     <MainLayout
       header={
@@ -79,6 +91,7 @@ const PostsPage = () => {
     >
       <section className="posts-page">
         <div className="posts-page__container">
+          {/* En-tête de la page */}
           <header className="posts-page__header">
             <h1 className="posts-page__title">Posts</h1>
             <p className="posts-page__subtitle">
@@ -86,6 +99,7 @@ const PostsPage = () => {
             </p>
           </header>
 
+          {/* Formulaire de création ou d'édition de post */}
           <div className="posts-page__create">
             {editingPost ? (
               <div className="posts-page__edit">
@@ -123,6 +137,7 @@ const PostsPage = () => {
             )}
           </div>
 
+          {/* Liste des posts */}
           <PostList
             posts={posts.map((post) => ({
               id: post._id,

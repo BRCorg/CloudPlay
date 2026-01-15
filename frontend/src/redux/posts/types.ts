@@ -1,3 +1,5 @@
+import type { ApiError } from '../auth/types';
+
 //---------- Types pour les posts ----------//
 
 export interface Post {
@@ -18,6 +20,6 @@ export interface Post {
 
 export interface PostState {
   loading: boolean;
-  error: string | null | { [key: string]: any } | string[];
+  error: string | null | ApiError | string[];
   posts: Post[];
 }

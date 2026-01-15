@@ -1,5 +1,5 @@
-
-import React, { useState } from "react";
+//---------------- composant LoginForm ---------------//
+import { useState } from "react";
 import "./loginForm.scss";
 
 import Button from "../../atoms/Button";
@@ -11,20 +11,26 @@ import Spinner from "../../atoms/Spinner";
 import type { ApiError } from "../../../redux/auth/types";
 import { getFieldError } from "../../../utils/getFieldError";
 
+// Type des props du composant LoginForm
 type LoginFormProps = {
   onSubmit: (email: string, password: string) => void;
   error?: string | string[] | ApiError | null;
   loading?: boolean;
 };
 
-
+// Composant LoginForm pour la connexion des utilisateurs
 const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // DEBUG: Affiche la structure des erreurs de champ reçues du backend
-  if (error && typeof error === 'object' && 'details' in error && Array.isArray((error as ApiError).details)) {
-    console.log('LoginForm error.details:', (error as ApiError).details);
+  if (
+    error &&
+    typeof error === "object" &&
+    "details" in error &&
+    Array.isArray((error as ApiError).details)
+  ) {
+    console.log("LoginForm error.details:", (error as ApiError).details);
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,7 +38,9 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
     onSubmit(email, password);
   };
 
-  const hasGlobalError = Boolean(error && (typeof error === "string" || Array.isArray(error)));
+  const hasGlobalError = Boolean(
+    error && (typeof error === "string" || Array.isArray(error))
+  );
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
@@ -59,12 +67,12 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          error={!!getFieldError(error ?? null, 'email')}
+          error={!!getFieldError(error ?? null, "email")}
           required
         />
-        {getFieldError(error ?? null, 'email') && (
+        {getFieldError(error ?? null, "email") && (
           <div className="login-form__field-error" role="alert">
-            {getFieldError(error ?? null, 'email')}
+            {getFieldError(error ?? null, "email")}
           </div>
         )}
       </div>
@@ -80,12 +88,12 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          error={!!getFieldError(error ?? null, 'password')}
+          error={!!getFieldError(error ?? null, "password")}
           required
         />
-        {getFieldError(error ?? null, 'password') && (
+        {getFieldError(error ?? null, "password") && (
           <div className="login-form__field-error" role="alert">
-            {getFieldError(error ?? null, 'password')}
+            {getFieldError(error ?? null, "password")}
           </div>
         )}
       </div>
@@ -98,11 +106,15 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
       </Button>
 
       {/* Affichage d'erreur global possible en bas (ex: identifiants invalides) */}
-      {typeof error === 'object' && error && !Array.isArray(error) && !('details' in error) && (error as ApiError).error && (
-        <div className="login-form__error-global" role="alert">
-          {(error as ApiError).error}
-        </div>
-      )}
+      {typeof error === "object" &&
+        error &&
+        !Array.isArray(error) &&
+        !("details" in error) &&
+        (error as ApiError).error && (
+          <div className="login-form__error-global" role="alert">
+            {(error as ApiError).error}
+          </div>
+        )}
 
       <footer className="login-form__footer">
         <Text muted>

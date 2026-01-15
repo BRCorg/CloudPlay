@@ -15,17 +15,21 @@ export type HeaderProps = {
   onLogout?: () => void;
 };
 
+// Composant Header : barre de navigation principale
 const Header = ({ user, onLogoClick, onProfileClick, onLogout }: HeaderProps) => {
   return (
     <header className="header">
       <div className="header__container">
+        {/* Logo cliquable (retour à l'accueil) */}
         <button type="button" className="header__logo" onClick={onLogoClick}>
           <span className="header__logo-text">CloudPlay</span>
         </button>
 
+        {/* Actions à droite : selon si user connecté ou non */}
         <div className="header__actions">
           {user ? (
             <>
+              {/* Bouton profil utilisateur (avatar + nom) */}
               <button
                 type="button"
                 className="header__user"
@@ -35,15 +39,17 @@ const Header = ({ user, onLogoClick, onProfileClick, onLogout }: HeaderProps) =>
                 <span className="header__user-name">{user.name}</span>
               </button>
 
+              {/* Bouton déconnexion (si onLogout fourni) */}
               {onLogout && (
                 <Button variant="outline" size="sm" onClick={onLogout}>
-                  Logout
+                  Déconnexion
                 </Button>
               )}
             </>
           ) : (
+            // Lien vers la page de connexion si pas d'utilisateur
             <a className="header__link" href="/login">
-              Sign in
+              S'inscrire
             </a>
           )}
         </div>

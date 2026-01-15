@@ -1,3 +1,4 @@
+// Vérifie si le payload est une erreur d'API (ApiError)
 // Type guard pour ApiError
 function isApiError(payload: unknown): payload is ApiError {
     return (
@@ -7,12 +8,14 @@ function isApiError(payload: unknown): payload is ApiError {
         typeof (payload as { error?: unknown }).error === 'string'
     );
 }
+// Importations principales : Redux Toolkit, types, et instance Axios
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { ApiError, AuthState } from "./types";
-import api from "../../api/authAPI";
+import api from "../../api/apiGlobal";
 
 
 // Au démarrage, l'état initial de l'authentification
+// État initial de l'authentification utilisateur
 const initialState: AuthState = {
     user: null, // Pas d'utilisateur connecté au départ
     isAuthenticated: false, // Pas authentifié au départ
@@ -25,6 +28,7 @@ const initialState: AuthState = {
 
 //----- Actions asynchrones pour l'authentification c'est-à-dire les appels API
 
+// Thunk pour l'inscription d'un utilisateur
 export const signup = createAsyncThunk(
     "auth/signup",
     async (formData: FormData, { rejectWithValue }) => {
@@ -50,6 +54,7 @@ export const signup = createAsyncThunk(
 
 //----- Action asynchrone pour la connexion (même structure que signup)
 
+// Thunk pour la connexion d'un utilisateur
 export const login = createAsyncThunk(
     "auth/login",
     async (data: { email: string; password: string }, { rejectWithValue }) => {
@@ -81,6 +86,7 @@ export const login = createAsyncThunk(
 
 //----- Action asynchrone pour la déconnexion
 
+// Thunk pour la déconnexion d'un utilisateur
 export const logout = createAsyncThunk(
     "auth/logout",
     async (_, { dispatch }) => {
@@ -94,6 +100,7 @@ export const logout = createAsyncThunk(
 
 //----- Action asynchrone pour récupérer les informations de l'utilisateur connecté
 
+// Thunk pour récupérer les infos de l'utilisateur connecté
 export const fetchMe = createAsyncThunk(
     "auth/fetchMe",
     async (_, { rejectWithValue }) => {
@@ -112,6 +119,7 @@ export const fetchMe = createAsyncThunk(
 
 //----- Action asynchrone pour mettre à jour le profil utilisateur
 
+// Thunk pour mettre à jour le profil utilisateur
 export const updateProfile = createAsyncThunk(
     "auth/updateProfile",
     async (formData: FormData, { rejectWithValue }) => {
@@ -135,10 +143,12 @@ export const updateProfile = createAsyncThunk(
 
 
 
+// Création du slice Redux pour l'authentification
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
+        // Action pour réinitialiser l'erreur d'authentification
         clearError(state) {
             state.error = null;
         },
@@ -146,7 +156,8 @@ const authSlice = createSlice({
     extraReducers: (builder) => {
         builder
 
-            // Signup
+            
+            // Gestion de l'inscription
             .addCase(signup.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -174,7 +185,8 @@ const authSlice = createSlice({
             })
 
 
-            // Login
+            
+            // Gestion de la connexion
             .addCase(login.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -202,7 +214,8 @@ const authSlice = createSlice({
             })
 
 
-            // FetchMe
+            
+            // Gestion de la récupération des infos utilisateur
             .addCase(fetchMe.pending, (state) => {
                 state.loading = true;
             })
@@ -221,6 +234,7 @@ const authSlice = createSlice({
 
 
             // Logout (le reset réel est fait par fetchMe)
+            // Gestion de la déconnexion
             .addCase(logout.pending, (state) => {
                 state.loading = true;
             })
@@ -230,6 +244,7 @@ const authSlice = createSlice({
 
 
             // Update profile
+            // Gestion de la mise à jour du profil utilisateur
             .addCase(updateProfile.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -260,5 +275,6 @@ const authSlice = createSlice({
     },
 });
 
+// Export des actions et du reducer du slice d'authentification
 export const { clearError } = authSlice.actions;
 export default authSlice.reducer;

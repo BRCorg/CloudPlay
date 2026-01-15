@@ -5,24 +5,43 @@ import "./commentItem.scss";
 import Avatar from "../../atoms/Avatar";
 import Textarea from "../../atoms/InputTextArea";
 import Button from "../../atoms/Button";
+import LikeIcon from "../../atoms/LikeIcon";
+import Text from "../../atoms/Text";
 
+// Type des props du composant CommentItem
 export type CommentItemProps = {
-  comment: IComment;
-  currentUserId?: string;
-  onEdit: (commentId: string, content: string) => void;
-  onDelete: (commentId: string) => void;
-  onLike?: (commentId: string) => void;
-  onReply?: (commentId: string) => void;
+  comment: IComment; // Le commentaire à afficher
+  currentUserId?: string; // L'ID de l'utilisateur courant (pour vérifier l'auteur)
+  onEdit: (commentId: string, content: string) => void; // Fonction pour éditer le commentaire
+  onDelete: (commentId: string) => void; // Fonction pour supprimer le commentaire
+  onLike?: (commentId: string) => void; // Fonction pour aimer le commentaire
+  onReply?: (commentId: string) => void; // Fonction pour répondre au commentaire (optionnel)
 };
 
-const CommentItem = ({ comment, currentUserId, onEdit, onDelete, onLike }: CommentItemProps) => {
+// Composant CommentItem pour afficher un commentaire individuel
+const CommentItem = ({
+  comment,
+  currentUserId,
+  onEdit,
+  onDelete,
+  onLike,
+}: CommentItemProps) => {
+  // État local pour savoir si on est en mode édition (faux par défaut)
   const [isEditing, setIsEditing] = useState(false);
+
+  // État local pour le contenu édité du commentaire
+  // Pré-rempli avec le contenu actuel du commentaire
   const [editContent, setEditContent] = useState(comment.content);
 
+  // Vérifie si l'utilisateur courant est l'auteur du commentaire
   const isAuthor = currentUserId === comment.author._id;
+
+  // Vérifie si l'utilisateur courant a liké le commentaire
   const isLiked = currentUserId ? comment.likes.includes(currentUserId) : false;
 
+  // Gestion des actions
   const handleSave = () => {
+    // Si le contenu édité n'est pas vide, on appelle la fonction onEdit
     if (editContent.trim()) {
       onEdit(comment._id, editContent.trim());
       setIsEditing(false);
@@ -30,41 +49,57 @@ const CommentItem = ({ comment, currentUserId, onEdit, onDelete, onLike }: Comme
   };
 
   const handleCancel = () => {
+    // Réinitialise le contenu édité et quitte le mode édition
     setEditContent(comment.content);
     setIsEditing(false);
   };
 
+  // Gestion de la suppression du commentaire
   const handleDelete = () => {
-    if (window.confirm("Supprimer ce commentaire ?")) {
+    if (window.confirm("Voulez-vous vraiment supprimer ce commentaire ?")) {
       onDelete(comment._id);
     }
   };
 
+  // Fonction utilitaire pour afficher le temps écoulé depuis la création du commentaire
   const timeAgo = (date: string) => {
-    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    
+    const seconds = Math.floor(
+      (new Date().getTime() - new Date(date).getTime()) / 1000
+    );
+
     if (seconds < 60) return "à l'instant";
     if (seconds < 3600) return `il y a ${Math.floor(seconds / 60)}m`;
     if (seconds < 86400) return `il y a ${Math.floor(seconds / 3600)}h`;
     return `il y a ${Math.floor(seconds / 86400)}j`;
   };
 
+  // ------------------- Rendu du composant -------------------//
   return (
     <div className="comment-item">
+      {/* Avatar */}
       <div className="comment-item__avatar">
-        <Avatar 
-          src={comment.author.avatar ? `http://localhost:5000/uploads/${comment.author.avatar}` : undefined}
+        <Avatar
+          src={
+            comment.author.avatar
+              ? `http://localhost:5000/uploads/${comment.author.avatar}`
+              : undefined
+          }
           alt={comment.author.username}
-          size="sm"
         />
       </div>
 
+      {/* Contenu du commentaire */}
       <div className="comment-item__content">
         <div className="comment-item__header">
-          <span className="comment-item__author">{comment.author.username}</span>
-          <span className="comment-item__time">{timeAgo(comment.createdAt)}</span>
+          <span className="comment-item__author">
+            {comment.author.username}
+          </span>
+          <span className="comment-item__time">
+            {timeAgo(comment.createdAt)}
+          </span>
         </div>
 
+        {/* Si on est en mode édition, on affiche un textarea pour modifier le commentaire */}
         {isEditing ? (
           <div className="comment-item__edit">
             <Textarea
@@ -83,33 +118,42 @@ const CommentItem = ({ comment, currentUserId, onEdit, onDelete, onLike }: Comme
           </div>
         ) : (
           <>
-            <p className="comment-item__text">{comment.content}</p>
-
+            <Text className="comment-item__text">{comment.content}</Text>
             <div className="comment-item__actions">
-              <button 
-                className={`comment-item__like ${isLiked ? 'comment-item__like--active' : ''}`}
+              {/* Bouton like */}
+              <Button
+                className={`comment-item__like ${isLiked ? "comment-item__like--active" : ""
+                  }`}
                 onClick={() => onLike && onLike(comment._id)}
+                variant={isLiked ? "primary" : "secondary"}
+                size="sm"
+                aria-label={isLiked ? "Retirer le like" : "Liker"}
               >
-                <svg viewBox="0 0 24 24" className="comment-item__like-icon" fill={isLiked ? "currentColor" : "none"}>
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L4.22 13.45 12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                {comment.likes.length > 0 && <span>{comment.likes.length}</span>}
-              </button>
+                <LikeIcon liked={isLiked} />
+                {comment.likes.length > 0 && (
+                  <span>{comment.likes.length}</span>
+                )}
+              </Button>
 
+              {/* Si c'est l'auteur du commentaire, on affiche les boutons modifier et supprimer */}
               {isAuthor && (
                 <>
-                  <button 
+                  <Button
                     className="comment-item__action-btn"
                     onClick={() => setIsEditing(true)}
+                    variant="secondary"
+                    size="sm"
                   >
                     Modifier
-                  </button>
-                  <button 
-                    className="comment-item__action-btn comment-item__action-btn--delete"
+                  </Button>
+                  <Button
+                    className="comment-item__action-btn"
                     onClick={handleDelete}
+                    variant="outline"
+                    size="sm"
                   >
                     Supprimer
-                  </button>
+                  </Button>
                 </>
               )}
             </div>
@@ -119,5 +163,4 @@ const CommentItem = ({ comment, currentUserId, onEdit, onDelete, onLike }: Comme
     </div>
   );
 };
-
 export default CommentItem;
