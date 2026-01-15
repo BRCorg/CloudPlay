@@ -20,22 +20,8 @@ const AppRoutes = () => {
         <Route path="/profile-setup" element={<ProfileSetup />} />
 
         {/* Routes protégées */}
-        <Route
-          path="/posts"
-          element={
-            <ProtectedRoute>
-              <PostsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/posts/:id"
-          element={
-            <ProtectedRoute>
-              <PostDetail />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/posts" element={<PostsPage />} />
+        <Route path="/posts/:id" element={<PostDetail />} />
         <Route
           path="/profile"
           element={

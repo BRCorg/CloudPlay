@@ -1,41 +1,157 @@
 @use "../../../public/assets/scss/variables" as *;
+ 
 
-.post-detail {
-  padding: $space-8 0 $space-12;
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap');
+ 
+.posts-page {
+  position: relative;
+  min-height: 100vh;
+  padding: $space-12 0 $space-12;
+  overflow-x: hidden;
+  background: $dark-bg;
+ 
+  // same vibe as home
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 55%, rgba($neon-cyan, 0.26) 0%, transparent 55%),
+      radial-gradient(circle at 82% 78%, rgba($neon-blue, 0.18) 0%, transparent 55%),
+      radial-gradient(circle at 45% 18%, rgba($neon-purple, 0.18) 0%, transparent 55%);
+    filter: blur(110px);
+    animation: postsGradientShift 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+ 
+  &::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba($neon-cyan, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba($neon-cyan, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: postsGridMove 10s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
 }
-
-.post-detail__container {
+ 
+@keyframes postsGradientShift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-5%, 5%) scale(1.06); }
+  50% { transform: translate(5%, -5%) scale(0.97); }
+  75% { transform: translate(-3%, -3%) scale(1.03); }
+}
+ 
+@keyframes postsGridMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+ 
+.posts-page__container {
   @include container;
-
+ 
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: $space-8;
 }
-
-.post-detail__article {
-  border: $border-width solid $border-color;
-  border-radius: $radius-lg;
-  background: $color-white;
-  overflow: hidden;
-}
-
-.post-detail__comments {
-  border: $border-width solid $border-color;
-  border-radius: $radius-lg;
-  background: $color-white;
-  padding: $space-6;
+ 
+.posts-page__header {
   display: flex;
   flex-direction: column;
-  gap: $space-6;
-
-  @media (max-width: 640px) {
-    padding: $space-4;
+  gap: $space-2;
+  animation: postsFadeUp 700ms $ease-out backwards;
+}
+ 
+.posts-page__title {
+  margin: 0;
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+ 
+  color: $neon-cyan;
+  text-shadow:
+    0 0 10px rgba($neon-cyan, 0.65),
+    0 0 18px rgba($neon-cyan, 0.35);
+}
+ 
+.posts-page__subtitle {
+  margin: 0;
+  font-family: 'Exo 2', sans-serif;
+  color: rgba(white, 0.78);
+  line-height: $leading-relaxed;
+  max-width: 70ch;
+}
+ 
+.posts-page__create {
+  width: 100%;
+  animation: postsFadeUp 700ms $ease-out 120ms backwards;
+}
+ 
+/**
+ * Edit block becomes a glass panel (instead of white card)
+ */
+.posts-page__edit {
+  position: relative;
+  overflow: hidden;
+ 
+  background: rgba($dark-surface, 0.86);
+  border-radius: $radius-2xl;
+  padding: $space-6;
+ 
+  border: 1px solid rgba($neon-cyan, 0.20);
+  box-shadow:
+    0 0 30px rgba($neon-cyan, 0.10),
+    inset 0 0 30px rgba($dark-bg, 0.35);
+  backdrop-filter: blur(12px);
+ 
+  animation: postsFadeUp 700ms $ease-out 180ms backwards;
+ 
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -30%;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba($neon-cyan, 0.9), transparent);
+    animation: postsScan 3.2s linear infinite;
+    opacity: 0.85;
   }
 }
-
-.post-detail__comments-title {
-  margin: 0;
-  font-size: $text-xl;
-  font-weight: $weight-semibold;
-  color: $color-text-primary;
+ 
+@keyframes postsScan {
+  0% { transform: translateX(-30%); }
+  100% { transform: translateX(220%); }
 }
+ 
+.posts-page__edit-title {
+  margin: 0 0 $space-4;
+  font-family: 'Orbitron', monospace;
+  font-size: $text-lg;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+ 
+  color: rgba($neon-purple, 0.9);
+  text-shadow: 0 0 10px rgba($neon-purple, 0.35);
+}
+ 
+@keyframes postsFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+ 

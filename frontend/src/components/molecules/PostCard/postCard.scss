@@ -1,4 +1,6 @@
-@import "../../../../public/assets/scss/variables";
+@use "../../../../public/assets/scss/variables" as *;
+
+
 
 .post-card {
   background: $color-white;
@@ -89,10 +91,18 @@
 }
 
 .post-card__image {
+  display: block;
+  margin: 16px auto;
   width: 100%;
-  height: 200px;
+  max-width: 700px;
+  height: auto;
+  min-height: 200px;
+  max-height: 400px;
   object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
   background: $color-gray-100;
+  padding: 12px;
 }
 
 .post-card__footer {

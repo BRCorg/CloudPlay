@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import { getComments, updateComment, deleteComment, toggleLikeComment } from "../../redux/comments/commentsSlice";
-import { toggleLikePost } from "../../redux/posts/postsSlice";
+import { toggleLikePost, getPostById } from "../../redux/posts/postsSlice";
 import "./postDetail.scss";
 
 import MainLayout from "../../components/templates/MainLayout";
@@ -19,18 +19,25 @@ const PostDetail = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
   const user = useAppSelector((state) => state.auth.user);
-  const { posts } = useAppSelector((state) => state.posts);
+  const { posts, loading } = useAppSelector((state) => state.posts);
   const { comments } = useAppSelector((state) => state.comments);
   
   const post = posts.find((p) => p._id === id);
 
+  // Pour gérer l'édition d'un seul commentaire à la fois
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+
   useEffect(() => {
     if (id) {
       dispatch(getComments(id));
+      if (!post) {
+        dispatch(getPostById(id));
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, id]);
 
-  if (!post) {
+  if (!post || loading) {
     return (
       <MainLayout
         header={
@@ -45,7 +52,7 @@ const PostDetail = () => {
       >
         <div className="post-detail">
           <div className="post-detail__container">
-            <p>Post non trouvé</p>
+            <p>{loading ? "Chargement..." : "Post non trouvé"}</p>
             <Button onClick={() => navigate("/posts")}>← Retour aux posts</Button>
           </div>
         </div>
@@ -53,8 +60,21 @@ const PostDetail = () => {
     );
   }
 
+
+  // Passe en mode édition pour un commentaire
+  const handleStartEditComment = (commentId: string) => {
+    setEditingCommentId(commentId);
+  };
+
+  // Annule l'édition
+  const handleCancelEditComment = () => {
+    setEditingCommentId(null);
+  };
+
+  // Sauvegarde la modification
   const handleEditComment = (commentId: string, content: string) => {
     dispatch(updateComment({ commentId, content }));
+    setEditingCommentId(null);
   };
 
   const handleDeleteComment = (commentId: string) => {
@@ -62,10 +82,18 @@ const PostDetail = () => {
   };
 
   const handleLikeComment = (commentId: string) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
     dispatch(toggleLikeComment(commentId));
   };
 
   const handleLikePost = async () => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
     if (id) {
       await dispatch(toggleLikePost(id));
     }
@@ -113,17 +141,22 @@ const PostDetail = () => {
               Commentaires ({comments.length})
             </h3>
             
-            {user && (
+            {user ? (
               <CommentForm
                 postId={post._id}
                 user={{ name: user.username, avatar: user.avatar }}
               />
+            ) : (
+              <Button variant="outline" onClick={() => navigate("/login")}>Connectez-vous pour commenter</Button>
             )}
 
             <CommentList
               comments={comments}
               currentUserId={user?._id}
-              onEdit={handleEditComment}
+              editingCommentId={editingCommentId}
+              onEdit={handleStartEditComment}
+              onCancelEdit={handleCancelEditComment}
+              onSaveEdit={handleEditComment}
               onDelete={handleDeleteComment}
               onLike={handleLikeComment}
             />

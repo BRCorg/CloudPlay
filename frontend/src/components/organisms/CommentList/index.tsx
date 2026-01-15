@@ -2,15 +2,22 @@ import type { IComment } from "../../../redux/comments/types";
 import CommentItem from "../../molecules/CommentItem";
 import "./commentList.scss";
 
+// Type des props du composant CommentList
 export type CommentListProps = {
   comments: IComment[];
   currentUserId?: string;
-  onEdit: (commentId: string, content: string) => void;
+  editingCommentId?: string | null;
+  onEdit: (commentId: string) => void; // Active le mode édition
+  onCancelEdit: () => void;
+  onSaveEdit: (commentId: string, content: string) => void;
   onDelete: (commentId: string) => void;
   onLike: (commentId: string) => void;
 };
 
-const CommentList = ({ comments, currentUserId, onEdit, onDelete, onLike }: CommentListProps) => {
+// Composant CommentList pour afficher une liste de commentaires
+const CommentList = ({ comments, currentUserId, editingCommentId, onEdit, onCancelEdit, onSaveEdit, onDelete, onLike }: CommentListProps) => {
+
+  // Si la liste des commentaires est vide, on affiche un message
   if (comments.length === 0) {
     return (
       <div className="comment-list comment-list--empty">
@@ -19,6 +26,8 @@ const CommentList = ({ comments, currentUserId, onEdit, onDelete, onLike }: Comm
     );
   }
 
+
+  // ------------------- Rendu du composant -------------------//
   return (
     <div className="comment-list">
       {comments.map((comment) => (
@@ -26,7 +35,11 @@ const CommentList = ({ comments, currentUserId, onEdit, onDelete, onLike }: Comm
           key={comment._id}
           comment={comment}
           currentUserId={currentUserId}
-          onEdit={onEdit}
+          isEditing={editingCommentId === comment._id}
+          onEdit={editingCommentId === comment._id
+            ? (commentId: string, content?: string) => onSaveEdit(commentId, content ?? "")
+            : onEdit}
+          onCancelEdit={onCancelEdit}
           onDelete={onDelete}
           onLike={onLike}
         />

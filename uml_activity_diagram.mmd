@@ -1,0 +1,25 @@
+flowchart TD
+    Start((Début))
+    Login{Connecté ?}
+    ViewPosts["Consulter la liste des posts"]
+    SelectPost["Sélectionner un post"]
+    ViewPost["Voir le détail du post"]
+    AddComment["Ajouter un commentaire"]
+    EditComment["Modifier un commentaire"]
+    LikePost["Liker/Unliker le post"]
+    LikeComment["Liker/Unliker un commentaire"]
+    UploadImage["Uploader une image"]
+    End((Fin))
+
+    Start --> ViewPosts --> SelectPost --> ViewPost
+    ViewPost --> AddComment
+    ViewPost --> LikePost
+    AddComment --> EditComment
+    ViewPost --> LikeComment
+    AddComment --> UploadImage
+    Login -- Non --> ViewPosts
+    Login -- Oui --> ViewPosts
+    EditComment --> End
+    LikePost --> End
+    LikeComment --> End
+    UploadImage --> End

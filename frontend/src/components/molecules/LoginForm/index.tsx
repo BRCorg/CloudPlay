@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+//---------------- composant LoginForm ---------------//
+import { useState } from "react";
 import "./loginForm.scss";
 
 import Button from "../../atoms/Button";
@@ -7,34 +8,50 @@ import Label from "../../atoms/Label";
 import Text from "../../atoms/Text";
 import Spinner from "../../atoms/Spinner";
 
+import type { ApiError } from "../../../redux/auth/types";
+import { getFieldError } from "../../../utils/getFieldError";
+
+// Type des props du composant LoginForm
 type LoginFormProps = {
   onSubmit: (email: string, password: string) => void;
-  error?: string;
+  error?: string | string[] | ApiError | null;
   loading?: boolean;
 };
 
+// Composant LoginForm pour la connexion des utilisateurs
 const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(email, password);
   };
 
-  const hasError = Boolean(error);
+
+  // Gère les erreurs globales (string, tableau ou objet avec .error)
+  const hasGlobalError = Boolean(
+    error && (
+      typeof error === "string" ||
+      Array.isArray(error) ||
+      (typeof error === "object" && error !== null && "error" in error && typeof (error as ApiError).error === "string")
+    )
+  );
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
-      <header className="login-form__header">
-  <Text muted>Accédez à votre espace CloudPlay</Text>
 
-      </header>
 
-      {hasError && (
-        <p className="login-form__error" role="alert">
-          {error}
-        </p>
+
+      {hasGlobalError && (
+        <div className="login-form__error" role="alert">
+          {Array.isArray(error)
+            ? error.map((errMsg, idx) => <div key={idx}>{errMsg}</div>)
+            : typeof error === "object" && error !== null && "error" in error && typeof (error as ApiError).error === "string"
+              ? (error as ApiError).error
+              : (error as string)}
+        </div>
       )}
 
       <div className="login-form__field">
@@ -48,9 +65,14 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          error={hasError}
+          error={!!getFieldError(error ?? null, "email")}
           required
         />
+        {getFieldError(error ?? null, "email") && (
+          <div className="login-form__field-error" role="alert">
+            {getFieldError(error ?? null, "email")}
+          </div>
+        )}
       </div>
 
       <div className="login-form__field">
@@ -64,9 +86,14 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
           placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          error={hasError}
+          error={!!getFieldError(error ?? null, "password")}
           required
         />
+        {getFieldError(error ?? null, "password") && (
+          <div className="login-form__field-error" role="alert">
+            {getFieldError(error ?? null, "password")}
+          </div>
+        )}
       </div>
 
       <Button type="submit" disabled={loading}>
@@ -75,6 +102,17 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
           {loading ? "Signing in..." : "Sign In"}
         </span>
       </Button>
+
+      {/* Affichage d'erreur global possible en bas (ex: identifiants invalides) */}
+      {typeof error === "object" &&
+        error &&
+        !Array.isArray(error) &&
+        !("details" in error) &&
+        (error as ApiError).error && (
+          <div className="login-form__error-global" role="alert">
+            {(error as ApiError).error}
+          </div>
+        )}
 
       <footer className="login-form__footer">
         <Text muted>

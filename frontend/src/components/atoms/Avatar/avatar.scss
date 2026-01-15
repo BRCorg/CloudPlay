@@ -1,4 +1,4 @@
-@import '../../../../public/assets/scss/variables';
+@use "../../../../public/assets/scss/variables" as *;
 
 .avatar {
   display: inline-flex;
@@ -13,6 +13,7 @@
 
   font-weight: $weight-medium;
   user-select: none;
+  -webkit-user-select: none;
 
   /* image */
   img {

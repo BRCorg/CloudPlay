@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { updateProfile } from "../../redux/auth/authSlice";
@@ -5,16 +6,28 @@ import { useNavigate } from "react-router-dom";
 import type { RootState } from "../../app/store";
 import "./ProfileSetup.scss";
 
+// Importation des composants atomiques
+import Avatar from "../../components/atoms/Avatar";
+import Button from "../../components/atoms/Button";
+import Label from "../../components/atoms/Label";
+import Input from "../../components/atoms/Input";
+import Text from "../../components/atoms/Text";
+
+
 export default function ProfileSetup() {
+  // Récupère l'utilisateur courant depuis le store
   const { user } = useAppSelector((state: RootState) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  
+
+  // State local pour le fichier avatar sélectionné
   const [avatar, setAvatar] = useState<File | null>(null);
+  // State pour l'aperçu de l'image (url ou base64)
   const [preview, setPreview] = useState(
     user?.avatar || "http://localhost:5000/uploads/default.webp"
   );
 
+  // Gestion du changement d'avatar (input file)
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setAvatar(file);
@@ -25,6 +38,7 @@ export default function ProfileSetup() {
     }
   };
 
+  // Sauvegarde l'avatar et met à jour le profil
   const handleSave = async () => {
     if (!avatar) return navigate("/");
 
@@ -38,26 +52,30 @@ export default function ProfileSetup() {
     }
   };
 
+  // Permet de passer l'étape (skip)
   const handleSkip = () => navigate("/");
 
+  // ------------------- Rendu du composant ------------------- //
   return (
     <div className="profile-setup">
       <div className="profile-setup__container">
+        {/* Titre de la page */}
         <h2 className="profile-setup__title">Complétez votre profil</h2>
-        <p className="profile-setup__subtitle">
+        {/* Sous-titre */}
+        <Text className="profile-setup__subtitle" muted>
           Ajoutez une photo de profil pour que vos amis vous reconnaissent
-        </p>
+        </Text>
 
+        {/* Section avatar */}
         <div className="profile-setup__avatar-section">
-          <img 
-            src={preview} 
-            alt="Avatar preview" 
-            className="profile-setup__avatar-preview"
-          />
-          <label htmlFor="avatar-upload" className="profile-setup__avatar-button">
+          {/* Aperçu de l'avatar avec composant atomique */}
+          <Avatar src={preview} alt="Avatar preview" size="lg" className="profile-setup__avatar-preview" />
+          {/* Label atomique pour le bouton d'upload */}
+          <Label htmlFor="avatar-upload" className="profile-setup__avatar-button">
             📷
-          </label>
-          <input
+          </Label>
+          {/* Input atomique pour le fichier */}
+          <Input
             id="avatar-upload"
             type="file"
             accept="image/*"
@@ -66,25 +84,31 @@ export default function ProfileSetup() {
           />
         </div>
 
+        {/* Actions (boutons) */}
         <div className="profile-setup__actions">
-          <button 
-            onClick={handleSave} 
+          {/* Bouton principal atomique */}
+          <Button
+            onClick={handleSave}
             disabled={!avatar}
-            className="profile-setup__button profile-setup__button--primary"
+            variant="primary"
+            className="profile-setup__button"
           >
             Enregistrer et continuer
-          </button>
-          <button 
+          </Button>
+          {/* Bouton secondaire atomique */}
+          <Button
             onClick={handleSkip}
-            className="profile-setup__button profile-setup__button--secondary"
+            variant="secondary"
+            className="profile-setup__button"
           >
             Plus tard
-          </button>
+          </Button>
         </div>
 
-        <p className="profile-setup__helper-text">
+        {/* Texte d'aide */}
+        <Text className="profile-setup__helper-text" muted>
           Vous pourrez modifier votre photo de profil à tout moment dans les paramètres
-        </p>
+        </Text>
       </div>
     </div>
   );

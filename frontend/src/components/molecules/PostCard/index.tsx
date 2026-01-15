@@ -1,30 +1,33 @@
 import "./postCard.scss";
 import Avatar from "../../atoms/Avatar";
 import LikeIcon from "../../atoms/LikeIcon";
+import Button from "../../atoms/Button";
+import { useNavigate } from "react-router-dom";
 
+// Type pour l'auteur du post
 type Author = {
   name: string;
   avatar?: string;
 };
 
+// Type des props du composant PostCard
 export type PostCardProps = {
-  title: string;
-  content: string;
-  author: Author;
-  image?: string;
-  likes?: number;
-  comments?: number;
-  timestamp?: string;
-
-  liked?: boolean;
-  onToggleLike?: (next: boolean) => void;
-
-  onOpen?: () => void;
-  isAuthor?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
+  title: string; // Titre du post
+  content: string; // Contenu du post
+  author: Author; // Auteur du post
+  image?: string; // URL de l'image du post (optionnel)
+  likes?: number; // Nombre de likes
+  comments?: number; // Nombre de commentaires
+  timestamp?: string; // Date/heure du post (optionnel)
+  liked?: boolean; // Si l'utilisateur courant a liké le post
+  onToggleLike?: (next: boolean) => void; // Fonction pour toggler le like
+  onOpen?: () => void; // Fonction pour ouvrir le post en détail
+  isAuthor?: boolean; // Indique si l'utilisateur courant est l'auteur du post
+  onEdit?: () => void; // Fonction pour éditer le post
+  onDelete?: () => void; // Fonction pour supprimer le post
 };
 
+// Composant PostCard pour afficher un post individuel
 const PostCard = ({
   title,
   content,
@@ -40,25 +43,51 @@ const PostCard = ({
   onEdit,
   onDelete,
 }: PostCardProps) => {
-  const canLike = Boolean(onToggleLike);
+  // Vérifie si on peut liker (si la fonction onToggleLike est fournie)
+  const canLike = true; // Affiche toujours le bouton like
 
+  // Pour navigation SPA
+  const navigate = useNavigate();
+
+  // Gestion du clic sur le bouton like
+  const handleLikeClick = () => {
+    if (!onToggleLike) {
+      // Redirige vers la page de login en SPA
+      navigate("/login");
+      return;
+    }
+    onToggleLike(!liked);
+  };
+
+  // ------------------- Rendu du composant -------------------//
   return (
     <article className="post-card">
+      {/* Zone principale cliquable pour ouvrir le post en détail */}
       <button type="button" className="post-card__main" onClick={onOpen}>
+        {/* En-tête : avatar et infos auteur */}
         <header className="post-card__header">
-          <Avatar src={author.avatar} alt={author.name} size="md" />
+          <Avatar 
+            src={author.avatar} 
+            alt={author.name} 
+            size="md" 
+          />
           <div className="post-card__meta">
             <p className="post-card__author">{author.name}</p>
-            {timestamp && <span className="post-card__timestamp">{timestamp}</span>}
+            {/* Date/heure du post si fournie */}
+            {timestamp && (
+              <span className="post-card__timestamp">{timestamp}</span>
+            )}
           </div>
         </header>
 
+        {/* Contenu du post : titre et texte */}
         <div className="post-card__content">
           <h3 className="post-card__title">{title}</h3>
           <p className="post-card__text">{content}</p>
         </div>
       </button>
 
+      {/* Image du post si présente */}
       {image && (
         <img
           className="post-card__image"
@@ -68,49 +97,60 @@ const PostCard = ({
         />
       )}
 
+      {/* Pied de carte : likes, commentaires, actions auteur */}
       <footer className="post-card__footer">
         <div className="post-card__footer-left">
+          {/* Le bouton like est toujours affiché, mais redirige vers login si non connecté */}
           {canLike && (
             <span className="post-card__like">
-              <LikeIcon liked={liked} onClick={() => onToggleLike?.(!liked)} />
+              <LikeIcon liked={liked} onClick={handleLikeClick} />
+              {/* Affiche le nombre de likes si > 0 */}
               {likes > 0 && <span className="post-card__count">{likes}</span>}
             </span>
           )}
 
+          {/* Nombre de commentaires */}
           <span className="post-card__comments" aria-label="Comments">
             💬 {comments}
           </span>
         </div>
 
+        {/* Actions auteur : modifier et supprimer (si user est l'auteur) */}
         {isAuthor && (
           <div className="post-card__actions">
+            {/* Bouton modifier */}
             {onEdit && (
-              <button
-                type="button"
+              <Button
                 className="post-card__action-btn"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
+                  // Empêche le clic sur ce bouton de remonter et de déclencher l'ouverture du post
                   e.stopPropagation();
                   onEdit();
                 }}
+                variant="secondary"
+                size="sm"
                 title="Modifier"
               >
                 ✏️
-              </button>
+              </Button>
             )}
+            {/* Bouton supprimer */}
             {onDelete && (
-              <button
-                type="button"
+              <Button
                 className="post-card__action-btn post-card__action-btn--delete"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent) => {
+                  // Empêche la propagation du clic au bouton principal (ouvrir le post)
                   e.stopPropagation();
                   if (window.confirm("Voulez-vous vraiment supprimer ce post ?")) {
                     onDelete();
                   }
                 }}
+                variant="outline"
+                size="sm"
                 title="Supprimer"
               >
                 🗑️
-              </button>
+              </Button>
             )}
           </div>
         )}

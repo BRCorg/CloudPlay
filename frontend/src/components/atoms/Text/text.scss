@@ -1,4 +1,4 @@
-@import "../../../../public/assets/scss/variables";
+@use "../../../../public/assets/scss/variables" as *;
 
 .text {
   margin: 0;
@@ -7,4 +7,16 @@
 
 .text--muted {
   color: $color-gray-600;
+}
+
+.text--error {
+  color: $color-error;
+  background: #fff0f0;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin: 6px 0 0 0;
+  font-size: 0.98em;
+  font-weight: 500;
+  border: 1px solid #f8bcbc;
+  box-shadow: 0 1px 6px rgba(211,47,47,0.08);
 }

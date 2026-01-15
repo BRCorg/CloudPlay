@@ -1,11 +1,11 @@
-//------------------ Model Comments ------------------//
+//------------------ Model Commentaire ------------------//
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IComment extends Document {
   content: string;
-  author: mongoose.Types.ObjectId;
-  post: mongoose.Types.ObjectId;
-  likes: mongoose.Types.ObjectId[];
+  author: mongoose.Types.ObjectId; // Référence à l'utilisateur
+  post: mongoose.Types.ObjectId; // Référence au post
+  likes: mongoose.Types.ObjectId[]; // Références aux utilisateurs qui ont liké le commentaire
   createdAt: Date;
   updatedAt: Date;
 }

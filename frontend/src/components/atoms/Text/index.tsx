@@ -2,12 +2,13 @@ import "./text.scss";
 
 type TextProps = {
   muted?: boolean;
+  className?: string;
   children: React.ReactNode;
 };
 
-const Text = ({ muted, children }: TextProps) => {
+const Text = ({ muted, className = "", children }: TextProps) => {
   return (
-    <p className={muted ? "text text--muted" : "text"}>
+    <p className={["text", muted ? "text--muted" : "", className].filter(Boolean).join(" ")}>
       {children}
     </p>
   );

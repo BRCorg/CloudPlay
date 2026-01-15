@@ -1,4 +1,13 @@
-@import "../../../../public/assets/scss/variables";
+
+@use "../../../../public/assets/scss/variables" as *;
+// Ajout styles pour erreurs
+.login-form__error,
+.login-form__error-global,
+.login-form__field-error {
+  color: red;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
 
 .login-form {
   width: 100%;

@@ -30,7 +30,7 @@ export const errorMiddleware = (
 
     // Pour toutes les autres erreurs, on renvoie une réponse 500
     res.status(500).json({
-        error: "Server error",
+        error: "Erreur serveur",
         details: err.message,
     });
 };

@@ -1,4 +1,4 @@
-@import "../../../../public/assets/scss/variables.scss";
+@use "../../../../public/assets/scss/variables.scss" as *;
 
 .header {
   position: sticky;

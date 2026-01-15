@@ -1,4 +1,16 @@
-@import "../../../public/assets/scss/variables";
+@use "../../../public/assets/scss/variables" as *;
+
+// Style pour l’erreur sous le champ username (même style que signup)
+.profile__field-error {
+  margin: 0;
+  font-size: $text-sm;
+  color: $color-error;
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  background: rgba($color-error, 0.08);
+  border: 1px solid rgba($color-error, 0.25);
+}
+
 
 .profile {
   min-height: 100vh;

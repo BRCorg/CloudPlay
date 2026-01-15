@@ -91,12 +91,6 @@ const Home = () => {
                 Pas d’OAuth, pas de follow, pas de notifications. Les chargements sont gérés au niveau
                 des pages (pas dans les layouts).
               </p>
-
-              <div className="home__cta">
-                <Button variant="secondary" onClick={() => navigate("/posts")}>
-                  Explorer les posts
-                </Button>
-              </div>
             </section>
           </div>
         </div>
