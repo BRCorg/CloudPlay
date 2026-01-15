@@ -94,8 +94,20 @@ export const signup = async (
         avatar: getAvatarUrl(user.avatar),
       },
     });
-  } catch (err) {
-    next(err); // Gestion des erreurs par le middleware d'erreur
+  } catch (err: any) {
+    // Gestion de l'erreur d'email déjà utilisé (duplicate key)
+    if (err.code === 11000 && err.keyPattern && err.keyPattern.email) {
+      return res.status(400).json({
+        error: "Erreur de validation",
+        details: [
+          {
+            path: ["email"],
+            message: "Cette adresse e-mail est déjà utilisée"
+          }
+        ]
+      });
+    }
+    next(err); // Gestion des autres erreurs par le middleware d'erreur
   }
 };
 
@@ -160,8 +172,8 @@ export const login = async (
  *                             Déconnexion
  ************************************************************************/
 export const logout = (_req: Request, res: Response) => {
-  // On supprime le cookie en le réinitialisant
-  res.clearCookie("token");
+  // On supprime le cookie en le réinitialisant (mêmes options que lors de la création)
+  res.clearCookie("token", { httpOnly: true, path: "/" });
   res.json({ message: "Déconnexion réussie" });
 };
 

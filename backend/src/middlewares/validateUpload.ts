@@ -1,7 +1,7 @@
 //----------- Middleware de validation d'upload de fichiers --------------//
 import path from "path";
 import multer from "multer";
-import { Request } from "express";
+import { Request, Response } from "express";
 
 // Chemin du dossier d'uploads
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
@@ -33,5 +33,20 @@ const imageFileFilter = (req: Request, file: Express.Multer.File, cb: (error: Er
 export const uploadSingleFileMiddleware = multer({
   storage,
   fileFilter: imageFileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5 Mo max
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 Mo max
 }).single("file");
+
+// Middleware pour gérer l'erreur Multer (taille, type, etc.)
+export function multerErrorHandler(err: any, req: Request, res: Response, next: Function) {
+  if (err) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: "L'image est trop lourde (max 5 Mo)." });
+    }
+    // Log le type MIME pour debug
+    if (err.message && err.message.includes('Type de fichier invalide')) {
+      console.error('[UPLOAD] Type MIME reçu:', req.file?.mimetype, req.file?.originalname);
+    }
+    return res.status(400).json({ error: err.message || "Erreur d'upload." });
+  }
+  next();
+}

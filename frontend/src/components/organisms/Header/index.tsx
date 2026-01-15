@@ -48,7 +48,7 @@ const Header = ({ user, onLogoClick, onProfileClick, onLogout }: HeaderProps) =>
             </>
           ) : (
             // Lien vers la page de connexion si pas d'utilisateur
-            <a className="header__link" href="/login">
+            <a className="header__link" href="/signup">
               S'inscrire
             </a>
           )}

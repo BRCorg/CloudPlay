@@ -19,17 +19,17 @@ export type Post = {
   isAuthor?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
+  onToggleLike?: (next: boolean) => void;
 };
 
 export type PostListProps = {
   posts: Post[];
   loading?: boolean;
   onOpenPost?: (id: string) => void;
-  onToggleLike?: (id: string, next: boolean) => void;
 };
 
 // Composant PostList : affiche une liste de posts ou des messages selon l'état
-const PostList = ({ posts, loading = false, onOpenPost, onToggleLike }: PostListProps) => {
+const PostList = ({ posts, loading = false, onOpenPost }: PostListProps) => {
   // Affiche un spinner de chargement si loading est true
   if (loading) {
     return (
@@ -68,7 +68,7 @@ const PostList = ({ posts, loading = false, onOpenPost, onToggleLike }: PostList
           timestamp={p.timestamp}
           liked={p.liked ?? false}
           onOpen={onOpenPost ? () => onOpenPost(p.id) : undefined}
-          onToggleLike={onToggleLike ? (next) => onToggleLike(p.id, next) : undefined}
+          onToggleLike={p.onToggleLike}
           isAuthor={p.isAuthor}
           onEdit={p.onEdit}
           onDelete={p.onDelete}

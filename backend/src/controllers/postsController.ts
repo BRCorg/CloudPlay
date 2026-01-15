@@ -15,15 +15,12 @@ const postSchema = z.object({
     .trim()
     .min(2, { message: "Le titre doit contenir au moins 2 caractères" })
     .regex(allowedRegex, {
-      message: "Le titre contient des caractères interdits",
+      message: "Le titre ne doit contenir que des lettres, chiffres, espaces, accents ou ponctuation (. , ? ! - _ ( ) ' \" )",
     }),
   content: z
     .string()
     .trim()
-    .min(5, { message: "Le contenu doit contenir au moins 5 caractères" })
-    .regex(allowedRegex, {
-      message: "Le contenu contient des caractères interdits",
-    }),
+    .min(5, { message: "Le contenu doit contenir au moins 5 caractères" }),
 });
 
 /*************************************************************************

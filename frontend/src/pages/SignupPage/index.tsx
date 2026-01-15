@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { signup } from "../../redux/auth/authSlice";
-import { useNavigate } from "react-router-dom";
 import { getFieldError } from "../../utils/getFieldError";
 import type { RootState } from "../../app/store";
 import "./signupPage.scss";
  
 import MainLayout from "../../components/templates/MainLayout";
+import Header from "../../components/organisms/Header";
+import { useNavigate } from "react-router-dom";
 import Input from "../../components/atoms/Input";
 import Button from "../../components/atoms/Button";
 import Label from "../../components/atoms/Label";
@@ -72,7 +73,9 @@ const SignupPage = () => {
 
   // ------------------- Rendu du composant ------------------- //
   return (
-    <MainLayout>
+    <MainLayout
+      header={<Header onLogoClick={() => navigate("/")} />}
+    >
       <section className="signup-page">
         <div className="signup-page__container">
           {/* En-tête de la page d'inscription */}

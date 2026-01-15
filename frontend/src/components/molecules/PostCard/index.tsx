@@ -2,6 +2,7 @@ import "./postCard.scss";
 import Avatar from "../../atoms/Avatar";
 import LikeIcon from "../../atoms/LikeIcon";
 import Button from "../../atoms/Button";
+import { useNavigate } from "react-router-dom";
 
 // Type pour l'auteur du post
 type Author = {
@@ -43,7 +44,20 @@ const PostCard = ({
   onDelete,
 }: PostCardProps) => {
   // Vérifie si on peut liker (si la fonction onToggleLike est fournie)
-  const canLike = Boolean(onToggleLike);
+  const canLike = true; // Affiche toujours le bouton like
+
+  // Pour navigation SPA
+  const navigate = useNavigate();
+
+  // Gestion du clic sur le bouton like
+  const handleLikeClick = () => {
+    if (!onToggleLike) {
+      // Redirige vers la page de login en SPA
+      navigate("/login");
+      return;
+    }
+    onToggleLike(!liked);
+  };
 
   // ------------------- Rendu du composant -------------------//
   return (
@@ -86,10 +100,10 @@ const PostCard = ({
       {/* Pied de carte : likes, commentaires, actions auteur */}
       <footer className="post-card__footer">
         <div className="post-card__footer-left">
-          {/* Seul un utilisateur connecté (onToggleLike fourni) peut liker */}
+          {/* Le bouton like est toujours affiché, mais redirige vers login si non connecté */}
           {canLike && (
             <span className="post-card__like">
-              <LikeIcon liked={liked} onClick={() => onToggleLike?.(!liked)} />
+              <LikeIcon liked={liked} onClick={handleLikeClick} />
               {/* Affiche le nombre de likes si > 0 */}
               {likes > 0 && <span className="post-card__count">{likes}</span>}
             </span>

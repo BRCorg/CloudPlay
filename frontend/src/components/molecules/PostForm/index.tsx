@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { useAppDispatch } from "../../../app/hooks";
 import { createPost, updatePost, clearPostError } from "../../../redux/posts/postsSlice";
 import { getFieldError } from '../../../utils/getFieldError';
@@ -36,22 +36,54 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
   const dispatch = useAppDispatch();
 
   // États locaux pour les champs du formulaire
-  const [title, setTitle] = useState(initialTitle); // Titre du post
-  const [content, setContent] = useState(initialContent); // Contenu du post
+  type FormState = {
+    title: string;
+    content: string;
+    preview: string | null;
+  };
+  type FormAction =
+    | { type: "SET_TITLE"; payload: string }
+    | { type: "SET_CONTENT"; payload: string }
+    | { type: "SET_PREVIEW"; payload: string | null }
+    | { type: "RESET"; payload: { title: string; content: string; preview: string | null } };
+
+  function formReducer(state: FormState, action: FormAction): FormState {
+    switch (action.type) {
+      case "SET_TITLE":
+        return { ...state, title: action.payload };
+      case "SET_CONTENT":
+        return { ...state, content: action.payload };
+      case "SET_PREVIEW":
+        return { ...state, preview: action.payload };
+      case "RESET":
+        return { ...action.payload };
+      default:
+        return state;
+    }
+  }
+
+  const [form, dispatchForm] = useReducer(formReducer, {
+    title: initialTitle,
+    content: initialContent,
+    preview: initialImage || null,
+  });
   const [file, setFile] = useState<File | null>(null); // Fichier image sélectionné
-  const [preview, setPreview] = useState<string | null>(initialImage || null); // Aperçu de l'image
 
   // Réinitialise les champs du formulaire uniquement lors d'un changement de postId (ou au montage)
   useEffect(() => {
     dispatch(clearPostError());
-    setTitle(initialTitle);
-    setContent(initialContent);
-    setPreview(initialImage || null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postId, dispatch]);
+    dispatchForm({
+      type: "RESET",
+      payload: {
+        title: initialTitle,
+        content: initialContent,
+        preview: initialImage || null,
+      },
+    });
+  }, [postId, dispatch, initialTitle, initialContent, initialImage]);
 
   // Vérifie si le formulaire peut être soumis
-  const canSubmit = title.trim().length > 0 && content.trim().length > 0 && !loading;
+  const canSubmit = form.title.trim().length > 0 && form.content.trim().length > 0 && !loading;
 
   // Gestion du changement de fichier image
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +92,7 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
       setFile(selectedFile);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreview(reader.result as string);
+        dispatchForm({ type: "SET_PREVIEW", payload: reader.result as string });
       };
       reader.readAsDataURL(selectedFile);
     }
@@ -75,8 +107,8 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
       // Mode édition : met à jour le post existant
       const result = await dispatch(updatePost({
         id: postId,
-        title: title.trim(),
-        content: content.trim(),
+        title: form.title.trim(),
+        content: form.content.trim(),
         file: file || undefined,
       }));
       // Ne ferme le formulaire que si l'update est réussie
@@ -85,17 +117,17 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
       }
     } else {
       // Mode création : crée un nouveau post
-      await dispatch(createPost({
-        title: title.trim(),
-        content: content.trim(),
+      const result = await dispatch(createPost({
+        title: form.title.trim(),
+        content: form.content.trim(),
         file: file || undefined,
       }));
 
-      // Réinitialise les champs après création
-      setTitle("");
-      setContent("");
-      setFile(null);
-      setPreview(null);
+      // Réinitialise les champs uniquement si la création a réussi
+      if (result.meta && result.meta.requestStatus === 'fulfilled') {
+        dispatchForm({ type: "RESET", payload: { title: '', content: '', preview: null } });
+        setFile(null);
+      }
     }
   };
 
@@ -129,8 +161,8 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
         <Input
           id="post-title"
           placeholder="Post title..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={form.title}
+          onChange={(e) => dispatchForm({ type: "SET_TITLE", payload: e.target.value })}
           required
         />
         {/* Affiche une erreur spécifique au titre si présente */}
@@ -145,8 +177,8 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
         <Textarea
           id="post-content"
           placeholder="What's on your mind?"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          value={form.content}
+          onChange={(e) => dispatchForm({ type: "SET_CONTENT", payload: e.target.value })}
           rows={4}
           required
         />
@@ -157,15 +189,18 @@ const PostForm = ({ user, editMode = false, postId, initialTitle = "", initialCo
       </div>
 
       {/* Aperçu de l'image sélectionnée (si présente) */}
-      {preview && (
+      {form.preview && (
         <div className="post-form__preview">
-          <img className="post-form__preview-img" src={preview} alt="Post preview" />
+          <img className="post-form__preview-img" src={form.preview} alt="Post preview" />
           <button
             type="button"
             className="post-form__remove"
             onClick={() => {
               setFile(null);
-              setPreview(null);
+              dispatchForm({ type: "SET_PREVIEW", payload: null });
+              // Réinitialise la valeur de l'input file pour permettre un nouvel upload identique
+              const fileInput = document.querySelector<HTMLInputElement>(".post-form__file-input");
+              if (fileInput) fileInput.value = "";
             }}
             aria-label="Remove image"
           >

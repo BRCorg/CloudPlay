@@ -1,3 +1,6 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { ApiError, AuthState } from "./types";
+import api from "../../api/apiGlobal";
 // Vérifie si le payload est une erreur d'API (ApiError)
 // Type guard pour ApiError
 function isApiError(payload: unknown): payload is ApiError {
@@ -8,20 +11,17 @@ function isApiError(payload: unknown): payload is ApiError {
         typeof (payload as { error?: unknown }).error === 'string'
     );
 }
-// Importations principales : Redux Toolkit, types, et instance Axios
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { ApiError, AuthState } from "./types";
-import api from "../../api/apiGlobal";
 
 
 // Au démarrage, l'état initial de l'authentification
 // État initial de l'authentification utilisateur
-const initialState: AuthState = {
+const initialState: AuthState & { justLoggedOut?: boolean } = {
     user: null, // Pas d'utilisateur connecté au départ
     isAuthenticated: false, // Pas authentifié au départ
     loading: false, // Pas de chargement au départ
     error: null,
     hasFetchedMe: false, // Pas encore récupéré les infos utilisateur
+    justLoggedOut: false,
 };
 
 
@@ -152,6 +152,9 @@ const authSlice = createSlice({
         clearError(state) {
             state.error = null;
         },
+        setJustLoggedOut(state, action) {
+            state.justLoggedOut = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -240,6 +243,9 @@ const authSlice = createSlice({
             })
             .addCase(logout.fulfilled, (state) => {
                 state.loading = false;
+                state.user = null;
+                state.isAuthenticated = false;
+                state.justLoggedOut = true;
             })
 
 
@@ -276,5 +282,5 @@ const authSlice = createSlice({
 });
 
 // Export des actions et du reducer du slice d'authentification
-export const { clearError } = authSlice.actions;
+export const { clearError, setJustLoggedOut } = authSlice.actions;
 export default authSlice.reducer;

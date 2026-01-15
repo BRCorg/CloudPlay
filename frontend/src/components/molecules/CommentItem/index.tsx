@@ -10,28 +10,32 @@ import Text from "../../atoms/Text";
 
 // Type des props du composant CommentItem
 export type CommentItemProps = {
-  comment: IComment; // Le commentaire à afficher
-  currentUserId?: string; // L'ID de l'utilisateur courant (pour vérifier l'auteur)
-  onEdit: (commentId: string, content: string) => void; // Fonction pour éditer le commentaire
-  onDelete: (commentId: string) => void; // Fonction pour supprimer le commentaire
-  onLike?: (commentId: string) => void; // Fonction pour aimer le commentaire
-  onReply?: (commentId: string) => void; // Fonction pour répondre au commentaire (optionnel)
+  comment: IComment;
+  currentUserId?: string;
+  isEditing?: boolean;
+  onEdit: (commentId: string, content?: string) => void; // Si isEditing: sauvegarde, sinon: active édition
+  onCancelEdit?: () => void;
+  onDelete: (commentId: string) => void;
+  onLike?: (commentId: string) => void;
+  onReply?: (commentId: string) => void;
 };
 
 // Composant CommentItem pour afficher un commentaire individuel
 const CommentItem = ({
   comment,
   currentUserId,
+  isEditing = false,
   onEdit,
+  onCancelEdit,
   onDelete,
   onLike,
 }: CommentItemProps) => {
-  // État local pour savoir si on est en mode édition (faux par défaut)
-  const [isEditing, setIsEditing] = useState(false);
 
   // État local pour le contenu édité du commentaire
-  // Pré-rempli avec le contenu actuel du commentaire
-  const [editContent, setEditContent] = useState(comment.content);
+  const [editContent, setEditContent] = useState(comment.content);  
+  
+  // Met à jour editContent uniquement lors du passage en mode édition (via le bouton Modifier)
+  // (logique déplacée directement dans le onClick du bouton)
 
   // Vérifie si l'utilisateur courant est l'auteur du commentaire
   const isAuthor = currentUserId === comment.author._id;
@@ -40,18 +44,16 @@ const CommentItem = ({
   const isLiked = currentUserId ? comment.likes.includes(currentUserId) : false;
 
   // Gestion des actions
+
   const handleSave = () => {
-    // Si le contenu édité n'est pas vide, on appelle la fonction onEdit
     if (editContent.trim()) {
       onEdit(comment._id, editContent.trim());
-      setIsEditing(false);
     }
   };
 
   const handleCancel = () => {
-    // Réinitialise le contenu édité et quitte le mode édition
     setEditContent(comment.content);
-    setIsEditing(false);
+    if (onCancelEdit) onCancelEdit();
   };
 
   // Gestion de la suppression du commentaire
@@ -122,8 +124,7 @@ const CommentItem = ({
             <div className="comment-item__actions">
               {/* Bouton like */}
               <Button
-                className={`comment-item__like ${isLiked ? "comment-item__like--active" : ""
-                  }`}
+                className={`comment-item__like ${isLiked ? "comment-item__like--active" : ""}`}
                 onClick={() => onLike && onLike(comment._id)}
                 variant={isLiked ? "primary" : "secondary"}
                 size="sm"
@@ -136,11 +137,14 @@ const CommentItem = ({
               </Button>
 
               {/* Si c'est l'auteur du commentaire, on affiche les boutons modifier et supprimer */}
-              {isAuthor && (
+              {isAuthor && !isEditing && (
                 <>
                   <Button
                     className="comment-item__action-btn"
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setEditContent(comment.content);
+                      onEdit(comment._id);
+                    }}
                     variant="secondary"
                     size="sm"
                   >
@@ -162,5 +166,5 @@ const CommentItem = ({
       </div>
     </div>
   );
-};
+}
 export default CommentItem;

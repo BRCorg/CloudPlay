@@ -99,43 +99,37 @@ const PostsPage = () => {
             </p>
           </header>
 
-          {/* Formulaire de création ou d'édition de post */}
-          <div className="posts-page__create">
-            {editingPost ? (
-              <div className="posts-page__edit">
-                <h3 className="posts-page__edit-title">Modifier le post</h3>
+          {/* Formulaire de création ou d'édition de post (uniquement si connecté) */}
+          {user && (
+            <div className="posts-page__create">
+              {editingPost ? (
+                <div className="posts-page__edit">
+                  <h3 className="posts-page__edit-title">Modifier le post</h3>
+                  <PostForm
+                    user={{ name: user.username, avatar: user.avatar }}
+                    editMode
+                    postId={editingPost._id}
+                    initialTitle={editingPost.title}
+                    initialContent={editingPost.content}
+                    initialImage={
+                      editingPost.image
+                        ? `http://localhost:5000/uploads/${editingPost.image}`
+                        : undefined
+                    }
+                    onCancel={() => setEditingPostId(null)}
+                    error={postFormError}
+                    loading={loading}
+                  />
+                </div>
+              ) : (
                 <PostForm
-                  user={
-                    user
-                      ? { name: user.username, avatar: user.avatar }
-                      : undefined
-                  }
-                  editMode
-                  postId={editingPost._id}
-                  initialTitle={editingPost.title}
-                  initialContent={editingPost.content}
-                  initialImage={
-                    editingPost.image
-                      ? `http://localhost:5000/uploads/${editingPost.image}`
-                      : undefined
-                  }
-                  onCancel={() => setEditingPostId(null)}
+                  user={{ name: user.username, avatar: user.avatar }}
                   error={postFormError}
                   loading={loading}
                 />
-              </div>
-            ) : (
-              <PostForm
-                user={
-                  user
-                    ? { name: user.username, avatar: user.avatar }
-                    : undefined
-                }
-                error={postFormError}
-                loading={loading}
-              />
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Liste des posts */}
           <PostList
@@ -163,10 +157,12 @@ const PostsPage = () => {
               isAuthor: user?._id === post.author?._id,
               onEdit: () => handleEditPost(post._id),
               onDelete: () => handleDeletePost(post._id),
+              // Ne passe onToggleLike que si user est connecté
+              ...(user ? { onToggleLike: () => handleToggleLike(post._id) } : {}),
             }))}
             loading={loading}
             onOpenPost={handleOpenPost}
-            onToggleLike={handleToggleLike}
+            // onToggleLike n'est plus passé globalement, mais par post
           />
         </div>
       </section>

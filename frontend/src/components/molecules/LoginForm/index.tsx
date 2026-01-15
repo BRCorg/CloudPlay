@@ -23,36 +23,34 @@ const LoginForm = ({ onSubmit, error, loading = false }: LoginFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // DEBUG: Affiche la structure des erreurs de champ reçues du backend
-  if (
-    error &&
-    typeof error === "object" &&
-    "details" in error &&
-    Array.isArray((error as ApiError).details)
-  ) {
-    console.log("LoginForm error.details:", (error as ApiError).details);
-  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(email, password);
   };
 
+
+  // Gère les erreurs globales (string, tableau ou objet avec .error)
   const hasGlobalError = Boolean(
-    error && (typeof error === "string" || Array.isArray(error))
+    error && (
+      typeof error === "string" ||
+      Array.isArray(error) ||
+      (typeof error === "object" && error !== null && "error" in error && typeof (error as ApiError).error === "string")
+    )
   );
 
   return (
     <form className="login-form" onSubmit={handleSubmit}>
-      <header className="login-form__header">
-        <Text muted>Accédez à votre espace CloudPlay</Text>
-      </header>
+
+
 
       {hasGlobalError && (
         <div className="login-form__error" role="alert">
           {Array.isArray(error)
             ? error.map((errMsg, idx) => <div key={idx}>{errMsg}</div>)
-            : (error as string)}
+            : typeof error === "object" && error !== null && "error" in error && typeof (error as ApiError).error === "string"
+              ? (error as ApiError).error
+              : (error as string)}
         </div>
       )}
 

@@ -4,6 +4,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"; // Outils Redu
 import axios from "axios"; // Client HTTP
 import type { PostState } from "./types"; // Typage de l'état des posts
 import type { AxiosError } from "axios"; // Typage des erreurs Axios
+import type { ApiError } from "../auth/types";
 
 // URL de base de l'API backend
 const API_URL = "http://localhost:5000";
@@ -15,9 +16,9 @@ const api = axios.create({
 });
 
 // Définition de l'état initial du slice posts
-const initialState: PostState = {
+const initialState: PostState & { error: string | import("../auth/types").ApiError | null } = {
     loading: false, // Indique si une requête est en cours
-    error: null,    // Message d'erreur éventuel
+    error: null,    // Message d'erreur éventuel (string ou ApiError)
     posts: [],      // Liste des posts
 };
 
@@ -69,10 +70,16 @@ export const createPost = createAsyncThunk(
             });
             return res.data.post;
         } catch (err) {
-            const error = err as AxiosError<{ error?: string }>;
-            let message = error.response?.data?.error;
-            if (!message && error.response?.data && typeof error.response.data === 'object') {
-                message = JSON.stringify(error.response.data);
+            const error = err as AxiosError<ApiError | string>;
+            // Si le backend renvoie un objet avec details (erreurs de validation)
+            const data = error.response?.data;
+            if (data && typeof data === 'object' && 'details' in data && Array.isArray((data as ApiError).details)) {
+                return rejectWithValue({ error: (data as ApiError).error || "Erreur de validation", details: (data as ApiError).details });
+            }
+            // Sinon, message global
+            let message = (typeof data === 'object' && 'error' in data) ? (data as ApiError).error : (typeof data === 'string' ? data : undefined);
+            if (!message && data && typeof data === 'object') {
+                message = JSON.stringify(data);
             }
             return rejectWithValue(message || error.message || "Erreur création post");
         }
@@ -127,10 +134,16 @@ export const updatePost = createAsyncThunk(
             });
             return res.data.post;
         } catch (err) {
-            const error = err as AxiosError<{ error?: string }>;
-            let message = error.response?.data?.error;
-            if (!message && error.response?.data && typeof error.response.data === 'object') {
-                message = JSON.stringify(error.response.data);
+            const error = err as AxiosError<ApiError | string>;
+            // Si le backend renvoie un objet avec details (erreurs de validation)
+            const data = error.response?.data;
+            if (data && typeof data === 'object' && 'details' in data && Array.isArray((data as ApiError).details)) {
+                return rejectWithValue({ error: (data as ApiError).error || "Erreur de validation", details: (data as ApiError).details });
+            }
+            // Sinon, message global
+            let message = (typeof data === 'object' && 'error' in data) ? (data as ApiError).error : (typeof data === 'string' ? data : undefined);
+            if (!message && data && typeof data === 'object') {
+                message = JSON.stringify(data);
             }
             return rejectWithValue(message || error.message || "Erreur mise à jour post");
         }
@@ -179,9 +192,13 @@ const postSlice = createSlice({
                 state.posts = [action.payload, ...state.posts];
             })
             .addCase(createPost.rejected, (state, action) => {
-                // Échec : on stocke le message d'erreur
+                // Échec : on stocke l'objet d'erreur complet (payload) si présent, sinon message
                 state.loading = false;
-                state.error = action.error.message || 'Erreur création post';
+                if (action.payload) {
+                    state.error = action.payload as string | import("../auth/types").ApiError;
+                } else {
+                    state.error = action.error.message || 'Erreur création post';
+                }
             })
 
             // ----- Suppression d'un post -----
@@ -214,9 +231,13 @@ const postSlice = createSlice({
                 }
             })
             .addCase(updatePost.rejected, (state, action) => {
-                // Échec : on stocke le message d'erreur
+                // Échec : on stocke l'objet d'erreur complet (payload) si présent, sinon message
                 state.loading = false;
-                state.error = action.error.message || 'Erreur mise à jour post';
+                if (action.payload) {
+                    state.error = action.payload as string | import("../auth/types").ApiError;
+                } else {
+                    state.error = action.error.message || 'Erreur mise à jour post';
+                }
             })
 
             // ----- Like/unlike d'un post -----

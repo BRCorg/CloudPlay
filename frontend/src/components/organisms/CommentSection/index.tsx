@@ -8,6 +8,8 @@ import Textarea from "../../atoms/InputTextArea";
 import Spinner from "../../atoms/Spinner";
 
 import CommentItem from "../../molecules/CommentItem";
+// ...existing code...
+// (déplacé dans le composant)
 import type { IComment } from "../../../redux/comments/types";
 
 
@@ -31,6 +33,8 @@ const CommentSection = ({
   onLike,
   onReply,
 }: CommentSectionProps) => {
+  // Ajoute un état pour savoir quel commentaire est en édition
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
 
   // État local pour le contenu du nouveau commentaire
   // Par défaut, le champ est vide
@@ -62,11 +66,10 @@ const CommentSection = ({
         </h3>
       </header>
 
-      {/* Formulaire d'ajout de commentaire (visible si user connecté) */}
-      {user && (
+      {/* Formulaire d'ajout de commentaire (visible si user connecté et pas en édition) */}
+      {user && !editingCommentId && (
         <form className="comment-section__form" onSubmit={handleSubmit}>
           <Avatar src={user.avatar} alt={user.username} size="sm" />
-
           <div className="comment-section__form-body">
             <Textarea
               placeholder="Écrire un commentaire..."
@@ -75,7 +78,6 @@ const CommentSection = ({
               rows={3}
               required
             />
-
             <div className="comment-section__form-actions">
               <Button type="submit" disabled={!canPost}>
                 Publier
@@ -109,7 +111,9 @@ const CommentSection = ({
             <CommentItem
               key={c._id}
               comment={c}
-              onEdit={() => {}}
+              isEditing={editingCommentId === c._id}
+              onEdit={() => setEditingCommentId(c._id)}
+              onCancelEdit={() => setEditingCommentId(null)}
               onDelete={() => {}}
               onLike={onLike ? () => onLike(c._id) : undefined}
               onReply={onReply ? () => onReply(c._id) : undefined}

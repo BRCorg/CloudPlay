@@ -1,5 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import type {} from "../types/express";
 import authRoutes from "./routes/authRoutes";
 import postsRoutes from "./routes/postsRoutes";
 import commentsRoutes from "./routes/commentsRoutes";
