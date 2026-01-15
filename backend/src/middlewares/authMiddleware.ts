@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { User } from "../models/User";
+import  User  from "../models/User";
 import { verifyToken } from "../utils/jwt";
 
 // ------ Middleware pour protéger les routes

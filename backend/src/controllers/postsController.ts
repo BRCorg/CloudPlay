@@ -1,6 +1,6 @@
 //------------------------- POSTS CONTROLLER ----------------------------//
 import { Request, Response, NextFunction } from "express";
-import { Post } from "../models/Post";
+import Post, { IPost } from "../models/Post";
 import Comment from "../models/Comment";
 import { z, ZodError } from "zod";
 import mongoose from "mongoose";
@@ -72,7 +72,7 @@ export const getPosts = async (
     // Ensuite, pour chaque post, compter les commentaires associés
     // et construire un nouveau tableau avec le count inclus
     const postsWithCommentCount = await Promise.all(
-      posts.map(async (post) => {
+      posts.map(async (post: IPost) => {
         const commentCount = await Comment.countDocuments({ post: post._id });
         return { ...post.toObject(), commentCount };
       })
@@ -177,7 +177,7 @@ export const toggleLikePost = async (
 
     // Vérifier si l'utilisateur a déjà liké le post
     const likeIndex = post.likes.findIndex(
-      (id) => id.toString() === userId
+      (id: mongoose.Types.ObjectId) => id.toString() === userId
     );
 
     // Si user like déjà, on le retire (unlike), sinon on l'ajoute (like)

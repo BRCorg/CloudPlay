@@ -1,7 +1,7 @@
 //**************************** Contrôleur d'authentification *************************//
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
-import { User } from "../models/User";
+import User  from "../models/User";
 import { z, ZodError } from "zod";
 import { generateToken } from "../utils/jwt";
 
