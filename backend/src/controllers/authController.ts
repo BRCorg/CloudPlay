@@ -2,11 +2,19 @@
 import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcryptjs";
 import User  from "../models/User";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import { generateToken } from "../utils/jwt";
 
 
 // Helper pour construire l'URL complète de l'avatar
+// Options de cookie uniformes pour login/signup/logout
+const cookieOptions = {
+  httpOnly: true,
+  path: "/",
+  secure: process.env.NODE_ENV === "production", // true en prod
+  sameSite: "lax" as "lax", // ou "strict" as "strict", "none" as "none"
+  // domain: "tondomaine.com", // à activer si besoin
+};
 const getAvatarUrl = (filename: string | undefined): string => {
   if (!filename)
     return `${
@@ -83,7 +91,7 @@ export const signup = async (
     // On envoie le token dans un cookie HttpOnly
     // Le cookie est accessible sur tout le site (path: "/")
     const token = generateToken(user._id.toString());
-    res.cookie("token", token, { httpOnly: true, path: "/" });
+    res.cookie("token", token, cookieOptions);
 
     // On renvoie les infos de l'utilisateur (sans le mot de passe)
     res.status(201).json({
@@ -151,7 +159,7 @@ export const login = async (
 
     // Générer un token JWT et l'envoyer dans un cookie HttpOnly
     const token = generateToken(user._id.toString());
-    res.cookie("token", token, { httpOnly: true, path: "/" });
+    res.cookie("token", token, cookieOptions);
 
     res.json({
       message: "Connexion réussie",
@@ -173,7 +181,7 @@ export const login = async (
  ************************************************************************/
 export const logout = (_req: Request, res: Response) => {
   // On supprime le cookie en le réinitialisant (mêmes options que lors de la création)
-  res.clearCookie("token", { httpOnly: true, path: "/" });
+  res.clearCookie("token", cookieOptions);
   res.json({ message: "Déconnexion réussie" });
 };
 
