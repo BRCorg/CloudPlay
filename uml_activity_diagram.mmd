@@ -1,0 +1,78 @@
+flowchart TD
+    subgraph CRUD_Posts["📝 CRUD Posts"]
+        %% ============ CRÉER UN POST ============
+        subgraph Create["Créer un Post (POST /posts)"]
+            C_Start((Début)) --> C_Auth{Utilisateur<br/>authentifié ?}
+            C_Auth -- Non --> C_401[401 Unauthorized]
+            C_Auth -- Oui --> C_Validate{Validation Zod<br/>title + content}
+            C_Validate -- Invalide --> C_400[400 Bad Request]
+            C_Validate -- Valide --> C_Image{Image<br/>uploadée ?}
+            C_Image -- Oui --> C_CreateWithImg["Créer post<br/>avec image"]
+            C_Image -- Non --> C_CreateNoImg["Créer post<br/>sans image"]
+            C_CreateWithImg --> C_Populate["Populate author"]
+            C_CreateNoImg --> C_Populate
+            C_Populate --> C_201[201 Created<br/>Retourne le post]
+        end
+ 
+        %% ============ LIRE LES POSTS ============
+        subgraph Read["Lire les Posts (GET /posts)"]
+            R_Start((Début)) --> R_Fetch["Récupérer tous les posts"]
+            R_Fetch --> R_Populate["Populate author<br/>(username, avatar)"]
+            R_Populate --> R_Sort["Trier par date<br/>(createdAt DESC)"]
+            R_Sort --> R_Count["Compter les commentaires<br/>pour chaque post"]
+            R_Count --> R_200[200 OK<br/>Retourne posts + commentCount]
+        end
+ 
+        %% ============ MODIFIER UN POST ============
+        subgraph Update["Modifier un Post (PUT /posts/:id)"]
+            U_Start((Début)) --> U_Find{Post<br/>existe ?}
+            U_Find -- Non --> U_404[404 Not Found]
+            U_Find -- Oui --> U_Owner{Utilisateur =<br/>Auteur ?}
+            U_Owner -- Non --> U_403[403 Forbidden]
+            U_Owner -- Oui --> U_Validate{Validation Zod<br/>partielle}
+            U_Validate -- Invalide --> U_400[400 Bad Request]
+            U_Validate -- Valide --> U_Image{Nouvelle<br/>image ?}
+            U_Image -- Oui --> U_UpdateImg["Mettre à jour<br/>avec image"]
+            U_Image -- Non --> U_UpdateNoImg["Mettre à jour<br/>sans image"]
+            U_UpdateImg --> U_Save["Sauvegarder + Populate"]
+            U_UpdateNoImg --> U_Save
+            U_Save --> U_200[200 OK<br/>Retourne le post mis à jour]
+        end
+ 
+        %% ============ SUPPRIMER UN POST ============
+        subgraph Delete["Supprimer un Post (DELETE /posts/:id)"]
+            D_Start((Début)) --> D_Find{Post<br/>existe ?}
+            D_Find -- Non --> D_404[404 Not Found]
+            D_Find -- Oui --> D_Owner{Utilisateur =<br/>Auteur ?}
+            D_Owner -- Non --> D_403[403 Forbidden]
+            D_Owner -- Oui --> D_Delete["Supprimer le post"]
+            D_Delete --> D_200[200 OK<br/>Message de confirmation]
+        end
+ 
+        %% ============ LIKER/UNLIKER UN POST ============
+        subgraph Like["Toggle Like (POST /posts/:postId/like)"]
+            L_Start((Début)) --> L_Find{Post<br/>existe ?}
+            L_Find -- Non --> L_404[404 Not Found]
+            L_Find -- Oui --> L_Check{Déjà<br/>liké ?}
+            L_Check -- Oui --> L_Unlike["Retirer le like<br/>(unlike)"]
+            L_Check -- Non --> L_Like["Ajouter le like"]
+            L_Unlike --> L_Save["Sauvegarder + Populate"]
+            L_Like --> L_Save
+            L_Save --> L_200[200 OK<br/>Retourne le post]
+        end
+    end
+ 
+    %% Styles
+    style C_201 fill:#22c55e,color:#fff
+    style R_200 fill:#22c55e,color:#fff
+    style U_200 fill:#22c55e,color:#fff
+    style D_200 fill:#22c55e,color:#fff
+    style L_200 fill:#22c55e,color:#fff
+    style C_401 fill:#ef4444,color:#fff
+    style C_400 fill:#f97316,color:#fff
+    style U_400 fill:#f97316,color:#fff
+    style U_403 fill:#ef4444,color:#fff
+    style U_404 fill:#ef4444,color:#fff
+    style D_403 fill:#ef4444,color:#fff
+    style D_404 fill:#ef4444,color:#fff
+    style L_404 fill:#ef4444,color:#fff

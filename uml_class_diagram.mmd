@@ -1,0 +1,35 @@
+classDiagram
+  class User {
+    +_id: String
+    +username: String
+    +email: String
+    +password: String
+    +avatar: String
+    +createdAt: Date
+    +updatedAt: Date
+  }
+
+  class Post {
+    +_id: String
+    +title: String
+    +content: String
+    +image: String
+    +createdAt: Date
+    +updatedAt: Date
+  }
+
+  class Comment {
+    +_id: String
+    +content: String
+    +createdAt: Date
+    +updatedAt: Date
+  }
+
+  User "1" -- "0..*" Post : écrit
+  User "1" -- "0..*" Comment : écrit
+  Post "1" -- "0..*" Comment : reçoit
+  Post "1" -- "0..*" User : like
+  Comment "1" -- "0..*" User : like
+  Post "1" -- "1" User : auteur
+  Comment "1" -- "1" User : auteur
+  Comment "1" -- "1" Post : sur

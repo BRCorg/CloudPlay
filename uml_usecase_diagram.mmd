@@ -1,0 +1,46 @@
+flowchart TB
+    classDef actor fill:#f5f5f5,stroke:#333,stroke-width:1px
+    classDef usecase fill:#ffffff,stroke:#4f46e5,stroke-width:1.5px,rx:20,ry:20
+
+    Utilisateur:::actor
+    Visiteur:::actor
+
+    Inscription((Inscription)):::usecase
+    Connexion((Connexion)):::usecase
+    Deconnexion((Déconnexion)):::usecase
+    CreerPost((Créer post)):::usecase
+    ModifierPost((Modifier post)):::usecase
+    SupprimerPost((Supprimer post)):::usecase
+    CommenterPost((Commenter post)):::usecase
+    ModifierCommentaire((Modifier commentaire)):::usecase
+    SupprimerCommentaire((Supprimer commentaire)):::usecase
+    LikerPost((Liker post)):::usecase
+    LikerCommentaire((Liker commentaire)):::usecase
+    UploaderImage((Uploader image)):::usecase
+    ConsulterPosts((Consulter posts)):::usecase
+    ConsulterCommentaires((Consulter commentaires)):::usecase
+
+    Utilisateur --> Inscription
+    Utilisateur --> Connexion
+    Utilisateur --> Deconnexion
+    Utilisateur --> CreerPost
+    Utilisateur --> ModifierPost
+    Utilisateur --> SupprimerPost
+    Utilisateur --> CommenterPost
+    Utilisateur --> ModifierCommentaire
+    Utilisateur --> SupprimerCommentaire
+    Utilisateur --> LikerPost
+    Utilisateur --> LikerCommentaire
+    Utilisateur --> UploaderImage
+
+    Visiteur --> ConsulterPosts
+    Visiteur --> ConsulterCommentaires
+
+    CreerPost -.-> UploaderImage
+    CommenterPost -.-> Connexion
+    LikerPost -.-> Connexion
+    LikerCommentaire -.-> Connexion
+    ModifierPost -.-> Connexion
+    SupprimerPost -.-> Connexion
+    ModifierCommentaire -.-> Connexion
+    SupprimerCommentaire -.-> Connexion
