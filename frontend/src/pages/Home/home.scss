@@ -1,9 +1,14 @@
-@use "sass:color";
-@use "../../../public/assets/scss/variables" as *;
-
+@import "../../../public/assets/scss/variables";
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap');
- 
- 
+
+// Futuristic color palette
+$neon-cyan: #00ffff;
+$neon-blue: #0066ff;
+$neon-purple: #9945ff;
+$dark-bg: #101027;
+$dark-surface: #12121a;
+$glass-white: rgba(255, 255, 255, 0.05);
+$glass-border: rgba(255, 255, 255, 0.1);
  
 .home {
   position: relative;

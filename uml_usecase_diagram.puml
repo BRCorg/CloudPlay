@@ -1,0 +1,61 @@
+@startuml CloudPlay_UseCase_Diagram
+title Diagramme de Cas d'Utilisation - CloudPlay
+
+left to right direction
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #FEFEFE
+  BorderColor #333333
+}
+
+' ==================== ACTEURS ====================
+actor "Visiteur" as Visitor
+actor "Utilisateur" as AuthUser
+
+Visitor <|-- AuthUser
+
+' ==================== AUTHENTIFICATION ====================
+rectangle "Authentification" {
+  usecase "S'inscrire" as UC_Signup
+  usecase "Se connecter" as UC_Login
+  usecase "Se déconnecter" as UC_Logout
+  usecase "Gérer son profil" as UC_Profile
+}
+
+' ==================== POSTS ====================
+rectangle "Gestion des Posts" {
+  usecase "Consulter les posts" as UC_ViewPosts
+  usecase "Créer un post" as UC_CreatePost
+  usecase "Modifier son post" as UC_UpdatePost
+  usecase "Supprimer son post" as UC_DeletePost
+  usecase "Liker un post" as UC_LikePost
+}
+
+' ==================== COMMENTAIRES ====================
+rectangle "Gestion des Commentaires" {
+  usecase "Consulter les commentaires" as UC_ViewComments
+  usecase "Ajouter un commentaire" as UC_CreateComment
+  usecase "Modifier son commentaire" as UC_UpdateComment
+  usecase "Supprimer son commentaire" as UC_DeleteComment
+  usecase "Liker un commentaire" as UC_LikeComment
+}
+
+' ==================== RELATIONS VISITEUR ====================
+Visitor --> UC_ViewPosts
+Visitor --> UC_ViewComments
+Visitor --> UC_Signup
+
+' ==================== RELATIONS UTILISATEUR ====================
+AuthUser --> UC_Login
+AuthUser --> UC_Logout
+AuthUser --> UC_Profile
+AuthUser --> UC_CreatePost
+AuthUser --> UC_UpdatePost
+AuthUser --> UC_DeletePost
+AuthUser --> UC_LikePost
+AuthUser --> UC_CreateComment
+AuthUser --> UC_UpdateComment
+AuthUser --> UC_DeleteComment
+AuthUser --> UC_LikeComment
+
+@enduml

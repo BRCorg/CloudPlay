@@ -130,19 +130,12 @@ const CommentItem = ({
                 size="sm"
                 aria-label={isLiked ? "Retirer le like" : "Liker"}
               >
-<<<<<<< HEAD
-                <svg viewBox="0 0 24 24" className="comment-item__like-icon" fill={isLiked ? "currentColor" : "none"}>
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L4.22 13.45 12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                {comment.likes.length > 0 && <span>{comment.likes.length}</span>}
-              </button>
-=======
+
                 <LikeIcon liked={isLiked} />
                 {comment.likes.length > 0 && (
                   <span>{comment.likes.length}</span>
                 )}
               </Button>
->>>>>>> bff3c6f837d38e69c1bd62f60d535da80eab5ead
 
               {/* Si c'est l'auteur du commentaire, on affiche les boutons modifier et supprimer */}
               {isAuthor && !isEditing && (

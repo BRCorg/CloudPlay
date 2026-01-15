@@ -71,12 +71,13 @@ backend/
 
 ## 📜 Scripts disponibles
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Lance le serveur en mode développement avec hot-reload |
-| `npm run build` | Compile le TypeScript en JavaScript |
-| `npm start` | Lance le serveur de production |
-| `npm test` | Lance les tests |
+`npm run dev` - Lance le serveur en mode développement avec hot-reload 
+
+`npm run build` - Compile le TypeScript en JavaScript 
+
+`npm start` - Lance le serveur de production 
+
+`npm test` - Lance les tests 
 
 ## 🔗 Endpoints API
 
@@ -115,6 +116,24 @@ backend/
 - `axios` - Client HTTP
 - `cookie-parser` - Parsing des cookies
 
+## 🖼️ Upload d'images
+
+- Répertoire public de stockage: `public/uploads` (exposé statiquement sur `/uploads`).
+- Middleware: `multer` avec stockage disque, nommage sécurisé (timestamp/UUID), filtrage MIME et limite 5MB.
+
+Endpoints d'upload:
+- `POST /api/upload/avatar` — champ attendu: `file` — renvoie `201` et `{ url, filename }` sur succès.
+- `POST /api/upload/post` — champ attendu: `file` — renvoie `201` et `{ url, filename }` sur succès.
+
+Comportement attendu du serveur:
+- Validation MIME: `jpeg|jpg|png|gif|webp`.
+- Limite de taille: 5MB (configurable).
+- Erreurs: retourne `400` avec `{ error }` pour type/taille/échec d'upload.
+
+Intégration frontend:
+- Upload recommandé en deux étapes: d'abord `POST /api/upload/*` pour obtenir l'URL, puis POST des données (ex: `/api/register` ou `/api/posts`) en incluant `avatar` ou `image` = URL reçue.
+- Exemple: envoyer `FormData` avec champ `file` puis inclure la `url` reçue dans le payload JSON.
+
 ## 🔐 Sécurité
 
 - Mots de passe hashés avec bcryptjs
@@ -122,6 +141,3 @@ backend/
 - Protection CORS configurée
 - Variables sensibles dans `.env` (non versionnées)
 
-## 📝 License
-
-ISC

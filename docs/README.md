@@ -60,6 +60,17 @@
 | `createdAt` | Date | Date de création |
 | `updatedAt` | Date | Date de dernière modification |
 
+### Upload d'images
+
+Les images (avatar utilisateur et images de post) sont stockées sur le serveur dans `public/uploads` et exposées en statique via `/uploads/<filename>`.
+
+- Champ d'upload attendu côté backend : `file`.
+- Endpoints disponibles : `POST /api/upload/avatar` et `POST /api/upload/post`.
+- Réponse attendue : `201` avec `{ url, filename }` où `url` est l'URL publique vers l'image.
+- Validation : types `jpeg|jpg|png|gif|webp`, limite par défaut 5MB.
+
+En base, les champs `User.avatar` et `Post.image` contiennent l'URL renvoyée par l'endpoint d'upload.
+
 ### Comment
 | Champ | Type | Description |
 |-------|------|-------------|
