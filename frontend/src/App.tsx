@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { fetchMe, setJustLoggedOut } from "./redux/auth/authSlice";
+import { fetchMe } from "./redux/auth/authSlice";
 import AppRoutes from "./routes/AppRoutes";
 
 import type { RootState } from "./app/store";
@@ -11,10 +11,8 @@ function App() {
   useEffect(() => {
     if (!justLoggedOut) {
       dispatch(fetchMe());
-    } else {
-      // Reset the flag so next reload will fetchMe again
-      dispatch(setJustLoggedOut(false));
     }
+    // On ne reset plus justLoggedOut ici : il ne sera remis à false qu'après un login/signup réussi
   }, [dispatch, justLoggedOut]);
 
   return <AppRoutes />;

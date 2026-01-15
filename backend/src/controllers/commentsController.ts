@@ -101,7 +101,9 @@ export const updateComment = async (
     if (comment.author.toString() !== userId)
       return res.status(403).json({ error: "Non autorisé" });
 
+    // Object .assign 
     Object.assign(comment, data);
+
     await comment.save();
     await comment.populate("author", "username avatar");
 

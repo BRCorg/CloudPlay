@@ -115,10 +115,10 @@ const Profile = () => {
           <div className="profile__card">
             <h1 className="profile__title">Mon Profil</h1>
             
+
             {/* Section avatar + upload */}
             <div className="profile__avatar-section">
               <Avatar src={avatarUrl} alt={user.username} size="lg" className="profile__avatar" />
-              
               <div className="profile__upload">
                 <Label htmlFor="avatar-input" className="profile__upload-label">
                   Changer la photo
@@ -137,6 +137,17 @@ const Profile = () => {
                 <Button onClick={handleUpdateAvatar} disabled={loading}>
                   {loading ? "Enregistrement..." : "Enregistrer"}
                 </Button>
+              )}
+
+              {/* Affichage d'une erreur d'upload globale ou détaillée */}
+              {error && typeof error === 'object' && error !== null && error.error && !getFieldError(error, 'username') && (
+                <div className="profile__field-error" role="alert" style={{ marginTop: 8 }}>
+                  {Array.isArray(error.details) && error.details.length > 0
+                    ? error.details.map((e, i) => <div key={i}>{e.message || JSON.stringify(e)}</div>)
+                    : typeof error.details === 'string' && error.details
+                      ? error.details
+                      : error.error}
+                </div>
               )}
             </div>
 
