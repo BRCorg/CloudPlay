@@ -12,9 +12,12 @@ const cookieOptions = {
   httpOnly: true,
   path: "/",
   secure: process.env.NODE_ENV === "production", // true en prod
-  sameSite: "lax" as "lax", // ou "strict" as "strict", "none" as "none"
-  // domain: "tondomaine.com", // à activer si besoin
+  sameSite: "lax" as "lax", 
 };
+
+
+
+// Fonction pour obtenir l'URL complète de l'avatar utilisateur
 const getAvatarUrl = (filename: string | undefined): string => {
   if (!filename)
     return `${
