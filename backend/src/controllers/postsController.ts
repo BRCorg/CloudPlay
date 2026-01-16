@@ -79,7 +79,7 @@ export const getPosts = async (
     );
 
     // Renvoyer les posts avec le nombre de commentaires
-    res.json({ posts: postsWithCommentCount });
+    res.status(200).json({ posts: postsWithCommentCount });
   } catch (err) {
     next(err);
   }
@@ -115,7 +115,7 @@ export const updatePost = async (
     await post.save();
     await post.populate("author", "username avatar");
 
-    res.json({ post });
+    res.status(200).json({ post });
   } catch (err) {
     if (err instanceof ZodError) return next(err);
     next(err);
@@ -145,7 +145,7 @@ export const deletePost = async (
 
     // Supprimer le post si tout est ok
     await post.deleteOne();
-    res.json({ message: "Post supprimé avec succès" });
+    res.status(200).json({ message: "Post supprimé avec succès" });
   } catch (err) {
     next(err);
   }
@@ -193,7 +193,7 @@ export const toggleLikePost = async (
     await post.save();
     await post.populate("author", "username avatar");
 
-    res.json(post);
+    res.status(200).json(post);
   } catch (error) {
     console.error("Erreur lors du like/dislike :", error);
     res.status(500).json({ message: "Erreur serveur" });
@@ -222,7 +222,7 @@ export const getPostById = async (
     const commentCount = await Comment.countDocuments({ post: post._id });
 
     // Renvoyer le post avec le nombre de commentaires
-    res.json({ post: { ...post.toObject(), commentCount } });
+    res.status(200).json({ post: { ...post.toObject(), commentCount } });
   } catch (err) {
     next(err);
   }

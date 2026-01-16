@@ -16,7 +16,6 @@ const cookieOptions = {
 };
 
 
-
 // Fonction pour obtenir l'URL complète de l'avatar utilisateur
 const getAvatarUrl = (filename: string | undefined): string => {
   if (!filename)
