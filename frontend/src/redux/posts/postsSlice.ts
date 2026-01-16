@@ -1,19 +1,12 @@
 
 // Importation des outils Redux Toolkit et d'Axios pour la gestion des requêtes asynchrones et du state
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"; // Outils Redux
-import axios from "axios"; // Client HTTP
+import api from "../../api/apiGlobal";
 import type { PostState } from "./types"; // Typage de l'état des posts
 import type { AxiosError } from "axios"; // Typage des erreurs Axios
 import type { ApiError } from "../auth/types";
 
-// URL de base de l'API backend
-const API_URL = "http://localhost:5000";
 
-// Création d'une instance Axios configurée pour l'API
-const api = axios.create({
-    baseURL: API_URL,
-    withCredentials: true, // Permet d'envoyer les cookies (authentification)
-});
 
 // Définition de l'état initial du slice posts
 const initialState: PostState & { error: string | import("../auth/types").ApiError | null } = {

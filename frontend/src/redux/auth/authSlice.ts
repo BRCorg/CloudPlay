@@ -5,16 +5,20 @@ import api from "../../api/apiGlobal";
 // Type guard pour ApiError
 function isApiError(payload: unknown): payload is ApiError {
     return (
+
+        // Vérifie que le payload est un objet avec une propriété 'error' de type string
         typeof payload === 'object' &&
+        // Vérifie que le payload n'est pas null
         payload !== null &&
+        // Vérifie la présence de la propriété 'error' et son type
         'error' in payload &&
+        // Vérifie que la propriété 'error' est bien une chaîne de caractères
         typeof (payload as { error?: unknown }).error === 'string'
     );
 }
 
 
 // Au démarrage, l'état initial de l'authentification
-// État initial de l'authentification utilisateur
 const initialState: AuthState & { justLoggedOut?: boolean } = {
     user: null, // Pas d'utilisateur connecté au départ
     isAuthenticated: false, // Pas authentifié au départ
@@ -40,9 +44,14 @@ export const signup = createAsyncThunk(
             });
             return res.data;
         } catch (err) {
+            // Si l’erreur est un objet, qu’elle a une propriété response, mais que cette propriété est vide/false
+            // alors l’API est probablement injoignable (serveur down, pas de réponse)
             if (typeof err === 'object' && err && 'response' in err && !(err as { response?: unknown }).response) {
                 return rejectWithValue("Serveur indisponible");
             }
+
+            // Si l’erreur est un objet et qu’elle a une propriété response (donc l’API a répondu)
+            // On renvoie l’objet d’erreur complet (avec details) pour que le front puisse afficher les erreurs par champ
             if (typeof err === 'object' && err && 'response' in err) {
                 return rejectWithValue((err as { response: { data?: unknown } }).response.data as ApiError);
             }
@@ -158,8 +167,6 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-
-            
             // Gestion de l'inscription
             .addCase(signup.pending, (state) => {
                 state.loading = true;
@@ -187,8 +194,6 @@ const authSlice = createSlice({
                 state.hasFetchedMe = true;
             })
 
-
-            
             // Gestion de la connexion
             .addCase(login.pending, (state) => {
                 state.loading = true;
@@ -216,8 +221,6 @@ const authSlice = createSlice({
                 state.hasFetchedMe = true;
             })
 
-
-            
             // Gestion de la récupération des infos utilisateur
             .addCase(fetchMe.pending, (state) => {
                 state.loading = true;
@@ -234,7 +237,6 @@ const authSlice = createSlice({
                 state.isAuthenticated = false;
                 state.hasFetchedMe = true;
             })
-
 
             // Logout (le reset réel est fait par fetchMe)
             // Gestion de la déconnexion

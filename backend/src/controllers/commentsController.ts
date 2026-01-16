@@ -1,7 +1,7 @@
 //-------------------------- COMMENTS CONTROLLER -------------------------//
 import { Request, Response, NextFunction } from "express";
 import Comment from "../models/Comment";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import mongoose from "mongoose";
 
 
@@ -70,7 +70,6 @@ export const createComment = async (
     await comment.populate("author", "username avatar");
     res.status(201).json(comment);
   } catch (err) {
-    if (err instanceof ZodError) return next(err);
     next(err);
   }
 };
@@ -109,7 +108,6 @@ export const updateComment = async (
 
     res.status(200).json({ message: "Commentaire mis à jour avec succès", comment });
   } catch (err) {
-    if (err instanceof ZodError) return next(err);
     next(err);
   }
 };

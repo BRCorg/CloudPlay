@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import Post, { IPost } from "../models/Post";
 import Comment from "../models/Comment";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import mongoose from "mongoose";
 
 // ----- Regex sécurisé pour autoriser uniquement les caractères souhaités
@@ -50,7 +50,6 @@ export const createPost = async (
     await post.populate("author", "username avatar");
     res.status(201).json({ post });
   } catch (err) {
-    if (err instanceof ZodError) return next(err);
     next(err);
   }
 };
@@ -117,7 +116,6 @@ export const updatePost = async (
 
     res.status(200).json({ post });
   } catch (err) {
-    if (err instanceof ZodError) return next(err);
     next(err);
   }
 };

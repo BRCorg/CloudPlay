@@ -1,23 +1,17 @@
 
 // Importation des outils Redux et d'Axios
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../api/apiGlobal';
 import type { CommentState, CreateCommentPayload, UpdateCommentPayload } from './types';
 
-// URL de base de l'API
-const API_URL = 'http://localhost:5000/api';
 
-// Instance Axios configurée pour l'API
-const axiosInstance = axios.create({
-  withCredentials: true,
-});
 
 
 // Récupérer les commentaires d'un post
 export const getComments = createAsyncThunk(
   'comments/getComments',
   async (postId: string) => {
-    const response = await axiosInstance.get(`${API_URL}/posts/${postId}/comments`);
+    const response = await api.get(`/api/posts/${postId}/comments`);
     return response.data;
   }
 );
@@ -28,8 +22,8 @@ export const createComment = createAsyncThunk(
   'comments/createComment',
   async ({ postId, content }: CreateCommentPayload, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(
-        `${API_URL}/posts/${postId}/comments`,
+      const response = await api.post(
+        `/api/posts/${postId}/comments`,
         { content }
       );
       return response.data;
@@ -59,8 +53,8 @@ export const createComment = createAsyncThunk(
 export const updateComment = createAsyncThunk(
   'comments/updateComment',
   async ({ commentId, content }: UpdateCommentPayload) => {
-    const response = await axiosInstance.put(
-      `${API_URL}/comments/${commentId}`,
+    const response = await api.put(
+      `/api/comments/${commentId}`,
       { content }
     );
     return response.data;
@@ -72,7 +66,7 @@ export const updateComment = createAsyncThunk(
 export const deleteComment = createAsyncThunk(
   'comments/deleteComment',
   async (commentId: string) => {
-    await axiosInstance.delete(`${API_URL}/comments/${commentId}`);
+    await api.delete(`/api/comments/${commentId}`);
     return commentId;
   }
 );
@@ -82,8 +76,8 @@ export const deleteComment = createAsyncThunk(
 export const toggleLikeComment = createAsyncThunk(
   'comments/toggleLikeComment',
   async (commentId: string) => {
-    const response = await axiosInstance.post(
-      `${API_URL}/comments/${commentId}/like`
+    const response = await api.post(
+      `/api/comments/${commentId}/like`
     );
     return response.data;
   }
