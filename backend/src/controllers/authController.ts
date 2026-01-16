@@ -163,7 +163,7 @@ export const login = async (
     const token = generateToken(user._id.toString());
     res.cookie("token", token, cookieOptions);
 
-    res.json({
+    res.status(200).json({
       message: "Connexion réussie",
       user: {
         _id: user._id,
@@ -203,7 +203,7 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // Renvoyer les informations de l'utilisateur
-    res.json({
+    res.status(200).json({
       _id: user._id,
       email: user.email,
       username: user.username,
@@ -268,7 +268,7 @@ export const updateProfile = async (
     });
 
     // Renvoie les infos mises à jour de l'utilisateur
-    res.json({
+    res.status(200).json({
       user: {
         _id: updatedUser!._id,
         email: updatedUser!.email,
